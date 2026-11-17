@@ -12,8 +12,8 @@
 Forever Loot Finder gets its item lists from other addons. It works without them, but then has little to show. The more of these you have, the more it lists:
 
 * **DungeonJournal**: Forever's dungeons with their bosses, loot and quests.
-* **Questie**: quest rewards, vendors and creature drops.
-* **AtlasLoot Classic Forever**: raids and world bosses, crafted gear, reputation, PvP and event rewards, drop chances.
+* **Questie**: quest rewards, vendors, creature drops and world drops.
+* **AtlasLoot Classic Forever**: raids and world bosses, crafted gear, reputation, PvP and event rewards, world drops, drop chances, and BiS lists you can add to your favourites.
 * **Pawn**: item scores, upgrade percent and the "Pawn upgrades only" filter.
 * **Baganator**: what you own in your bags, bank and mail on all your characters.
 * **Auctionator**: auction prices and its shopping list.
@@ -36,14 +36,14 @@ Each one can be switched off under Settings > Addons.
 * **By slot**: every slot on the left with how many items match. Click a column header to sort, right-click it to choose which columns to show.
 * **Dungeons** and **Raids**: a card per place with its items. Places for your level are highlighted.
 * **Quests**, **Professions**, **Reputation**, **PvP** and **World events**: the same cards for quest rewards, crafted gear and other rewards.
-* **Favourites**: three tiers (BiS, Must have, Nice to have), grouped by where to farm them, for all your characters.
+* **Favourites**: three tiers (BiS, Must have, Nice to have), grouped by where to farm them, for all your characters. Use **Add item** on the Favourites tab to add any wearable item by name, ID or Shift-click, even one with no known source.
 * Filters for armor and weapon type, stats, sources, drop chance, price, dungeons and raids, required level, quality, binding, weapon speed, set pieces and more.
 * Items another class or race can't use never show.
 * Right-click an item to favourite it, open it in DungeonJournal, AtlasLoot or Questie, set a waypoint, search it in Auctionator, see its set or link it in chat.
 * Dungeon reminder: your favourites in the dungeon you enter.
 * Drop alert: a notice when a favourite drops.
-* Item tooltips show which of your characters want an item.
-* Export and import your favourites and settings.
+* Item tooltips show your favourite tier, and optionally which of your other characters want the item.
+* Export and import your favourites and settings, or add an AtlasLoot BiS list for your class.
 
 ## Notes
 
