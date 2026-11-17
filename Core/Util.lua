@@ -31,6 +31,18 @@ function Util.Equippable(id)
     return itemID ~= nil and ns.Index.EQUIP_SLOT[equipLoc] ~= nil
 end
 
+-- string.lower only knows ASCII, Russian names need their capitals too
+local CYRILLIC = {}
+local D0, D1 = string.char(0xD0), string.char(0xD1)
+for code = 0x90, 0x9F do CYRILLIC[D0 .. string.char(code)] = D0 .. string.char(code + 0x20) end
+for code = 0xA0, 0xAF do CYRILLIC[D0 .. string.char(code)] = D1 .. string.char(code - 0x20) end
+CYRILLIC[D0 .. string.char(0x81)] = D1 .. string.char(0x91) -- Ё
+local CAPITAL = D0 .. "[" .. string.char(0x80) .. "-" .. string.char(0xAF) .. "]"
+function Util.Lower(text)
+    if type(text) ~= "string" then return "" end
+    return (text:lower():gsub(CAPITAL, CYRILLIC))
+end
+
 function Util.ItemIDFromLink(link)
     if type(link) ~= "string" or Util.IsSecret(link) then return nil end
     return tonumber(link:match("item:(%d+)"))
