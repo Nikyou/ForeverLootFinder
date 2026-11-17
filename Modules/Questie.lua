@@ -149,6 +149,15 @@ function Questie.Keys(kind)
     table.sort(list)
     return list
 end
+-- name and required level of any quest, for other addons' quest lists
+function Questie.QuestBasics(questID)
+    if not db() then return nil end
+    local name = get("Quest", questID, "name")
+    if type(name) ~= "string" then return nil end
+    local level = get("Quest", questID, "requiredLevel")
+    return name, type(level) == "number" and level > 0 and level or nil
+end
+
 
 local function ids(list)
     local out = {}
