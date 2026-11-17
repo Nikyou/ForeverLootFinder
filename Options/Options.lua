@@ -381,7 +381,20 @@ function Options:ShowFavouritesImport(charKey)
     })
 end
 
+function Options:ImportBiS(list)
+    local F = ns.Favourites
+    local plan = F.BiSPlan(list)
+    if #plan.new == 0 then
+        self:ShowMessage(L["Nothing new to import."] .. "\n\n" .. F.FDJSummary(plan))
+        return
+    end
+    self:Confirm(format(L["Add %s to your favourites as \"BiS\"?"], ns.AtlasLootBiS.Label(list)) .. "\n\n"
+                   .. F.FDJSummary(plan),
+                 {{label = L["Import"], onClick = function() F.ApplyBiS(plan) end}, {label = L["Cancel"]}})
+end
+
 -- FDJ's own list is left alone
+
 function Options:ImportFDJ()
     local F = ns.Favourites
     local plan = F.FDJPlan()

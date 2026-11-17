@@ -4,6 +4,36 @@ local W, Options = ns.Widgets, ns.Options
 
 local controls = {}
 local selected
+local bisList
+
+local function bisLists()
+    local data = ns.addon.db.global.characters[ns.charKey]
+    return ns.AtlasLootBiS.Lists(data and data.class)
+end
+
+local function bisItems()
+    local items = {}
+    for _, list in ipairs(bisLists()) do items[#items + 1] = {value = list.key, text = ns.AtlasLootBiS.Label(list)} end
+    return items
+end
+
+local function refreshBiS()
+    local lists = bisLists()
+    local found
+    for _, list in ipairs(lists) do if list.key == bisList then found = list end end
+    found = found or lists[1]
+    bisList = found and found.key or nil
+    controls.bis:SetValue(bisList, true)
+    controls.bis:SetEnabled(found ~= nil)
+    controls.bisImport:SetEnabled(found ~= nil)
+    if found then
+        controls.bisImport.why = nil
+    elseif ns.AtlasLootBiS.Installed() then
+        controls.bisImport.why = {reason = L["It has no lists for your class yet."]}
+    else
+        controls.bisImport.why = {needs = {"AtlasLoot Classic"}}
+    end
+end
 
 local function F() return ns.Favourites end
 
@@ -36,6 +66,7 @@ local function refresh()
     local hasFDJ = F().HasFDJList()
     controls.fdj:SetShown(hasFDJ)
     controls.fdjHelp:SetShown(hasFDJ)
+    refreshBiS()
 end
 
 local function create(parent)
@@ -58,6 +89,19 @@ local function create(parent)
     controls.fdj = W.Button(parent, L["Import FDJ favourites"], nil, 22, function() Options:ImportFDJ() end)
     controls.fdj:FitWidth()
     left.place(controls.fdj, 30)
+
+    left.title(L["AtlasLoot BiS lists"])
+    left.help(L["Adds a list's items as \"BiS\". Nothing is imported until you click."], 0)
+    controls.bis = W.Dropdown(parent, Options.COLUMN - 20, bisItems, function(value) bisList = value end)
+    left.place(controls.bis, 34)
+    controls.bisImport = W.Button(parent, L["Import BiS list"], nil, 22, function()
+        for _, list in ipairs(bisLists()) do
+            if list.key == bisList then return Options:ImportBiS(list) end
+        end
+    end)
+    controls.bisImport:FitWidth()
+    W.WhyTooltip(controls.bisImport, L["AtlasLoot BiS lists"])
+    left.place(controls.bisImport, 30)
 
     local right = W.Column(parent, Options.RIGHT, Options.COLUMN)
     right.title(L["Characters"])

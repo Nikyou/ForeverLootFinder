@@ -65,7 +65,7 @@ function Favourites.PlanImport(fdjList, current, known)
         if not id or id <= 0 then
             plan.skipped[#plan.skipped + 1] = {id = id, name = entry.name, reason = "no item ID"}
         elseif not known(id) then
-            plan.skipped[#plan.skipped + 1] = {id = id, name = entry.name, reason = "not an item FLF lists"}
+            plan.skipped[#plan.skipped + 1] = {id = id, name = entry.name, reason = "not wearable"}
         elseif not seen[id] then
             seen[id] = true
             if current and current[id] then
@@ -79,9 +79,10 @@ function Favourites.PlanImport(fdjList, current, known)
 end
 
 -- only adds, existing tiers stay
-function Favourites.ApplyImport(store, charKey, plan)
+function Favourites.ApplyImport(store, charKey, plan, tier)
+    tier = tier or Favourites.IMPORT_TIER
     for _, id in ipairs(plan.new) do
-        if not Favourites.GetIn(store, charKey, id) then Favourites.SetIn(store, charKey, id, Favourites.IMPORT_TIER) end
+        if not Favourites.GetIn(store, charKey, id) then Favourites.SetIn(store, charKey, id, tier) end
     end
 end
 
@@ -201,14 +202,26 @@ function Favourites.ApplyDecoded(data, mode, charKey)
     ns.FireChange("favourites")
 end
 
-function Favourites.FDJPlan()
+-- an item with no known source can still be a favourite, it just stays out of the slot lists
+function Favourites.CanAdd(id)
+    if type(id) ~= "number" or id <= 0 then return false end
     local index = ns.GetIndex()
-    local known = function(id)
-        local record = index and index.byKey[id]
-        if not record then return false end
-        return ns.Items.Info(record).slot ~= nil
-    end
-    return Favourites.PlanImport(ns.DungeonJournal.FavouriteItems(), Favourites.List(), known)
+    local record = index and index.byKey[id]
+    if record then return ns.Items.Info(record).slot ~= nil end
+    return ns.Util.Equippable(id)
+end
+
+function Favourites.FDJPlan()
+    return Favourites.PlanImport(ns.DungeonJournal.FavouriteItems(), Favourites.List(), Favourites.CanAdd)
+end
+
+function Favourites.BiSPlan(list)
+    return Favourites.PlanImport(list.items, Favourites.List(), Favourites.CanAdd)
+end
+
+function Favourites.ApplyBiS(plan)
+    Favourites.ApplyImport(global().favourites, ns.charKey, plan, "BIS")
+    ns.FireChange("favourites")
 end
 
 function Favourites.FDJSummary(plan)

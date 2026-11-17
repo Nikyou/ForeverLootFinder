@@ -85,6 +85,9 @@ function Tooltip.SourceText(source, dungeonByKey, withDungeon)
     end
     if source.kind == "world" then
         local text = source.section and format(L["World drop: %s"], source.section) or L["World drop"]
+        local level = levelText(source.levelMin, source.levelMax)
+        -- the creatures' levels, not a requirement
+        if level then text = text .. " " .. MUTED .. "(" .. format(L["creatures %s"], level) .. ")|r" end
         return text .. Tooltip.ViaQuestNote(source)
     end
     if source.kind == "zoneQuest" then
@@ -195,25 +198,37 @@ function Tooltip.Lines(record, dungeonByKey, opts)
     if opts.showFavourite and opts.who then
         for _, tier in ipairs(ns.Favourites.TIERS) do
             local names = opts.who[tier.key]
-            if names and #names > 0 then
-                lines[#lines + 1] = {
-                    text = format("%s %s — %s", Tooltip.STAR, tier.label, table.concat(names, ", ")),
-                    color = tier.color,
-                }
+            if names then
+                local text = Tooltip.STAR .. " " .. tier.label
+                -- just your own tier needs no name
+                if #names > 0 then text = text .. " — " .. table.concat(names, ", ") end
+                lines[#lines + 1] = {text = text, color = tier.color}
             end
         end
     end
     return lines
 end
 
-local function whoNames(id)
-    local who = ns.Favourites.Who(id)
+-- a tier with an empty list is yours alone
+function Tooltip.WhoNames(who, myKey, others, nameOf)
     local out = {}
     for tier, keys in pairs(who) do
-        out[tier] = {}
-        for _, key in ipairs(keys) do table.insert(out[tier], ns.Favourites.CharacterName(key)) end
+        local names, mine = {}, false
+        for _, key in ipairs(keys) do
+            if key == myKey then mine = true end
+            if others then names[#names + 1] = nameOf(key) end
+        end
+        if others or mine then
+            if not others or (mine and #keys == 1) then names = {} end
+            out[tier] = names
+        end
     end
     return out
+end
+
+local function whoNames(id)
+    local others = ns.addon.db.profile.tooltip.otherChars == true
+    return Tooltip.WhoNames(ns.Favourites.Who(id), ns.charKey, others, ns.Favourites.CharacterName)
 end
 
 local function auctionText(record)
@@ -250,7 +265,11 @@ local function onItemTooltip(tooltip, data)
     if isSecret(id) or type(id) ~= "number" then return end
     local index = ns.GetIndex()
     local record = index and index.byKey[id]
-    if not record then return end
+    if not record then
+        -- a favourite no addon lists still gets its tier line
+        if not (index and next(ns.Favourites.Who(id))) then return end
+        record = {key = id, id = id, sources = {}}
+    end
     local owner = tooltip.GetOwner and tooltip:GetOwner()
     Tooltip.Add(tooltip, record, owner and owners[owner] or nil)
 end

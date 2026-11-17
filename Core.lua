@@ -36,7 +36,7 @@ local defaults = {
         },
         stars = true,
         -- allItems: every tooltip, not only FLF's windows. auction off by default, Auctionator has its own line
-        tooltip = {allItems = false, favourite = true, auction = false},
+        tooltip = {allItems = false, favourite = true, otherChars = false, auction = false},
         dungeonTab = {hideEmpty = false, byBoss = false},
         cardChance = true,
         favourites = {defaultTier = "MUST"},
@@ -404,12 +404,13 @@ function addon:OnSlashCommand(input)
         local idx = ns.GetIndex()
         if not id then
             self:Print(L["Usage: /flf fav <item link or ID>"])
-        elseif not (idx and idx.byKey[id]) then
-            self:Print(L["That item isn't listed."])
+        elseif not ns.Favourites.CanAdd(id) then
+            self:Print(L["That item can't be worn."])
         else
             local tier = self.db.profile.favourites.defaultTier
             ns.Favourites.Set(id, tier)
             self:Print(format(L["Added to favourites (%s)."], ns.Favourites.TierLabel(tier)))
+            if not (idx and idx.byKey[id]) then self:Print(L["No addon lists where it's from, so it shows only under Favourites."]) end
         end
     elseif command == "dump" then
         ns.Dump.Start(rest:lower())
