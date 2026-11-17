@@ -381,7 +381,7 @@ L["Nothing to list yet."] = true
 -- UI/Tabs/SlotTab.lua
 L["No items match the filters."] = true
 L["By slot"] = true
-L["~ counted without \"Pawn upgrades only\": it is checked for the selected slot only."] = true
+L["~ Pawn is still working out some of these. The number may drop."] = true
 
 -- UI/Tabs/DungeonTab.lua
 L["All slots"] = true

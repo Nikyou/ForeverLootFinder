@@ -381,7 +381,7 @@ if not L then return end
 -- UI/Tabs/SlotTab.lua
 -- L["No items match the filters."] = true -- Translation missing
 -- L["By slot"] = true -- Translation missing
--- L["~ counted without \"Pawn upgrades only\": it is checked for the selected slot only."] = true -- Translation missing
+-- L["~ Pawn is still working out some of these. The number may drop."] = true -- Translation missing
 
 -- UI/Tabs/DungeonTab.lua
 -- L["All slots"] = true -- Translation missing

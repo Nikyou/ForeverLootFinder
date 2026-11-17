@@ -381,7 +381,7 @@ L["Nothing to list yet."] = "Пока нечего показать."
 -- UI/Tabs/SlotTab.lua
 L["No items match the filters."] = "Нет предметов под эти фильтры."
 L["By slot"] = "По ячейкам"
-L["~ counted without \"Pawn upgrades only\": it is checked for the selected slot only."] = "~ — без учёта «Только улучшения по Pawn»: это проверяется только для выбранной ячейки."
+L["~ Pawn is still working out some of these. The number may drop."] = "~ Pawn ещё считает часть предметов. Число может уменьшиться."
 
 -- UI/Tabs/DungeonTab.lua
 L["All slots"] = "Все ячейки"
