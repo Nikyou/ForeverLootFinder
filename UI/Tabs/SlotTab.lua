@@ -81,10 +81,9 @@ local function create(parent)
         button:SetScript("OnClick", function() selectSlot(slot) end)
         W.FullTextTooltip(button, button.label)
         button:HookScript("OnEnter", function(self)
-            if not (ui.approximate and slot ~= ns.Filters().slot) then return end
+            if not (ui.approximate and ui.approximate[slot] and slot ~= ns.Filters().slot) then return end
             if GameTooltip:GetOwner() ~= self then GameTooltip:SetOwner(self, "ANCHOR_RIGHT") end
-            GameTooltip:AddLine(L["~ counted without \"Pawn upgrades only\": it is checked for the selected slot only."],
-                                1, 1, 1, true)
+            GameTooltip:AddLine(L["~ Pawn is still working out some of these. The number may drop."], 1, 1, 1, true)
             GameTooltip:Show()
         end)
         button:HookScript("OnLeave", function(self) if GameTooltip:GetOwner() == self then GameTooltip:Hide() end end)
@@ -103,8 +102,8 @@ local function refresh(ctx, kinds)
     ui.approximate = approximate
     for slot, button in pairs(ui.slots) do
         local count = counts[slot] or 0
-        -- without the upgrade check the other slots can only count more
-        local about = approximate and slot ~= filters.slot and count > 0
+        -- items Pawn hasn't scored yet count as upgrades till then, so it can only drop
+        local about = approximate and approximate[slot] and slot ~= filters.slot and count > 0
         button.count:SetText((about and "~" or "") .. count)
         button:SetRowSelected(slot == filters.slot)
         button.label:SetTextColor(unpack((counts[slot] or 0) > 0 and Style.TEXT or Style.MUTED))

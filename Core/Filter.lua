@@ -164,6 +164,7 @@ function Filter.Context(state, character, opts)
         hidden = opts.hidden or {},
         dungeonByKey = opts.dungeonByKey or {},
         pawnUpgrade = opts.pawnUpgrade,
+        pawnUpgradePeek = opts.pawnUpgradePeek,
         auctionPrice = opts.auctionPrice,
         completed = opts.completed,
         professions = character.professions,
@@ -448,15 +449,31 @@ end
 
 -- rows of one slot and the rail's counts in one pass. the Pawn upgrade check is the slow part, so only the
 -- shown slot gets it; the third result says the other counts skipped it
+-- third result: the slots whose count is a guess ("Pawn upgrades only" with values still missing), or false.
+-- only the selected slot asks Pawn first, the others use what's known and queue the rest behind it
 function Filter.RunWithCounts(records, infoOf, state, ctx, slot)
-    local rows, counts = {}, {}
-    local approximate = slot ~= nil and state.pawnUpgradesOnly and ctx.pawnUpgrade ~= nil or false
+    local rows, counts, approximate = {}, {}, false
+    local peek = slot ~= nil and state.pawnUpgradesOnly and ctx.pawnUpgrade ~= nil
     for _, record in ipairs(records) do
         local info = infoOf(record)
         local itemSlot = info.slot
         if itemSlot then
-            local status, sources = Filter.Evaluate(record, info, state, ctx, true, approximate and itemSlot ~= slot)
-            if Filter.Shows(status, ctx) then
+            local other = peek and itemSlot ~= slot
+            local status, sources = Filter.Evaluate(record, info, state, ctx, true, other)
+            local shows = Filter.Shows(status, ctx)
+            if shows and other then
+                local upgrade = ctx.pawnUpgradePeek and ctx.pawnUpgradePeek(record, info)
+                if upgrade == nil then
+                    -- only what Pawn can still score makes it rough: no ID or not loaded is the loading's business
+                    if record.id and record.id > 0 and info.loaded then
+                        approximate = approximate or {}
+                        approximate[itemSlot] = true
+                    end
+                elseif upgrade <= 0 then
+                    shows = false
+                end
+            end
+            if shows then
                 counts[itemSlot] = (counts[itemSlot] or 0) + 1
                 if slot == nil or itemSlot == slot then
                     rows[#rows + 1] = {record = record, info = info, status = status, sources = sources}

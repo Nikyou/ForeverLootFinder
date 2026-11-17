@@ -203,6 +203,16 @@ function ns.FilterContext(charKey)
             if result.upgradeKnown and result.upgrade == nil then return 0 end
             return result.upgrade
         end or nil,
+        -- the other slots' counts: known values only, the rest asked for behind the shown slot's
+        pawnUpgradePeek = compare and function(record, info)
+            if not info.loaded then return nil end
+            -- unique ones too: the comparer would otherwise ask Pawn ahead of the shown slot
+            if record.id > 0 and ns.Pawn.Peek(record.id, scale) == nil then return nil end
+            local result = compare(record, info)
+            if result.unique == "equipped" then return -1 end
+            if result.upgradeKnown and result.upgrade == nil then return 0 end
+            return result.upgrade
+        end or nil,
         auctionPrice = ns.Auctionator.Active() and function(record, info)
             local price = ns.Auctionator.ForRecord(record, info)
             return price and price.price or nil

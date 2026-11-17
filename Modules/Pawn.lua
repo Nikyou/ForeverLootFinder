@@ -14,6 +14,11 @@ local signatures = {}
 local slotValues = {} -- [scale][invSlot], false = empty
 -- a stack, so the list on screen comes first. an id asked again moves up and leaves false behind
 local queue, position, live = {}, {}, 0
+-- the other slots' items, for their counts: only once the stack above is empty, in the order asked
+local later, laterHead, inLater = {}, 1, {}
+-- Pawn had nothing for these a few times this session (often not in the client's cache): left alone till next login
+local LATER_TRIES, LATER_RETRY = 3, 2
+local laterTries, noValue = {}, {}
 local paused = false
 local listeners = {}
 local changePending = false
@@ -194,6 +199,35 @@ end
 
 function Pawn.Value(id, scale) return Pawn.Lookup(id, scale) or nil end
 
+-- like Lookup, but an unknown value waits behind everything Lookup asked for
+function Pawn.Peek(id, scale)
+    if not id or id <= 0 or not scale then return nil end
+    local value = scaleValues(scale)[id]
+    if value == nil then
+        local key = scale .. ":" .. id
+        if noValue[key] then return false end
+        if not position[key] and not inLater[key] then
+            inLater[key] = true
+            later[#later + 1] = {id = id, scale = scale, key = key}
+        end
+    end
+    return value
+end
+
+local function popLater()
+    while laterHead <= #later do
+        local job = later[laterHead]
+        laterHead = laterHead + 1
+        inLater[job.key] = nil
+        if scaleValues(job.scale)[job.id] == nil then return job end
+    end
+    wipe(later)
+    laterHead = 1
+    return nil
+end
+
+local function pending() return live > 0 or laterHead <= #later end
+
 function Pawn.Forget(id)
     for _, byScale in pairs(values) do byScale[id] = nil end
     if ns.Cache then ns.Cache.ForgetPawn(id) end
@@ -231,36 +265,50 @@ end
 
 local passStart
 function Pawn.Step()
-    if paused or live == 0 then return end
+    if paused or not pending() then return end
     local left = math.min(Util.BackgroundLeft(), STEP_MS)
     if left <= 0 then return end
     local clock = Util.Clock()
     passStart = passStart or clock
     repeat
         local job = pop()
+        local fromLater = false
+        if not job then
+            job, fromLater = popLater(), true
+        end
         if not job then break end
         local started = Util.Clock()
         local value = Pawn.Compute(job.id, job.scale)
         Pawn.timing.count = Pawn.timing.count + 1
         Pawn.timing.ms = Pawn.timing.ms + (Util.Clock() - started)
-        if value ~= nil then scaleValues(job.scale)[job.id] = round(value) end
+        if value ~= nil then
+            scaleValues(job.scale)[job.id] = round(value)
+        elseif fromLater then
+            laterTries[job.key] = (laterTries[job.key] or 0) + 1
+            if laterTries[job.key] >= LATER_TRIES then
+                noValue[job.key] = true
+            else
+                -- the client may have it by then
+                C_Timer.After(LATER_RETRY, function() Pawn.Peek(job.id, job.scale) end)
+            end
+        end
     until Util.Clock() - clock >= left
     local spent = Util.Clock() - clock
     Util.BackgroundUsed(spent)
     Pawn.timing.longestFrame = math.max(Pawn.timing.longestFrame, spent)
-    if live == 0 then
-        wipe(queue)
+    if live == 0 then wipe(queue) end
+    if not pending() then
         Pawn.timing.lastPassMs = Util.Clock() - passStart
         passStart = nil
     end
     if not changePending then
         changePending = true
-        C_Timer.After(live > 0 and 1 or 0.3, notify)
+        C_Timer.After(pending() and 1 or 0.3, notify)
     end
 end
 
-function Pawn.IsBusy() return live > 0 end
-function Pawn.QueueLength() return live end
+function Pawn.IsBusy() return pending() end
+function Pawn.QueueLength() return live + math.max(0, #later - laterHead + 1) end
 function Pawn.SetPaused(value) paused = value and true or false end
 
 local function cleared()
@@ -274,7 +322,11 @@ function Pawn.ClearValues()
     if ns.Cache then ns.Cache.ClearPawn() end
     wipe(queue)
     wipe(position)
-    live = 0
+    wipe(later)
+    wipe(inLater)
+    wipe(laterTries)
+    wipe(noValue)
+    live, laterHead = 0, 1
     cleared()
 end
 
@@ -292,7 +344,11 @@ function Pawn.CheckScales()
             changed = true
         end
     end
-    if changed then cleared() end
+    if changed then
+        wipe(laterTries)
+        wipe(noValue)
+        cleared()
+    end
     return changed
 end
 
@@ -309,6 +365,6 @@ end
 
 function Pawn.Init()
     local frame = CreateFrame("Frame")
-    frame:SetScript("OnUpdate", function() if live > 0 then ns.Guard(Pawn.Step) end end)
+    frame:SetScript("OnUpdate", function() if pending() then ns.Guard(Pawn.Step) end end)
     Pawn.frame = frame
 end
