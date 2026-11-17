@@ -1,0 +1,5 @@
+<Bindings>
+    <Binding name="FOREVERLOOTFINDER_TOGGLE" header="FOREVERLOOTFINDER" category="ADDONS">
+        ForeverLootFinder_Toggle()
+    </Binding>
+</Bindings>

@@ -1,0 +1,589 @@
+-- interface strings in Spanish (Spain), untranslated ones are commented out
+local L = LibStub("AceLocale-3.0"):NewLocale("ForeverLootFinder", "esES")
+if not L then return end
+
+-- Core.lua
+-- L["Error (shown once): %s"] = true -- Translation missing
+-- L["Copy your Dungeon Journal favourites: Favourites tab, \"Import FDJ favourites\"."] = true -- Translation missing
+-- L["Commands (also /lootfinder):"] = true -- Translation missing
+-- L["open the window"] = true -- Translation missing
+-- L["open the settings"] = true -- Translation missing
+-- L["move the windows back to the centre"] = true -- Translation missing
+-- L["add an item (link or ID) to favourites"] = true -- Translation missing
+-- L["all item stats from the client"] = true -- Translation missing
+-- L["Dungeon Journal data"] = true -- Translation missing
+-- L["Usage: /flf fav <item link or ID>"] = true -- Translation missing
+-- L["Added to favourites (%s)."] = true -- Translation missing
+-- L["Unknown command \"%s\"."] = true -- Translation missing
+-- L["Click: loot list"] = true -- Translation missing
+-- L["Right-click: settings"] = true -- Translation missing
+-- L["Toggle the loot list"] = true -- Translation missing
+-- L["Questie data"] = true -- Translation missing
+-- L["AtlasLoot and profession data"] = true -- Translation missing
+-- L["items not loaded, and why"] = true -- Translation missing
+-- L["all dumps but stats"] = true -- Translation missing
+-- L["reread the Dungeon Journal, rebuild the lists"] = true -- Translation missing
+-- L["That item isn't listed."] = true -- Translation missing
+-- L["Can't read DungeonJournal's loot data. Forever Loot Finder may need an update."] = true -- Translation missing
+
+-- Favourites.lua
+-- L["BiS"] = true -- Translation missing
+-- L["Must have"] = true -- Translation missing
+-- L["Nice to have"] = true -- Translation missing
+-- L["The string is empty."] = true -- Translation missing
+-- L["Not a favourites string."] = true -- Translation missing
+-- L["The string is damaged."] = true -- Translation missing
+-- L["Needs a newer Forever Loot Finder."] = true -- Translation missing
+-- L["%d favourites: %d new, %d tier changed, %d unchanged."] = true -- Translation missing
+-- L["From %s."] = true -- Translation missing
+-- L["%d new, %d unchanged, %d skipped."] = true -- Translation missing
+-- L["and %d more"] = true -- Translation missing
+-- L["no ID"] = true -- Translation missing
+-- L["Skipped:"] = true -- Translation missing
+
+-- Sets.lua
+-- L["%d of %d pieces listed"] = true -- Translation missing
+-- L["%d pieces listed"] = true -- Translation missing
+
+-- Tooltip.lua
+-- L["Quest: %s"] = true -- Translation missing
+-- L["Trash: %s"] = true -- Translation missing
+-- L["Trash"] = true -- Translation missing
+-- L["rare"] = true -- Translation missing
+-- L["shared, low chance"] = true -- Translation missing
+-- L["unconfirmed"] = true -- Translation missing
+-- L["Horde"] = true -- Translation missing
+-- L["Alliance"] = true -- Translation missing
+-- L["Drops from: %s"] = true -- Translation missing
+-- L["%d more (Shift)"] = true -- Translation missing
+-- L["%s (skill %d)"] = true -- Translation missing
+-- L["from level %d"] = true -- Translation missing
+-- L["Source: %s"] = true -- Translation missing
+-- L["Reputation"] = true -- Translation missing
+-- L["PvP: %s"] = true -- Translation missing
+-- L["PvP"] = true -- Translation missing
+-- L["World event: %s"] = true -- Translation missing
+-- L["World drop: %s"] = true -- Translation missing
+-- L["World drop"] = true -- Translation missing
+-- L["quest: %s"] = true -- Translation missing
+-- L["level %d"] = true -- Translation missing
+-- L["level %d–%d"] = true -- Translation missing
+-- L["Sold by %d vendors"] = true -- Translation missing
+-- L["Vendor: %s"] = true -- Translation missing
+-- L["Dropped by %d creatures"] = true -- Translation missing
+-- L["Auction: %s"] = true -- Translation missing
+
+-- Reminder.lua
+-- L["Favourites in this dungeon"] = true -- Translation missing
+-- L["Click to close"] = true -- Translation missing
+
+-- DropAlert.lua
+-- L["Favourite dropped (%s)"] = true -- Translation missing
+-- L["Favourite dropped: %s (%s)"] = true -- Translation missing
+
+-- Dump.lua
+-- L["Ctrl+A, then Ctrl+C to copy."] = true -- Translation missing
+-- L["Close"] = true -- Translation missing
+-- L["Loading items; the dump opens when done."] = true -- Translation missing
+-- L["Stat dump"] = true -- Translation missing
+-- L["Dungeon Journal dump"] = true -- Translation missing
+-- L["Questie dump"] = true -- Translation missing
+-- L["Crafted items dump"] = true -- Translation missing
+-- L["Item data dump"] = true -- Translation missing
+-- L["Full dump"] = true -- Translation missing
+-- L["Usage: /flf dump stats, fdj, questie, crafts, items or all"] = true -- Translation missing
+-- L["DungeonJournal isn't installed."] = true -- Translation missing
+
+-- ImportExport.lua
+-- L["Not a Forever Loot Finder profile string."] = true -- Translation missing
+-- L["All display and alert settings"] = true -- Translation missing
+-- L["Made with Forever Loot Finder %s"] = true -- Translation missing
+
+-- Options/Options.lua
+-- L["Settings"] = true -- Translation missing
+-- L["Please confirm"] = true -- Translation missing
+-- L["Export profile"] = true -- Translation missing
+-- L["Copy (Ctrl+C) and share."] = true -- Translation missing
+-- L["Import profile"] = true -- Translation missing
+-- L["Paste a profile string (Ctrl+V)."] = true -- Translation missing
+-- L["Import"] = true -- Translation missing
+-- L["Enter a profile name."] = true -- Translation missing
+-- L["Profile \"%s\" exists. Overwrite?"] = true -- Translation missing
+-- L["Overwrite"] = true -- Translation missing
+-- L["Cancel"] = true -- Translation missing
+-- L["Import into a new profile or over \"%s\"?"] = true -- Translation missing
+-- L["New profile name"] = true -- Translation missing
+-- L["Imported"] = true -- Translation missing
+-- L["Create profile"] = true -- Translation missing
+-- L["Into current"] = true -- Translation missing
+-- L["Overwrite \"%s\"?"] = true -- Translation missing
+-- L["Export favourites"] = true -- Translation missing
+-- L["Favourites of %s. Copy (Ctrl+C) and share."] = true -- Translation missing
+-- L["Import favourites"] = true -- Translation missing
+-- L["Paste a favourites string (Ctrl+V) for %s."] = true -- Translation missing
+-- L["Merge adds new items and keeps your tiers. Overwrite replaces the list."] = true -- Translation missing
+-- L["Merge"] = true -- Translation missing
+-- L["Nothing new to import."] = true -- Translation missing
+-- L["Copy this character's Dungeon Journal favourites as \"Nice to have\"?"] = true -- Translation missing
+
+-- UI/Labels.lua
+-- L["Head"] = true -- Translation missing
+-- L["Neck"] = true -- Translation missing
+-- L["Shoulder"] = true -- Translation missing
+-- L["Back"] = true -- Translation missing
+-- L["Chest"] = true -- Translation missing
+-- L["Wrist"] = true -- Translation missing
+-- L["Hands"] = true -- Translation missing
+-- L["Waist"] = true -- Translation missing
+-- L["Legs"] = true -- Translation missing
+-- L["Feet"] = true -- Translation missing
+-- L["Finger"] = true -- Translation missing
+-- L["Trinket"] = true -- Translation missing
+-- L["One-hand"] = true -- Translation missing
+-- L["Main hand"] = true -- Translation missing
+-- L["Two-hand"] = true -- Translation missing
+-- L["Off hand"] = true -- Translation missing
+-- L["Ranged"] = true -- Translation missing
+-- L["Relic"] = true -- Translation missing
+-- L["Cloth"] = true -- Translation missing
+-- L["Leather"] = true -- Translation missing
+-- L["Mail"] = true -- Translation missing
+-- L["Plate"] = true -- Translation missing
+-- L["Shield"] = true -- Translation missing
+-- L["Held in off-hand"] = true -- Translation missing
+-- L["Libram"] = true -- Translation missing
+-- L["Idol"] = true -- Translation missing
+-- L["Totem"] = true -- Translation missing
+-- L["One-handed axe"] = true -- Translation missing
+-- L["Two-handed axe"] = true -- Translation missing
+-- L["Bow"] = true -- Translation missing
+-- L["Gun"] = true -- Translation missing
+-- L["One-handed mace"] = true -- Translation missing
+-- L["Two-handed mace"] = true -- Translation missing
+-- L["Polearm"] = true -- Translation missing
+-- L["One-handed sword"] = true -- Translation missing
+-- L["Two-handed sword"] = true -- Translation missing
+-- L["Staff"] = true -- Translation missing
+-- L["Fist weapon"] = true -- Translation missing
+-- L["Dagger"] = true -- Translation missing
+-- L["Thrown"] = true -- Translation missing
+-- L["Crossbow"] = true -- Translation missing
+-- L["Wand"] = true -- Translation missing
+-- L["Weapon skill"] = true -- Translation missing
+-- L["Weapon DPS"] = true -- Translation missing
+-- L["Vendor"] = true -- Translation missing
+-- L["Creature"] = true -- Translation missing
+
+-- UI/Row.lua
+-- L["Upgrade"] = true -- Translation missing
+-- L["Speed / DPS"] = true -- Translation missing
+-- L["Drop %"] = true -- Translation missing
+-- L["Source"] = true -- Translation missing
+-- L["+%d more"] = true -- Translation missing
+-- L["Unique"] = true -- Translation missing
+-- L["new"] = true -- Translation missing
+-- L["Name"] = true -- Translation missing
+-- L["Unique: already equipped"] = true -- Translation missing
+-- L["Unique: already owned"] = true -- Translation missing
+-- L["Two-hand weapon equipped."] = true -- Translation missing
+-- L["Slot empty."] = true -- Translation missing
+-- L["Pawn (%s): %.1f"] = true -- Translation missing
+-- L["Pawn rates base stats only; the bonus is random."] = true -- Translation missing
+-- L["Pawn doesn't count set bonuses."] = true -- Translation missing
+-- L["Set: %s (%s)"] = true -- Translation missing
+-- L["Item data still loading."] = true -- Translation missing
+-- L["Not in the game data yet"] = true -- Translation missing
+-- L["Price"] = true -- Translation missing
+-- L["Auction price"] = true -- Translation missing
+-- L["No drop chances known yet."] = true -- Translation missing
+-- L["Weapon slots only."] = true -- Translation missing
+-- L["Columns"] = true -- Translation missing
+-- L["Click: sort. Right-click: columns."] = true -- Translation missing
+-- L["Auction price: %s"] = true -- Translation missing
+-- L["Cheapest random-bonus version."] = true -- Translation missing
+-- L["Last seen at auction %d days ago."] = true -- Translation missing
+-- L["Not seen at auction for 21+ days."] = true -- Translation missing
+-- L["Not on this server: it says the item doesn't exist."] = true -- Translation missing
+-- L["Maybe not on this server: it never sent the item."] = true -- Translation missing
+
+-- UI/Menu.lua
+-- L["Remove from favourites"] = true -- Translation missing
+-- L["Show in Dungeon Journal"] = true -- Translation missing
+-- L["Show whole set"] = true -- Translation missing
+-- L["Link to chat"] = true -- Translation missing
+-- L["Hide this item"] = true -- Translation missing
+-- L["Show in AtlasLoot"] = true -- Translation missing
+-- L["Quest in Questie: %s"] = true -- Translation missing
+-- L["Waypoint: %s"] = true -- Translation missing
+-- L["Search in Auctionator"] = true -- Translation missing
+-- L["Add to Auctionator shopping list"] = true -- Translation missing
+-- L["Already on shopping list \"%s\"."] = true -- Translation missing
+-- L["Added to shopping list \"%s\"."] = true -- Translation missing
+-- L["Auctionator couldn't add it."] = true -- Translation missing
+
+-- UI/SetPanel.lua
+-- L["Favourite all pieces"] = true -- Translation missing
+-- L["Owned"] = true -- Translation missing
+
+-- UI/FilterBar.lua
+-- L["Attributes"] = true -- Translation missing
+-- L["Spell"] = true -- Translation missing
+-- L["Physical"] = true -- Translation missing
+-- L["Defense"] = true -- Translation missing
+-- L["Resistances"] = true -- Translation missing
+-- L["Click: want, exclude, any. Right-click: any."] = true -- Translation missing
+-- L["Any binding"] = true -- Translation missing
+-- L["Bind on pickup only"] = true -- Translation missing
+-- L["Bind on equip only"] = true -- Translation missing
+-- L["My level + N"] = true -- Translation missing
+-- L["Fixed level"] = true -- Translation missing
+-- L["Any wanted stat"] = true -- Translation missing
+-- L["All wanted stats"] = true -- Translation missing
+-- L["All dungeons"] = true -- Translation missing
+-- L["None"] = true -- Translation missing
+-- L["Armor type"] = true -- Translation missing
+-- L["Cloaks, rings, necks and trinkets always show."] = true -- Translation missing
+-- L["Weapon type"] = true -- Translation missing
+-- L["Stats"] = true -- Translation missing
+-- L["Has a Use or proc effect"] = true -- Translation missing
+-- L["Sources"] = true -- Translation missing
+-- L["Rare spawns"] = true -- Translation missing
+-- L["Trash drops"] = true -- Translation missing
+-- L["Shared loot (low chance)"] = true -- Translation missing
+-- L["Unconfirmed drops"] = true -- Translation missing
+-- L["Hide the other faction"] = true -- Translation missing
+-- L["Max required level"] = true -- Translation missing
+-- L["Hide items above this level"] = true -- Translation missing
+-- L["My level"] = true -- Translation missing
+-- L["My level + 5"] = true -- Translation missing
+-- L["Dungeon level"] = true -- Translation missing
+-- L["Only dungeons in this level range"] = true -- Translation missing
+-- L["Binding"] = true -- Translation missing
+-- L["BoE items can also be bought or traded."] = true -- Translation missing
+-- L["Weapon speed"] = true -- Translation missing
+-- L["Weapons in this speed range (sec)"] = true -- Translation missing
+-- L["Other items aren't affected."] = true -- Translation missing
+-- L["More"] = true -- Translation missing
+-- L["Only set pieces"] = true -- Translation missing
+-- L["Hide items I own"] = true -- Translation missing
+-- L["Equipped, bags, and bank once opened."] = true -- Translation missing
+-- L["Minimum quality"] = true -- Translation missing
+-- L["Dungeons"] = true -- Translation missing
+-- L["Pawn upgrades only"] = true -- Translation missing
+-- L["%d dungeons"] = true -- Translation missing
+-- L["Max required level: off"] = true -- Translation missing
+-- L["Max required level: %d"] = true -- Translation missing
+-- L["their level"] = true -- Translation missing
+-- L["your level"] = true -- Translation missing
+-- L["Max required level: %d (%s + %d)"] = true -- Translation missing
+-- L["no armor"] = true -- Translation missing
+-- L["no weapons"] = true -- Translation missing
+-- L["%d weapon types"] = true -- Translation missing
+-- L["All of: %s"] = true -- Translation missing
+-- L["Any of: %s"] = true -- Translation missing
+-- L["Without: %s"] = true -- Translation missing
+-- L["no rares"] = true -- Translation missing
+-- L["no trash"] = true -- Translation missing
+-- L["no shared loot"] = true -- Translation missing
+-- L["with unconfirmed"] = true -- Translation missing
+-- L["both factions"] = true -- Translation missing
+-- L["dungeons %d–%d"] = true -- Translation missing
+-- L["BoP only"] = true -- Translation missing
+-- L["BoE only"] = true -- Translation missing
+-- L["speed %.1f–%.1f"] = true -- Translation missing
+-- L["set pieces"] = true -- Translation missing
+-- L["Use or proc"] = true -- Translation missing
+-- L["%s or better"] = true -- Translation missing
+-- L["name has \"%s\""] = true -- Translation missing
+-- L["not owned"] = true -- Translation missing
+-- L["upgrades only"] = true -- Translation missing
+-- L["Equipped, bags, bank and mail (Syndicator)."] = true -- Translation missing
+-- L["Dungeon drops"] = true -- Translation missing
+-- L["Dungeon quests"] = true -- Translation missing
+-- L["Other quests (Questie)"] = true -- Translation missing
+-- L["Hide done quests"] = true -- Translation missing
+-- L["Not if you still have the item."] = true -- Translation missing
+-- L["BoP only from my professions"] = true -- Translation missing
+-- L["no dungeon drops"] = true -- Translation missing
+-- L["no dungeon quests"] = true -- Translation missing
+-- L["no other quests"] = true -- Translation missing
+-- L["no crafted"] = true -- Translation missing
+-- L["with done quests"] = true -- Translation missing
+-- L["Raids and world bosses"] = true -- Translation missing
+-- L["Reputation rewards"] = true -- Translation missing
+-- L["PvP rewards"] = true -- Translation missing
+-- L["World events"] = true -- Translation missing
+-- L["World drops"] = true -- Translation missing
+-- L["no raids"] = true -- Translation missing
+-- L["no reputation"] = true -- Translation missing
+-- L["no PvP"] = true -- Translation missing
+-- L["no world events"] = true -- Translation missing
+-- L["no world drops"] = true -- Translation missing
+-- L["Hide items for other professions"] = true -- Translation missing
+-- L["Like engineering goggles: wearable only with the profession."] = true -- Translation missing
+-- L["with other professions' items"] = true -- Translation missing
+-- L["Hide cosmetic items"] = true -- Translation missing
+-- L["with cosmetic items"] = true -- Translation missing
+-- L["All raids"] = true -- Translation missing
+-- L["%d raids"] = true -- Translation missing
+-- L["Raids"] = true -- Translation missing
+-- L["Needs one of these addons:"] = true -- Translation missing
+-- L["Places"] = true -- Translation missing
+-- L["Quests tied to a raid go with it."] = true -- Translation missing
+-- L["Item"] = true -- Translation missing
+-- L["Off in Settings, Addons tab."] = true -- Translation missing
+-- L["Without it, open a profession window to list its items."] = true -- Translation missing
+-- L["Pick a Pawn scale at the top."] = true -- Translation missing
+-- L["Hide drops rarer than this"] = true -- Translation missing
+-- L["Keep drops with unknown chance"] = true -- Translation missing
+-- L["AtlasLoot's chances, per boss. Often unknown for trash and shared loot. Quests and crafts aren't affected."] = true -- Translation missing
+-- L["drop chance %s or more"] = true -- Translation missing
+-- L["no unknown chances"] = true -- Translation missing
+-- L["Also hides dungeons and quests above this level."] = true -- Translation missing
+-- L["Turn on \"%s\" first."] = true -- Translation missing
+-- L["Turn on \"%s\" or \"%s\" first."] = true -- Translation missing
+-- L["Sold by vendors"] = true -- Translation missing
+-- L["no vendors"] = true -- Translation missing
+-- L["Creature drops (outside dungeons)"] = true -- Translation missing
+-- L["no creature drops"] = true -- Translation missing
+-- L["Max auction price (gold)"] = true -- Translation missing
+-- L["Only items with a price"] = true -- Translation missing
+-- L["with an auction price"] = true -- Translation missing
+-- L["Auctionator's prices from your scans. BoP and unpriced items: hidden by the first box, kept by the max price."] = true -- Translation missing
+
+-- UI/MainWindow.lua
+-- L["Pawn value"] = true -- Translation missing
+-- L["Pawn upgrade %"] = true -- Translation missing
+-- L["Item level"] = true -- Translation missing
+-- L["Required level"] = true -- Translation missing
+-- L["Drop chance"] = true -- Translation missing
+-- L["Quality"] = true -- Translation missing
+-- L["One stat"] = true -- Translation missing
+-- L["Visible scales"] = true -- Translation missing
+-- L["Other scales"] = true -- Translation missing
+-- L["Search"] = true -- Translation missing
+-- L["Sort:"] = true -- Translation missing
+-- L["Reread Pawn values (after editing a scale)"] = true -- Translation missing
+-- L["Filters"] = true -- Translation missing
+-- L["Reset"] = true -- Translation missing
+-- L["Reset filters to class defaults"] = true -- Translation missing
+-- L["Loading items: %s / %s"] = true -- Translation missing
+-- L["Pawn values..."] = true -- Translation missing
+-- L["Paused in combat"] = true -- Translation missing
+-- L["%d items"] = true -- Translation missing
+-- L["Nothing to list yet."] = true -- Translation missing
+
+-- UI/SlotTab.lua
+-- L["No items match the filters."] = true -- Translation missing
+-- L["By slot"] = true -- Translation missing
+-- L["~ counted without \"Pawn upgrades only\": it is checked for the selected slot only."] = true -- Translation missing
+
+-- UI/DungeonTab.lua
+-- L["All slots"] = true -- Translation missing
+-- L["Click: open in Dungeon Journal"] = true -- Translation missing
+-- L["Slot:"] = true -- Translation missing
+-- L["loot list incomplete"] = true -- Translation missing
+-- L["Raid, from AtlasLoot"] = true -- Translation missing
+-- L["From AtlasLoot"] = true -- Translation missing
+-- L["Raids and world bosses need AtlasLoot."] = true -- Translation missing
+-- L["Group by boss"] = true -- Translation missing
+-- L["Shift-click: waypoint to the entrance"] = true -- Translation missing
+
+-- UI/FavouritesTab.lua
+-- L["Character:"] = true -- Translation missing
+-- L["Export"] = true -- Translation missing
+-- L["Import FDJ favourites"] = true -- Translation missing
+-- L["Copies this character's Dungeon Journal favourites once, as \"Nice to have\"."] = true -- Translation missing
+-- L["%d of %d favourites shown"] = true -- Translation missing
+-- L["No favourites yet. Click an item to add it."] = true -- Translation missing
+-- L["No favourites match the filters."] = true -- Translation missing
+-- L["Favourites"] = true -- Translation missing
+-- L["Other"] = true -- Translation missing
+-- L["Sold by many vendors"] = true -- Translation missing
+-- L["Dropped by many creatures"] = true -- Translation missing
+-- L["No source listed"] = true -- Translation missing
+
+-- Options/GeneralTab.lua
+-- L["Rare"] = true -- Translation missing
+-- L["Shared"] = true -- Translation missing
+-- L["Quest"] = true -- Translation missing
+-- L["Unconfirmed"] = true -- Translation missing
+-- L["Random bonus"] = true -- Translation missing
+-- L["Faction"] = true -- Translation missing
+-- L["Not in game data yet"] = true -- Translation missing
+-- L["BoE"] = true -- Translation missing
+-- L["Set"] = true -- Translation missing
+-- L["Window"] = true -- Translation missing
+-- L["Minimap button"] = true -- Translation missing
+-- L["Favourite stars"] = true -- Translation missing
+-- L["Item tooltips"] = true -- Translation missing
+-- L["Who wants it (all characters)"] = true -- Translation missing
+-- L["List"] = true -- Translation missing
+-- L["Show items still loading (greyed)"] = true -- Translation missing
+-- L["Random-bonus items pass stat filters"] = true -- Translation missing
+-- L["Their base stats differ from the drop."] = true -- Translation missing
+-- L["Badges on rows"] = true -- Translation missing
+-- L["Hidden items"] = true -- Translation missing
+-- L["Hidden with \"Hide this item\", this character only."] = true -- Translation missing
+-- L["Show one again"] = true -- Translation missing
+-- L["Show all again"] = true -- Translation missing
+-- L["General"] = true -- Translation missing
+-- L["Crafted"] = true -- Translation missing
+-- L["Professions: mine first"] = true -- Translation missing
+-- L["Dungeons, Raids: hide empty places"] = true -- Translation missing
+-- L["Dungeons, Raids: drop chance on icons"] = true -- Translation missing
+-- L["Auction price (Auctionator)"] = true -- Translation missing
+-- L["For when Auctionator's own price lines are off."] = true -- Translation missing
+-- L["Empty columns stay hidden. Also: right-click the list header."] = true -- Translation missing
+-- L["Source on all item tooltips"] = true -- Translation missing
+-- L["Loot Finder's windows always show it."] = true -- Translation missing
+-- L["Show items not on this server"] = true -- Translation missing
+-- L["Greyed. Missing favourites always show."] = true -- Translation missing
+
+-- Options/AlertsTab.lua
+-- L["Small window"] = true -- Translation missing
+-- L["Chat"] = true -- Translation missing
+-- L["Off"] = true -- Translation missing
+-- L["Dungeon reminder"] = true -- Translation missing
+-- L["On entering a dungeon: your favourites there and their bosses."] = true -- Translation missing
+-- L["Drop alert"] = true -- Translation missing
+-- L["When a favourite drops: loot window, group roll or chat."] = true -- Translation missing
+-- L["On-screen notice"] = true -- Translation missing
+-- L["Chat line"] = true -- Translation missing
+-- L["Sound"] = true -- Translation missing
+-- L["Alerts"] = true -- Translation missing
+
+-- Options/FavouritesTab.lua
+-- L["%s (%s %d, %d favourites)"] = true -- Translation missing
+-- L["Tiers"] = true -- Translation missing
+-- L["From the Dungeon Journal"] = true -- Translation missing
+-- L["Characters"] = true -- Translation missing
+-- L["Delete character"] = true -- Translation missing
+-- L["Delete %s and their favourites?"] = true -- Translation missing
+-- L["Delete"] = true -- Translation missing
+-- L["Characters are added on login. The current one can't be deleted."] = true -- Translation missing
+-- L["Share"] = true -- Translation missing
+-- L["The selected character's favourites and tiers, as a string."] = true -- Translation missing
+-- L["Click adds items with this tier:"] = true -- Translation missing
+
+-- Options/ProfilesTab.lua
+-- L["Current profile"] = true -- Translation missing
+-- L["Profiles hold display and alert settings. Filters and favourites are per character."] = true -- Translation missing
+-- L["New profile"] = true -- Translation missing
+-- L["Create"] = true -- Translation missing
+-- L["Copy from"] = true -- Translation missing
+-- L["Copies another profile into this one."] = true -- Translation missing
+-- L["Overwrite the current profile with \"%s\"?"] = true -- Translation missing
+-- L["Copy"] = true -- Translation missing
+-- L["Select a profile"] = true -- Translation missing
+-- L["Delete a profile"] = true -- Translation missing
+-- L["Delete the profile \"%s\"?"] = true -- Translation missing
+-- L["Reset current profile"] = true -- Translation missing
+-- L["Reset this profile?"] = true -- Translation missing
+-- L["Share this profile as a string. Import asks before replacing."] = true -- Translation missing
+-- L["Profiles"] = true -- Translation missing
+
+-- Modules/Crafts.lua
+-- L["Blacksmithing"] = true -- Translation missing
+-- L["Leatherworking"] = true -- Translation missing
+-- L["Tailoring"] = true -- Translation missing
+-- L["Engineering"] = true -- Translation missing
+-- L["Enchanting"] = true -- Translation missing
+-- L["Alchemy"] = true -- Translation missing
+-- L["Jewelcrafting"] = true -- Translation missing
+-- L["Cooking"] = true -- Translation missing
+-- L["First Aid"] = true -- Translation missing
+-- L["Mining"] = true -- Translation missing
+-- L["Herbalism"] = true -- Translation missing
+-- L["Skinning"] = true -- Translation missing
+-- L["Fishing"] = true -- Translation missing
+
+-- UI/QuestTab.lua
+-- L["Other quests"] = true -- Translation missing
+-- L["%d quests"] = true -- Translation missing
+-- L["Install Questie for quests outside dungeons."] = true -- Translation missing
+-- L["Reading Questie..."] = true -- Translation missing
+-- L["Quests"] = true -- Translation missing
+-- L["%s (done)"] = true -- Translation missing
+-- L["Group by quest"] = true -- Translation missing
+
+-- UI/CraftTab.lua
+-- L["Apprentice (1–74)"] = true -- Translation missing
+-- L["Journeyman (75–149)"] = true -- Translation missing
+-- L["Expert (150–224)"] = true -- Translation missing
+-- L["Artisan (225–299)"] = true -- Translation missing
+-- L["Master (300+)"] = true -- Translation missing
+-- L["Skill unknown"] = true -- Translation missing
+-- L["your skill %d"] = true -- Translation missing
+-- L["Learned (skill %d)."] = true -- Translation missing
+-- L["Not learned: the filter hides its BoP items."] = true -- Translation missing
+-- L["Install AtlasLoot for all crafted items, or open your professions once."] = true -- Translation missing
+-- L["Professions"] = true -- Translation missing
+-- L["Group by skill"] = true -- Translation missing
+
+-- Options/AddonsTab.lua
+-- L["Waiting to load..."] = true -- Translation missing
+-- L["Reading..."] = true -- Translation missing
+-- L["Loaded, but no data found. See /flf dump questie or crafts."] = true -- Translation missing
+-- L["Not installed."] = true -- Translation missing
+-- L["In use."] = true -- Translation missing
+-- L["Addons"] = true -- Translation missing
+-- L["Profession window"] = true -- Translation missing
+-- L["Dungeon and raid drops"] = true -- Translation missing
+-- L["Quest rewards"] = true -- Translation missing
+-- L["Crafted items"] = true -- Translation missing
+-- L["Use for owned items"] = true -- Translation missing
+-- L["Knows your gear, bags, bank and mail across sessions. Without it, the bank counts once opened."] = true -- Translation missing
+-- L["Use for crafts, raids and other lists"] = true -- Translation missing
+-- L["Crafts, raid and world boss loot, reputation, PvP and event rewards."] = true -- Translation missing
+-- L["When addons overlap"] = true -- Translation missing
+-- L["Same item, same place (dungeon, quest, profession): the first addon's entry wins."] = true -- Translation missing
+-- L["%d crafted, %d other items."] = true -- Translation missing
+-- L["Tabs"] = true -- Translation missing
+-- L["Show the %s tab"] = true -- Translation missing
+-- L["%s (default)"] = true -- Translation missing
+-- L["Use for quests, vendors and creature drops"] = true -- Translation missing
+-- L["Vendors"] = true -- Translation missing
+-- L["Creature drops"] = true -- Translation missing
+-- L["Questie's database: quest rewards, vendor goods and creature drops."] = true -- Translation missing
+-- L["Waypoints"] = true -- Translation missing
+-- L["Auto (TomTom, else map pin)"] = true -- Translation missing
+-- L["Game map pin"] = true -- Translation missing
+-- L["This client has no map pins."] = true -- Translation missing
+-- L["Right-click an item for a waypoint to its source. Shift-click a dungeon name for its entrance."] = true -- Translation missing
+-- L["%d quest rewards, %d vendor, %d creature sources."] = true -- Translation missing
+-- L["In use: TomTom."] = true -- Translation missing
+-- L["In use: the game's map pin."] = true -- Translation missing
+-- L["Not available: install TomTom."] = true -- Translation missing
+-- L["Use auction prices"] = true -- Translation missing
+-- L["Price column, sort, filters and shopping list. Prices are from your scans."] = true -- Translation missing
+-- L["In use: %d of %d sellable items priced."] = true -- Translation missing
+-- L["Use for dungeon loot and quests"] = true -- Translation missing
+-- L["The main source: Forever's dungeons, bosses and dungeon quests."] = true -- Translation missing
+-- L["In use: %d dungeons."] = true -- Translation missing
+
+-- UI/SourceTabs.lua
+-- L["Needs AtlasLoot."] = true -- Translation missing
+
+-- Modules/Quests.lua
+-- L["%s (entrance)"] = true -- Translation missing
+
+-- Modules/Navigation.lua
+-- L["Waypoint set: %s"] = true -- Translation missing
+
+-- UI/FilterSummary.lua
+-- L["auction price up to %s"] = true -- Translation missing
+
+-- Options/CreditsTab.lua
+-- L["By %s"] = true -- Translation missing
+-- L["Dungeon loot, bosses and quests. Required."] = true -- Translation missing
+-- L["%s (comes with %s)"] = true -- Translation missing
+-- L["By the Questie team: %s and others"] = true -- Translation missing
+-- L["Quest rewards, vendors and creature drops."] = true -- Translation missing
+-- L["Raids, crafted gear, reputation, PvP and event rewards, drop chances."] = true -- Translation missing
+-- L["Item scores and upgrades."] = true -- Translation missing
+-- L["Items in bags, bank and mail across characters."] = true -- Translation missing
+-- L["Auction prices and shopping lists."] = true -- Translation missing
+-- L["Made by %s"] = true -- Translation missing
+-- L["It reads its data from these addons. Thanks to their authors!"] = true -- Translation missing
+-- L["Credits"] = true -- Translation missing

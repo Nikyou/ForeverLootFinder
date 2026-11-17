@@ -1,0 +1,67 @@
+## Interface: 16001
+## Title: Forever Loot Finder
+## Notes: Browse every dungeon item, quest reward and crafted item by slot, filter and sort it, and plan what to farm.
+## Notes-ruRU: Все предметы из подземелий, награды заданий и создаваемые предметы по ячейкам: фильтры, сортировка и план, что фармить.
+## Version: @project-version@
+## Author: Nikyou
+## Category: Inventory
+## SavedVariables: ForeverLootFinderDB, ForeverLootFinderCache
+## IconTexture: 134344
+## OptionalDeps: ForeverDungeonJournal, Pawn, Syndicator, QuestieDB, Questie, AtlasLootClassic, Auctionator
+
+embeds.xml
+Util.lua
+
+Locales.xml
+
+Data\Classes.lua
+Data\StatMap.lua
+Modules\Source.lua
+Index.lua
+Restrictions.lua
+Filter.lua
+Sort.lua
+
+Core.lua
+Cache.lua
+State.lua
+Items.lua
+Modules\Pawn.lua
+Modules\Auctionator.lua
+Modules\Owned.lua
+Modules\Quests.lua
+Modules\AtlasLoot.lua
+Modules\Crafts.lua
+Modules\Loot.lua
+Modules\Navigation.lua
+Favourites.lua
+Sets.lua
+Tooltip.lua
+Reminder.lua
+DropAlert.lua
+Dump.lua
+ImportExport.lua
+
+Options\Widgets.lua
+Options\Options.lua
+UI\Labels.lua
+UI\Row.lua
+UI\Menu.lua
+UI\SetPanel.lua
+UI\PlacesDropdown.lua
+UI\FilterBar.lua
+UI\FilterSummary.lua
+UI\MainWindow.lua
+UI\SlotTab.lua
+UI\Cards.lua
+UI\DungeonTab.lua
+UI\QuestTab.lua
+UI\CraftTab.lua
+UI\SourceTabs.lua
+UI\FavouritesTab.lua
+Options\GeneralTab.lua
+Options\AlertsTab.lua
+Options\FavouritesTab.lua
+Options\AddonsTab.lua
+Options\ProfilesTab.lua
+Options\CreditsTab.lua
