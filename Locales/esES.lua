@@ -23,8 +23,9 @@ if not L then return end
 -- L["items not loaded, and why"] = true -- Translation missing
 -- L["all dumps but stats"] = true -- Translation missing
 -- L["reread the Dungeon Journal, rebuild the lists"] = true -- Translation missing
--- L["That item isn't listed."] = true -- Translation missing
 -- L["Can't read DungeonJournal's loot data. Forever Loot Finder may need an update."] = true -- Translation missing
+-- L["That item can't be worn."] = true -- Translation missing
+-- L["No addon lists where it's from, so it shows only under Favourites."] = true -- Translation missing
 
 -- Features/Favourites.lua
 -- L["BiS"] = true -- Translation missing
@@ -72,6 +73,7 @@ if not L then return end
 -- L["Vendor: %s"] = true -- Translation missing
 -- L["Dropped by %d creatures"] = true -- Translation missing
 -- L["Auction: %s"] = true -- Translation missing
+-- L["creatures %s"] = true -- Translation missing
 
 -- Features/Reminder.lua
 -- L["Favourites in this dungeon"] = true -- Translation missing
@@ -125,6 +127,7 @@ if not L then return end
 -- L["Merge"] = true -- Translation missing
 -- L["Nothing new to import."] = true -- Translation missing
 -- L["Copy this character's Dungeon Journal favourites as \"Nice to have\"?"] = true -- Translation missing
+-- L["Add %s to your favourites as \"BiS\"?"] = true -- Translation missing
 
 -- UI/Labels.lua
 -- L["Head"] = true -- Translation missing
@@ -402,6 +405,8 @@ if not L then return end
 -- L["Sold by many vendors"] = true -- Translation missing
 -- L["Dropped by many creatures"] = true -- Translation missing
 -- L["No source listed"] = true -- Translation missing
+-- L["Add item"] = true -- Translation missing
+-- L["Any wearable item, even one no addon lists. It shows only here."] = true -- Translation missing
 
 -- Options/GeneralTab.lua
 -- L["Rare"] = true -- Translation missing
@@ -417,7 +422,6 @@ if not L then return end
 -- L["Minimap button"] = true -- Translation missing
 -- L["Favourite stars"] = true -- Translation missing
 -- L["Item tooltips"] = true -- Translation missing
--- L["Who wants it (all characters)"] = true -- Translation missing
 -- L["List"] = true -- Translation missing
 -- L["Show items still loading (greyed)"] = true -- Translation missing
 -- L["Random-bonus items pass stat filters"] = true -- Translation missing
@@ -439,6 +443,8 @@ if not L then return end
 -- L["Loot Finder's windows always show it."] = true -- Translation missing
 -- L["Show items not on this server"] = true -- Translation missing
 -- L["Greyed. Missing favourites always show."] = true -- Translation missing
+-- L["Favourite tier"] = true -- Translation missing
+-- L["Other characters' favourites"] = true -- Translation missing
 
 -- Options/AlertsTab.lua
 -- L["Small window"] = true -- Translation missing
@@ -465,6 +471,10 @@ if not L then return end
 -- L["Share"] = true -- Translation missing
 -- L["The selected character's favourites and tiers, as a string."] = true -- Translation missing
 -- L["Click adds items with this tier:"] = true -- Translation missing
+-- L["It has no lists for your class yet."] = true -- Translation missing
+-- L["AtlasLoot BiS lists"] = true -- Translation missing
+-- L["Adds a list's items as \"BiS\". Nothing is imported until you click."] = true -- Translation missing
+-- L["Import BiS list"] = true -- Translation missing
 
 -- Options/ProfilesTab.lua
 -- L["Current profile"] = true -- Translation missing
@@ -587,3 +597,20 @@ if not L then return end
 -- L["Made by %s"] = true -- Translation missing
 -- L["It reads its data from these addons. Thanks to their authors!"] = true -- Translation missing
 -- L["Credits"] = true -- Translation missing
+
+-- Modules/AtlasLoot/BiS.lua
+-- L["%s, phase %d"] = true -- Translation missing
+
+-- UI/AddFavourite.lua
+-- L["%s added (%s)."] = true -- Translation missing
+-- L["No known source: it shows only here."] = true -- Translation missing
+-- L["no source"] = true -- Translation missing
+-- L["Nothing found. Try a link (Shift-click the item) or its ID."] = true -- Translation missing
+-- L["Add a favourite"] = true -- Translation missing
+-- L["Item name, ID, or Shift-click an item."] = true -- Translation missing
+-- L["SoD only"] = true -- Translation missing
+-- L["unlikely drop"] = true -- Translation missing
+-- L["removed quest"] = true -- Translation missing
+-- L["not on this server"] = true -- Translation missing
+-- L["Hidden by Loot Finder: %s."] = true -- Translation missing
+-- L["You can still add it."] = true -- Translation missing

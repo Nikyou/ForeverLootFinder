@@ -23,8 +23,9 @@ L["AtlasLoot and profession data"] = true
 L["items not loaded, and why"] = true
 L["all dumps but stats"] = true
 L["reread the Dungeon Journal, rebuild the lists"] = true
-L["That item isn't listed."] = true
 L["Can't read DungeonJournal's loot data. Forever Loot Finder may need an update."] = true
+L["That item can't be worn."] = true
+L["No addon lists where it's from, so it shows only under Favourites."] = true
 
 -- Features/Favourites.lua
 L["BiS"] = true
@@ -72,6 +73,7 @@ L["Sold by %d vendors"] = true
 L["Vendor: %s"] = true
 L["Dropped by %d creatures"] = true
 L["Auction: %s"] = true
+L["creatures %s"] = true
 
 -- Features/Reminder.lua
 L["Favourites in this dungeon"] = true
@@ -125,6 +127,7 @@ L["Merge adds new items and keeps your tiers. Overwrite replaces the list."] = t
 L["Merge"] = true
 L["Nothing new to import."] = true
 L["Copy this character's Dungeon Journal favourites as \"Nice to have\"?"] = true
+L["Add %s to your favourites as \"BiS\"?"] = true
 
 -- UI/Labels.lua
 L["Head"] = true
@@ -402,6 +405,8 @@ L["Other"] = true
 L["Sold by many vendors"] = true
 L["Dropped by many creatures"] = true
 L["No source listed"] = true
+L["Add item"] = true
+L["Any wearable item, even one no addon lists. It shows only here."] = true
 
 -- Options/GeneralTab.lua
 L["Rare"] = true
@@ -417,7 +422,6 @@ L["Window"] = true
 L["Minimap button"] = true
 L["Favourite stars"] = true
 L["Item tooltips"] = true
-L["Who wants it (all characters)"] = true
 L["List"] = true
 L["Show items still loading (greyed)"] = true
 L["Random-bonus items pass stat filters"] = true
@@ -439,6 +443,8 @@ L["Source on all item tooltips"] = true
 L["Loot Finder's windows always show it."] = true
 L["Show items not on this server"] = true
 L["Greyed. Missing favourites always show."] = true
+L["Favourite tier"] = true
+L["Other characters' favourites"] = true
 
 -- Options/AlertsTab.lua
 L["Small window"] = true
@@ -465,6 +471,10 @@ L["Characters are added on login. The current one can't be deleted."] = true
 L["Share"] = true
 L["The selected character's favourites and tiers, as a string."] = true
 L["Click adds items with this tier:"] = true
+L["It has no lists for your class yet."] = true
+L["AtlasLoot BiS lists"] = true
+L["Adds a list's items as \"BiS\". Nothing is imported until you click."] = true
+L["Import BiS list"] = true
 
 -- Options/ProfilesTab.lua
 L["Current profile"] = true
@@ -587,3 +597,20 @@ L["Auction prices and shopping lists."] = true
 L["Made by %s"] = true
 L["It reads its data from these addons. Thanks to their authors!"] = true
 L["Credits"] = true
+
+-- Modules/AtlasLoot/BiS.lua
+L["%s, phase %d"] = true
+
+-- UI/AddFavourite.lua
+L["%s added (%s)."] = true
+L["No known source: it shows only here."] = true
+L["no source"] = true
+L["Nothing found. Try a link (Shift-click the item) or its ID."] = true
+L["Add a favourite"] = true
+L["Item name, ID, or Shift-click an item."] = true
+L["SoD only"] = true
+L["unlikely drop"] = true
+L["removed quest"] = true
+L["not on this server"] = true
+L["Hidden by Loot Finder: %s."] = true
+L["You can still add it."] = true

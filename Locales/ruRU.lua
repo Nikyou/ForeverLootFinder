@@ -23,8 +23,9 @@ L["AtlasLoot and profession data"] = "данные AtlasLoot и професси
 L["items not loaded, and why"] = "незагруженные предметы и причины"
 L["all dumps but stats"] = "все выгрузки, кроме stats"
 L["reread the Dungeon Journal, rebuild the lists"] = "перечитать Dungeon Journal и пересобрать списки"
-L["That item isn't listed."] = "Этого предмета нет в списках."
 L["Can't read DungeonJournal's loot data. Forever Loot Finder may need an update."] = "Не удаётся прочитать добычу DungeonJournal. Возможно, нужно обновить Forever Loot Finder."
+L["That item can't be worn."] = "Этот предмет нельзя надеть."
+L["No addon lists where it's from, so it shows only under Favourites."] = "Ни один аддон не знает, откуда он, поэтому он виден только в «Избранном»."
 
 -- Features/Favourites.lua
 L["BiS"] = "БиС"
@@ -72,6 +73,7 @@ L["Sold by %d vendors"] = "Продают торговцы: %d"
 L["Vendor: %s"] = "Торговец: %s"
 L["Dropped by %d creatures"] = "Добыча с существ: %d"
 L["Auction: %s"] = "Аукцион: %s"
+L["creatures %s"] = "существа: %s"
 
 -- Features/Reminder.lua
 L["Favourites in this dungeon"] = "Избранное в этом подземелье"
@@ -125,6 +127,7 @@ L["Merge adds new items and keeps your tiers. Overwrite replaces the list."] = "
 L["Merge"] = "Объединить"
 L["Nothing new to import."] = "Нечего импортировать."
 L["Copy this character's Dungeon Journal favourites as \"Nice to have\"?"] = "Скопировать избранное Dungeon Journal этого персонажа как «Желательно»?"
+L["Add %s to your favourites as \"BiS\"?"] = "Добавить %s в избранное как «БиС»?"
 
 -- UI/Labels.lua
 L["Head"] = "Голова"
@@ -402,6 +405,8 @@ L["Other"] = "Другое"
 L["Sold by many vendors"] = "Продают многие торговцы"
 L["Dropped by many creatures"] = "Падает со многих существ"
 L["No source listed"] = "Источник не указан"
+L["Add item"] = "Добавить"
+L["Any wearable item, even one no addon lists. It shows only here."] = "Любой надеваемый предмет, даже если ни один аддон его не знает. Он будет виден только здесь."
 
 -- Options/GeneralTab.lua
 L["Rare"] = "Редкий"
@@ -417,7 +422,6 @@ L["Window"] = "Окно"
 L["Minimap button"] = "Кнопка у миникарты"
 L["Favourite stars"] = "Звёзды избранного"
 L["Item tooltips"] = "Подсказки предметов"
-L["Who wants it (all characters)"] = "Кому нужно (все персонажи)"
 L["List"] = "Список"
 L["Show items still loading (greyed)"] = "Показывать незагруженные (серым)"
 L["Random-bonus items pass stat filters"] = "Случайный бонус проходит фильтр характеристик"
@@ -439,6 +443,8 @@ L["Source on all item tooltips"] = "Источник во всех подска�
 L["Loot Finder's windows always show it."] = "В окнах Loot Finder он есть всегда."
 L["Show items not on this server"] = "Показывать отсутствующие на сервере"
 L["Greyed. Missing favourites always show."] = "Серым. Избранные видны всегда."
+L["Favourite tier"] = "Уровень избранного"
+L["Other characters' favourites"] = "Избранное других персонажей"
 
 -- Options/AlertsTab.lua
 L["Small window"] = "Небольшое окно"
@@ -465,6 +471,10 @@ L["Characters are added on login. The current one can't be deleted."] = "Пер�
 L["Share"] = "Обмен"
 L["The selected character's favourites and tiers, as a string."] = "Избранное и приоритеты выбранного персонажа в виде строки."
 L["Click adds items with this tier:"] = "Щелчок добавляет с приоритетом:"
+L["It has no lists for your class yet."] = "Для вашего класса списков пока нет."
+L["AtlasLoot BiS lists"] = "Списки БиС из AtlasLoot"
+L["Adds a list's items as \"BiS\". Nothing is imported until you click."] = "Добавляет предметы списка как «БиС». Без нажатия ничего не импортируется."
+L["Import BiS list"] = "Импорт списка БиС"
 
 -- Options/ProfilesTab.lua
 L["Current profile"] = "Текущий профиль"
@@ -587,3 +597,20 @@ L["Auction prices and shopping lists."] = "Цены аукциона и спис
 L["Made by %s"] = "Автор аддона: %s"
 L["It reads its data from these addons. Thanks to their authors!"] = "Данные берутся из этих аддонов. Спасибо их авторам!"
 L["Credits"] = "Благодарности"
+
+-- Modules/AtlasLoot/BiS.lua
+L["%s, phase %d"] = "%s, фаза %d"
+
+-- UI/AddFavourite.lua
+L["%s added (%s)."] = "%s добавлен (%s)."
+L["No known source: it shows only here."] = "Источник неизвестен, он виден только здесь."
+L["no source"] = "без источника"
+L["Nothing found. Try a link (Shift-click the item) or its ID."] = "Ничего не найдено. Попробуйте ссылку (Shift-клик по предмету) или ID."
+L["Add a favourite"] = "Добавить в избранное"
+L["Item name, ID, or Shift-click an item."] = "Название, ID или Shift-клик по предмету."
+L["SoD only"] = "только SoD"
+L["unlikely drop"] = "сомнительный дроп"
+L["removed quest"] = "удалённое задание"
+L["not on this server"] = "нет на сервере"
+L["Hidden by Loot Finder: %s."] = "Скрыт Loot Finder: %s."
+L["You can still add it."] = "Его всё равно можно добавить."
