@@ -220,6 +220,8 @@ end
 
 -- raids have their own switch instead of "dungeon drops", the parts (rares, trash, shared) count for both
 local function kindOn(kind, kinds, raid)
+    -- a combined item follows its dungeon's drops
+    if kind == "combine" then kind = "boss" end
     if Index.DROP_KINDS[kind] then
         if raid then
             if kinds.raid == false then return false end

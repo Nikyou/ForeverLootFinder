@@ -16,10 +16,12 @@ local KNOWN = {
         "name", "loot", "aliases", "npcID", "description", "trash", "rare", "recipeTab", "trackerHidden", "childOf", "fightGroup",
         "fightSig", "optional", "killWith", "lootChest", "listHidden", "portraitNpcID", "probableLoot", "summonItem",
         "customIcon", "factionOnly", "lootNote", "rareLabel", "chestLabel", "children", "displayID", "killedBefore",
-        "runLogHidden", "spawnQuest", "summonChain", "trackerOnlyIfKilled",
+        "runLogHidden", "spawnQuest", "summonChain", "trackerOnlyIfKilled", "questLink", "pairNpcID",
     },
-    loot = {"allTrash", "tip"},
+    loot = {"allTrash", "tip", "dropNote", "makes", "sourceTip"},
 }
+-- FDJ's notes put Spellshock Leggings at 1/440 and Bloodletter Scalpel at 1/611
+DungeonJournal.RARE_DROP_CHANCE = 0.2
 -- FDJ has none of these yet
 DungeonJournal.CHANCE_KEYS = {"chance", "dropChance", "dropRate", "rate", "pct"}
 local QUEST_REWARD_FIELDS = {"rewardItems", "additionalRewardItems", "noteRewardItems"}
@@ -101,6 +103,11 @@ local function lootEntry(item, base, unknown)
     entry.allTrash = item.allTrash == true
     if type(item.tip) == "table" then entry.tip = item.tip end
     entry.chance = chanceOf(item)
+    if item.dropNote == "EXTREMELY_RARE_DROP" then
+        entry.rareDrop = true
+        entry.chance = entry.chance or DungeonJournal.RARE_DROP_CHANCE
+    end
+    if type(item.sourceTip) == "string" and item.sourceTip ~= "" then entry.sourceTip = item.sourceTip end
     for key in pairs(item) do
         if type(key) == "number" then
             if key > 6 then count(unknown, "loot[" .. key .. "]") end
@@ -110,6 +117,29 @@ local function lootEntry(item, base, unknown)
     end
     if item[6] ~= nil and item[6] ~= "RANDOM_ENCHANT" then count(unknown, "loot[6]=" .. tostring(item[6])) end
     return entry
+end
+
+-- makes = {itemID, name, slot text, quality, from = {{itemID, name, boss name}, ...}}: Jang'thraze and Sang'thraze
+-- make Sul'thraze, which has no row of its own
+local function combineEntry(made, dungeonKey, bossIndex)
+    if type(made) ~= "table" or not tonumber(made[1]) then return nil end
+    local parts = {}
+    for _, part in ipairs(type(made.from) == "table" and made.from or {}) do
+        if type(part) == "table" and tonumber(part[1]) then
+            parts[#parts + 1] = {id = tonumber(part[1]), name = type(part[2]) == "string" and part[2] or "?",
+                                 bossName = type(part[3]) == "string" and part[3] or nil}
+        end
+    end
+    return {
+        dungeon = dungeonKey,
+        bossIndex = bossIndex,
+        kind = "combine",
+        id = tonumber(made[1]),
+        name = type(made[2]) == "string" and made[2] or "",
+        slotText = type(made[3]) == "string" and made[3] or nil,
+        quality = tonumber(made[4]),
+        parts = parts,
+    }
 end
 
 -- quest reward: {itemID, name, quality, count?}, no slot text
@@ -178,6 +208,8 @@ function DungeonJournal.ReadData(fdj)
             data.dungeons[#data.dungeons + 1] = record
             data.dungeonByKey[key] = record
             local bossByName = {}
+            -- both halves carry it, one entry is enough
+            local combined = {}
             for bossIndex, boss in ipairs(type(dungeon.bosses) == "table" and dungeon.bosses or {}) do
                 if type(boss) == "table" then
                     unknownKeys(boss, "boss", unknown)
@@ -209,6 +241,11 @@ function DungeonJournal.ReadData(fdj)
                         }
                         for _, item in ipairs(type(boss.loot) == "table" and boss.loot or {}) do
                             add(lootEntry(item, base, unknown))
+                            local made = type(item) == "table" and type(item.makes) == "table" and tonumber(item.makes[1])
+                            if made and not combined[made] then
+                                combined[made] = true
+                                add(combineEntry(item.makes, key, bossIndex))
+                            end
                         end
                         local probableBase = {
                             dungeon = key,

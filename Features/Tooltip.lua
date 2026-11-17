@@ -98,7 +98,17 @@ function Tooltip.SourceText(source, dungeonByKey, withDungeon)
         return text .. " — " .. source.zoneName
     end
     local where
-    if source.kind == "quest" then
+    if source.kind == "combine" then
+        local parts = {}
+        for _, part in ipairs(source.parts or {}) do
+            local text = part.name or "?"
+            if part.bossName then text = text .. " " .. MUTED .. "(" .. ns.DungeonJournal.BossName(part.bossName) .. ")|r" end
+            parts[#parts + 1] = text
+        end
+        where = format(L["Combine: %s"], table.concat(parts, " + "))
+        if withDungeon == false or source.dungeon == nil then return where end
+        return where .. " — " .. Tooltip.DungeonLabel(source.dungeon, dungeonByKey)
+    elseif source.kind == "quest" then
         where = format(L["Quest: %s"], source.questName or source.section or "?")
     elseif source.kind == "trash" then
         local mobs = source.mobs and source.mobs ~= "" and source.mobs or nil
@@ -110,8 +120,14 @@ function Tooltip.SourceText(source, dungeonByKey, withDungeon)
     if source.kind == "rare" then notes[#notes + 1] = L["rare"] end
     if source.kind == "shared" then notes[#notes + 1] = L["shared, low chance"] end
     if source.kind == "probable" then notes[#notes + 1] = L["unconfirmed"] end
+    if source.sourceTip and source.sourceTip ~= source.bossName then notes[#notes + 1] = source.sourceTip end
     if source.faction then notes[#notes + 1] = source.faction == "Horde" and L["Horde"] or L["Alliance"] end
-    if source.chance then notes[#notes + 1] = format("%.1f%%", source.chance) end
+    -- FDJ says "extremely rare", the chance behind it is only a stand-in
+    if source.rareDrop and not source.chanceFrom then
+        notes[#notes + 1] = L["extremely rare"]
+    elseif source.chance then
+        notes[#notes + 1] = format("%.1f%%", source.chance)
+    end
     if #notes > 0 then where = where .. " " .. MUTED .. "(" .. table.concat(notes, ", ") .. ")|r" end
     if withDungeon == false or source.dungeon == nil then return where end
     return where .. " — " .. Tooltip.DungeonLabel(source.dungeon, dungeonByKey)

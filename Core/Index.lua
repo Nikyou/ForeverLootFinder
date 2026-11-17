@@ -8,7 +8,8 @@ Index.SLOTS = {
     "HEAD", "NECK", "SHOULDER", "BACK", "CHEST", "WRIST", "HANDS", "WAIST", "LEGS", "FEET", "FINGER", "TRINKET", "ONEHAND",
     "MAINHAND", "TWOHAND", "OFFHAND", "RANGED", "RELIC",
 }
--- kinds: boss, rare, trash, shared, probable, quest, zoneQuest, craft, reputation, pvp, event, world, vendor, npcDrop.
+-- kinds: boss, rare, trash, shared, probable, combine, quest, zoneQuest, craft, reputation, pvp, event, world, vendor,
+-- npcDrop.
 -- a QuestieDB creature drop inside a dungeon or raid becomes boss, rare or trash with creature = true
 Index.DROP_KINDS = {boss = true, rare = true, trash = true, shared = true, probable = true}
 function Index.IsQuest(source) return source.kind == "quest" or source.kind == "zoneQuest" end
@@ -169,6 +170,8 @@ local SOURCE_FIELDS = {
     -- count, ids and zones only on a "many" source
     "npcID", "npcName", "npcLevel", "npcs", "zone", "zones", "moreZones", "levelMin", "levelMax", "rare", "many", "count",
     "creature", "worldDrop",
+    -- FDJ: the halves of a combined item, an extremely rare drop, which trash drops it
+    "parts", "rareDrop", "sourceTip",
 }
 
 -- FDJ knows Forever's dungeons best, Questie has quest IDs and levels, AtlasLoot has craft skill levels
@@ -212,12 +215,12 @@ local function shareChances(record)
     local sources = record.sources
     if #sources < 2 then return end
     for _, from in ipairs(sources) do
-        if from.chance and from.dungeon and Index.DROP_KINDS[from.kind] then
+        if from.chance and not from.rareDrop and from.dungeon and Index.DROP_KINDS[from.kind] then
             local same, sameBoss = {}, nil
             local boss = lower(from.bossName)
             for _, to in ipairs(sources) do
                 if to ~= from and to.provider ~= from.provider and to.dungeon == from.dungeon and Index.DROP_KINDS[to.kind]
-                  and not to.chance then
+                  and (not to.chance or to.rareDrop) then
                     same[#same + 1] = to
                     if boss and lower(to.bossName) == boss then sameBoss = to end
                 end
@@ -325,6 +328,29 @@ local LIST_KINDS = {reputation = true, pvp = true, event = true, world = true}
 
 -- AtlasLoot's world epics and QuestieDB's spread-out drops are the same thing: one line, AtlasLoot's section with
 -- QuestieDB's creature levels
+-- SilverDragon's rare beside another addon's drop from the same creature
+local function dropRepeatedRares(record)
+    local creatures
+    for _, source in ipairs(record.sources) do
+        if source.provider ~= "silverdragon" then
+            for _, id in ipairs(source.npcs or {}) do
+                creatures = creatures or {}
+                creatures[id] = true
+            end
+            if source.npcID then
+                creatures = creatures or {}
+                creatures[source.npcID] = true
+            end
+        end
+    end
+    if not creatures then return end
+    local kept = {}
+    for _, source in ipairs(record.sources) do
+        if not (source.provider == "silverdragon" and source.npcID and creatures[source.npcID]) then kept[#kept + 1] = source end
+    end
+    if #kept < #record.sources then record.sources = kept end
+end
+
 local function mergeWorld(record)
     local first
     local kept = {}
@@ -406,6 +432,7 @@ function Index.Build(data, extras, priority)
         shareChances(record)
         resolveOverlaps(record, priority, index.dungeonByKey)
         mergeWorld(record)
+        dropRepeatedRares(record)
         for _, source in ipairs(record.sources) do tieToPlace(source, index.placeByArea, index.dungeonByKey) end
         crossCheckQuests(record)
         if #record.sources > 1 then table.sort(record.sources, sourceOrder) end

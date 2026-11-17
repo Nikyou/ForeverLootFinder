@@ -3,6 +3,7 @@ local _, ns = ...
 local L = ns.L
 
 local function bossGroup(source)
+    if source.kind == "combine" then return L["Combined"], L["Combined"] end
     local label = source.kind == "quest" and format(L["Quest: %s"], source.questName or source.section or "?")
                     or ns.DungeonJournal.BossName(source.bossName or source.section
                                                   or (source.kind == "trash" and L["Trash"]) or "?")
