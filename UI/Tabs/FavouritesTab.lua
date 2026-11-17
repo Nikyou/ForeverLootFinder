@@ -27,9 +27,16 @@ local function create(parent)
         ns.FireChange("filters")
     end)
     ui.character:SetPoint("LEFT", ui.charLabel, "RIGHT", 8, 0)
+    ui.add = W.Button(parent, L["Add item"], nil, 22, function(self) ns.AddFavourite.Toggle(self) end)
+    ui.add:FitWidth()
+    ui.add:SetPoint("LEFT", ui.character, "RIGHT", 12, 0)
+    W.AddTooltip(ui.add, function(tooltip)
+        tooltip:AddLine(L["Add item"])
+        tooltip:AddLine(L["Any wearable item, even one no addon lists. It shows only here."], 1, 1, 1, true)
+    end)
     ui.export = W.Button(parent, L["Export"], nil, 22, function() ns.Options:ShowFavouritesExport(charKey()) end)
     ui.export:FitWidth()
-    ui.export:SetPoint("LEFT", ui.character, "RIGHT", 12, 0)
+    ui.export:SetPoint("LEFT", ui.add, "RIGHT", 4, 0)
     ui.import = W.Button(parent, L["Import"], nil, 22, function() ns.Options:ShowFavouritesImport(charKey()) end)
     ui.import:FitWidth()
     ui.import:SetPoint("LEFT", ui.export, "RIGHT", 4, 0)
@@ -72,7 +79,9 @@ local function refresh(ctx, kinds)
     for id in pairs(favourites) do
         if type(id) == "number" and id > 0 and not index.byKey[id] then
             local stub = {key = id, id = id, sources = {}, orphan = true}
-            rows[#rows + 1] = {record = stub, info = ns.Items.Info(stub), status = "missing", sources = {}}
+            local info = ns.Items.Info(stub)
+            local status = info.missing and "missing" or (info.loaded and "pass" or "unknown")
+            rows[#rows + 1] = {record = stub, info = info, status = status, sources = {}}
         end
     end
     local function placeOf(source)
