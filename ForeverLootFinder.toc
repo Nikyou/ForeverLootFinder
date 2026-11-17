@@ -7,7 +7,7 @@
 ## Category: Inventory
 ## SavedVariables: ForeverLootFinderDB, ForeverLootFinderCache
 ## IconTexture: 134344
-## OptionalDeps: ForeverDungeonJournal, Pawn, Syndicator, QuestieDB, Questie, AtlasLootClassic, Auctionator
+## OptionalDeps: ForeverDungeonJournal, Pawn, Syndicator, QuestieDB, Questie, AtlasLootClassic, AtlasBIStooltips, Auctionator
 
 embeds.xml
 Core\Util.lua
@@ -33,6 +33,7 @@ Modules\Questie.lua
 Modules\AtlasLoot\Loader.lua
 Modules\AtlasLoot\Crafts.lua
 Modules\AtlasLoot\Lists.lua
+Modules\AtlasLoot\BiS.lua
 Modules\Waypoints.lua
 Features\Favourites.lua
 Features\Sets.lua
@@ -48,6 +49,7 @@ UI\Labels.lua
 UI\Row.lua
 UI\Menu.lua
 UI\SetPanel.lua
+UI\AddFavourite.lua
 UI\Filters\PlacesDropdown.lua
 UI\Filters\FilterBar.lua
 UI\Filters\FilterSummary.lua
