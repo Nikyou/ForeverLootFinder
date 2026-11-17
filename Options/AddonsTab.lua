@@ -102,6 +102,13 @@ local function create(parent)
                                  L["Crafts, raid and world boss loot, reputation, PvP and event rewards."],
                                  function(value) ns.AtlasLoot.SetEnabled(value) end)
 
+    controls.attune = section(left, "Attune", L["Use for quests the others miss"],
+                              L["Quest rewards from Wowhead's Forever pages. QuestieDB and DungeonJournal come first."],
+                              function(value) ns.Attune.SetEnabled(value) end)
+    controls.silverdragon = section(left, "SilverDragon", L["Use for rare creatures"],
+                                    L["Rares and their loot. DungeonJournal and QuestieDB come first."],
+                                    function(value) ns.SilverDragon.SetEnabled(value) end)
+
     controls.auctionator = section(left, "Auctionator", L["Use auction prices"],
                                    L["Price column, sort, filters and shopping list. Prices are from your scans."],
                                    function(value) ns.Auctionator.SetEnabled(value) end)
@@ -205,6 +212,14 @@ local function refresh()
         atlasText = STATE_TEXT[lootState] or STATE_TEXT[craftState] or ""
     end
     setStatus(controls.atlasloot, ns.Crafts.Installed(), p.atlasloot ~= false, atlasText)
+    local attune = ns.Attune.Stats()
+    setStatus(controls.attune, ns.Attune.Installed(), p.attune ~= false,
+              ns.Attune.State() == "done" and good(format(L["%d quests, %d rewards."], attune.quests, attune.rewards))
+                or STATE_TEXT[ns.Attune.State()] or "")
+    local rares = ns.SilverDragon.Stats()
+    setStatus(controls.silverdragon, ns.SilverDragon.Installed(), p.silverdragon ~= false,
+              ns.SilverDragon.State() == "done" and good(format(L["%d rares, %d items."], rares.rares, rares.items))
+                or STATE_TEXT[ns.SilverDragon.State()] or "")
     local auctionText = ""
     if ns.Auctionator.Active() then
         local index = ns.GetIndex()

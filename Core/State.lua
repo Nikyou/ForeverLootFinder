@@ -36,6 +36,8 @@ local function build()
         {provider = "questie", entries = ns.Questie.Entries(), areas = ns.Questie.Areas()},
         {provider = "atlasloot", entries = ns.Crafts.Entries()},
         ns.AtlasLootLists.Entries(),
+        {provider = "attune", entries = ns.Attune.Entries()},
+        {provider = "silverdragon", entries = ns.SilverDragon.Entries()},
     }, ns.Priority())
     dirty = false
     ns.Sets.Invalidate()

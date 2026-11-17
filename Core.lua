@@ -220,7 +220,7 @@ function addon:OnProfileChanged()
     self:Migrate("profile")
     LibStub("LibDBIcon-1.0"):Refresh(ADDON_NAME, self.db.profile.minimap)
     if started then
-        for _, provider in ipairs({ns.Questie, ns.Crafts, ns.AtlasLootLists}) do
+        for _, provider in ipairs({ns.Questie, ns.Crafts, ns.AtlasLootLists, ns.Attune, ns.SilverDragon}) do
             if provider.Enabled() and provider.State() == "off" then provider.Init() end
         end
         ns.Owned.ScanSyndicator()
@@ -322,7 +322,7 @@ local HANDLERS = {
     -- an index still missing an addon's items would prune them
     PLAYER_LOGOUT = function()
         local settled = ns.IndexSettled()
-        for _, provider in ipairs({ns.Questie, ns.Crafts, ns.AtlasLootLists}) do
+        for _, provider in ipairs({ns.Questie, ns.Crafts, ns.AtlasLootLists, ns.Attune, ns.SilverDragon}) do
             local state = provider.State()
             if state == "waiting" or state == "scanning" then settled = false end
         end
@@ -347,6 +347,8 @@ function addon:OnEnable()
     ns.Owned.Scan()
     ns.Owned.HookSyndicator()
     ns.Questie.Init()
+    ns.Attune.Init()
+    ns.SilverDragon.Init()
     ns.Crafts.Init()
     ns.AtlasLootLists.Init()
     ns.Auctionator.Init()
