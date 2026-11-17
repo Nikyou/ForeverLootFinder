@@ -5,8 +5,10 @@ local Index, Restrictions, StatMap, Util = ns.Index, ns.Restrictions, ns.StatMap
 local Items = {}
 ns.Items = Items
 
-local MAX_REQUESTS = 40 -- per frame, the server answers at its own pace anyway
-local BUILD_MS = 3 -- leaves Pawn its share of the frame
+local MAX_REQUESTS = 80 -- per frame, the server answers at its own pace anyway
+local BURST_REQUESTS = 300 -- what's on screen, asked at once so the answers come in one go
+local BUILD_MS = 4 -- leaves Pawn its share of the frame
+local BURST_BUILD_MS = 10
 local REDRAW_DELAY = 0.4
 local REDRAW_MAX_WAIT = 2 -- during a long burst
 local TOOLTIP_RETRIES, TOOLTIP_RETRY_DELAY = 5, 1
@@ -36,12 +38,12 @@ local wake -- restarts the OnUpdate, set by Items.Init
 
 -- tooltips are slow, so infos are built a slice per frame rather than inside a redraw
 local deferred = false
-local buildFirst, buildLater, buildHead = {}, {}, 1
+local buildFirst, firstHead, buildLater, buildHead = {}, 1, {}, 1
 local hurry = {} -- the selected slot's items
 local buildScheduled = false
 
 Items.timing = {requests = 0, requestMs = 0, builds = 0, buildMs = 0, tooltipMs = 0, quick = 0, slices = 0, longestSlice = 0,
-                redraws = 0, loadStarted = nil, loadDone = nil}
+                redraws = 0, ignored = 0, loadStarted = nil, loadDone = nil}
 local timing = Items.timing
 
 local isSecret = Util.IsSecret
@@ -75,7 +77,7 @@ local function patterns()
     return patternSets
 end
 
-local function buildWork() return #buildFirst > 0 or buildHead <= #buildLater end
+local function buildWork() return firstHead <= #buildFirst or buildHead <= #buildLater end
 
 local changePending, pendingSince, lastChange = false, 0, 0
 
@@ -113,6 +115,13 @@ local function scheduleBuild()
     if buildScheduled or paused or not buildWork() then return end
     buildScheduled = true
     C_Timer.After(0, buildSlice)
+end
+
+-- an item doesn't change within a session: once built in full from fresh data it stays, even when the client drops it
+-- from its cache. asking again would never end, the client holds fewer items than FLF lists. one from the saved cache
+-- is still brought up to date by the first answer
+local function complete(info)
+    return info ~= nil and info.loaded and info.tooltipLoaded and not info.partial and not info.fromCache
 end
 
 local function markDirty(id)
@@ -299,8 +308,8 @@ function Items.Info(record, now)
     end
     if info.partial then markDirty(id) end
     if old and old.loaded and not info.loaded and not failed[id] then
-        -- evicted from the client cache: keep what we had and ask again
-        pcall(C_Item.RequestLoadItemDataByID, id)
+        -- evicted from the client cache: keep what we had, ask again only if it wasn't finished
+        if not complete(old) then pcall(C_Item.RequestLoadItemDataByID, id) end
         return old
     end
     if not info.partial then keep(id, info) end
@@ -309,10 +318,13 @@ function Items.Info(record, now)
 end
 
 local function nextBuild()
-    while #buildFirst > 0 do
-        local id = table.remove(buildFirst)
+    while firstHead <= #buildFirst do
+        local id = buildFirst[firstHead]
+        firstHead = firstHead + 1
         if dirty[id] then return id end
     end
+    wipe(buildFirst)
+    firstHead = 1
     while buildHead <= #buildLater do
         local id = buildLater[buildHead]
         buildHead = buildHead + 1
@@ -326,7 +338,8 @@ end
 buildSlice = function()
     buildScheduled = false
     if paused then return end
-    local left = math.min(Util.BackgroundLeft(), BUILD_MS)
+    local burst = firstHead <= #buildFirst
+    local left = math.min(Util.BackgroundLeft(burst), burst and BURST_BUILD_MS or BUILD_MS)
     if left > 0 then
         local clock = Util.Clock()
         local built = 0
@@ -369,12 +382,19 @@ end
 
 function Items.Tracked() return trackedCount > 0 and tracked or nil end
 
-local urgent, inUrgent = {}, {} -- the selected slot jumps the queue
+local urgent, inUrgent, urgentHead = {}, {}, 1 -- what's on screen jumps the queue, in its order
 
 function Items.Request(records, isUrgent)
     started = true
     timing.loadStarted = timing.loadStarted or GetTime()
-    if isUrgent then wipe(hurry) end
+    -- the newest view wins, what it replaced is in the normal queue too
+    if isUrgent then
+        wipe(hurry)
+        wipe(buildFirst)
+        wipe(urgent)
+        wipe(inUrgent)
+        firstHead, urgentHead = 1, 1
+    end
     for _, record in ipairs(records) do
         local id = record.id
         if id and id > 0 then
@@ -409,11 +429,14 @@ end
 
 local head = 1
 local function nextID()
-    while #urgent > 0 do
-        local id = table.remove(urgent)
+    while urgentHead <= #urgent do
+        local id = urgent[urgentHead]
+        urgentHead = urgentHead + 1
         inUrgent[id] = nil
-        if not requested[id] then return id end
+        if not requested[id] then return id, true end
     end
+    wipe(urgent)
+    urgentHead = 1
     if head <= #queue then
         head = head + 1
         return queue[head - 1]
@@ -423,13 +446,19 @@ end
 
 local function step()
     if paused then return end
-    local left = Util.BackgroundLeft()
+    local burst = urgentHead <= #urgent
+    local left = Util.BackgroundLeft(burst)
     if left <= 0 then return end
     local clock = Util.Clock()
     local sent = 0
-    while sent < MAX_REQUESTS and Util.Clock() - clock < left do
-        local id = nextID()
+    while sent < (burst and BURST_REQUESTS or MAX_REQUESTS) and Util.Clock() - clock < left do
+        local id, fromUrgent = nextID()
         if not id then break end
+        -- the urgent list ran out mid-frame: the rest at the normal pace
+        if burst and not fromUrgent then
+            burst = false
+            if sent >= MAX_REQUESTS then break end
+        end
         if not requested[id] then
             requested[id] = true
             sent = sent + 1
@@ -491,6 +520,16 @@ end
 
 function Items.OnItemInfo(id, success)
     if isSecret(id) or type(id) ~= "number" or not tracked[id] then return end
+    -- someone else asked for an item already built (another addon, or the client refilling its cache)
+    local record = recordOf[id]
+    if success ~= false and record and complete(cache[record.key]) then
+        timing.ignored = timing.ignored + 1
+        if not seen[id] then
+            markDone(seen, id)
+            failed[id], gaveUp[id] = nil, nil
+        end
+        return
+    end
     if success == false then
         if seen[id] then return end
         markDone(failed, id)
@@ -517,7 +556,8 @@ end
 function Items.QueueInfo()
     local toBuild = 0
     for _ in pairs(dirty) do toBuild = toBuild + 1 end
-    return {queued = math.max(0, #queue - head + 1), urgent = #urgent, started = started, paused = paused, toBuild = toBuild}
+    return {queued = math.max(0, #queue - head + 1), urgent = math.max(0, #urgent - urgentHead + 1), started = started,
+            paused = paused, toBuild = toBuild}
 end
 
 function Items.Waiting()
@@ -537,7 +577,7 @@ function Items.SetPaused(value)
     end
 end
 
-local function busy() return #urgent > 0 or head <= #queue or next(askedAt) ~= nil end
+local function busy() return urgentHead <= #urgent or head <= #queue or next(askedAt) ~= nil end
 
 function Items.Init()
     deferred = true

@@ -99,14 +99,16 @@ end
 
 Util.FRAME_BUDGET_MS = 6
 
--- shared per frame by item requests, info builds and Pawn values. GetTime() is constant within a frame
-Util.BACKGROUND_MS = 5
+-- shared per frame by item requests, info builds and Pawn values. GetTime() is constant within a frame.
+-- a burst (what's on screen) may take more for the few frames it lasts
+Util.BACKGROUND_MS = 6
+Util.BURST_MS = 12
 local budgetFrame, budgetUsed = nil, 0
 
-function Util.BackgroundLeft()
+function Util.BackgroundLeft(burst)
     local frame = GetTime()
     if frame ~= budgetFrame then budgetFrame, budgetUsed = frame, 0 end
-    return Util.BACKGROUND_MS - budgetUsed
+    return (burst and Util.BURST_MS or Util.BACKGROUND_MS) - budgetUsed
 end
 
 function Util.BackgroundUsed(ms) budgetUsed = budgetUsed + ms end

@@ -272,7 +272,17 @@ function Cards.Tab(spec)
         local list = (spec.entries or plainEntries)(cards, order, ctx, index)
         ui.view:Render(list, ns.MainWindow.RowOptions(nil, nil, ctx))
         -- new data keeps the scroll position
-        if (kinds and kinds.tab) or ui.shownSlot ~= slot then ui.view:ScrollToTop() end
+        if (kinds and kinds.tab) or ui.shownSlot ~= slot then
+            ui.view:ScrollToTop()
+            -- card by card, top first: the first dungeon (raid, zone) fills in before the next
+            local records = {}
+            for _, entry in ipairs(list) do
+                for _, group in ipairs(entry.groups or {}) do
+                    for _, row in ipairs(group.rows) do records[#records + 1] = row.record end
+                end
+            end
+            ns.Items.Request(records, true)
+        end
         ui.shownSlot = slot
         ns.MainWindow.shownCount = shown
         local empty = L["No items match the filters."]

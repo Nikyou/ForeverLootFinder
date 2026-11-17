@@ -403,6 +403,7 @@ function Dump.LoadLines()
                                .. "without the tooltip; %d build slices, longest %.1f ms; %d left to build; %d redraws; "
                                .. "finished %s", t.requests, t.requestMs, t.builds, t.buildMs, t.tooltipMs, t.quick, t.slices,
                                t.longestSlice, queue.toBuild, t.redraws, finished)
+    lines[#lines + 1] = format("answers for finished items, ignored: %d", t.ignored or 0)
     local cache = ns.Cache.Summary()
     if not cache then
         lines[#lines + 1] = "cache: not loaded"
