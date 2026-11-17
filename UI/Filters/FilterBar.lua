@@ -608,8 +608,8 @@ function FilterBar.Create(parent, width)
 end
 
 local function environment(f)
-    local atlasInstalled, atlasOn = ns.Loot.Installed(), ns.Loot.Enabled()
-    local questInstalled, questOn = ns.Quests.Installed(), ns.Quests.Enabled()
+    local atlasInstalled, atlasOn = ns.AtlasLootLists.Installed(), ns.AtlasLootLists.Enabled()
+    local questInstalled, questOn = ns.Questie.Installed(), ns.Questie.Enabled()
     local craftWindows = next(ns.addon.db.global.tradeSkills or {}) ~= nil
     local turnedOff = L["Off in Settings, Addons tab."]
     local index = ns.GetIndex()
@@ -626,7 +626,7 @@ local function environment(f)
         auctionWhy = {needs = NEEDS.auctionator, reason = ns.Auctionator.Installed() and turnedOff or nil},
     }
     local function questKind(switch)
-        local on = env.quests and ns.Quests.KindEnabled(switch)
+        local on = env.quests and ns.Questie.KindEnabled(switch)
         local off = questInstalled and not on and turnedOff or nil
         return on, {needs = NEEDS.questie, reason = off}
     end

@@ -26,7 +26,7 @@ if not L then return end
 -- L["That item isn't listed."] = true -- Translation missing
 -- L["Can't read DungeonJournal's loot data. Forever Loot Finder may need an update."] = true -- Translation missing
 
--- Favourites.lua
+-- Features/Favourites.lua
 -- L["BiS"] = true -- Translation missing
 -- L["Must have"] = true -- Translation missing
 -- L["Nice to have"] = true -- Translation missing
@@ -41,11 +41,11 @@ if not L then return end
 -- L["no ID"] = true -- Translation missing
 -- L["Skipped:"] = true -- Translation missing
 
--- Sets.lua
+-- Features/Sets.lua
 -- L["%d of %d pieces listed"] = true -- Translation missing
 -- L["%d pieces listed"] = true -- Translation missing
 
--- Tooltip.lua
+-- Features/Tooltip.lua
 -- L["Quest: %s"] = true -- Translation missing
 -- L["Trash: %s"] = true -- Translation missing
 -- L["Trash"] = true -- Translation missing
@@ -73,15 +73,15 @@ if not L then return end
 -- L["Dropped by %d creatures"] = true -- Translation missing
 -- L["Auction: %s"] = true -- Translation missing
 
--- Reminder.lua
+-- Features/Reminder.lua
 -- L["Favourites in this dungeon"] = true -- Translation missing
 -- L["Click to close"] = true -- Translation missing
 
--- DropAlert.lua
+-- Features/DropAlert.lua
 -- L["Favourite dropped (%s)"] = true -- Translation missing
 -- L["Favourite dropped: %s (%s)"] = true -- Translation missing
 
--- Dump.lua
+-- Features/Dump.lua
 -- L["Ctrl+A, then Ctrl+C to copy."] = true -- Translation missing
 -- L["Close"] = true -- Translation missing
 -- L["Loading items; the dump opens when done."] = true -- Translation missing
@@ -94,7 +94,7 @@ if not L then return end
 -- L["Usage: /flf dump stats, fdj, questie, crafts, items or all"] = true -- Translation missing
 -- L["DungeonJournal isn't installed."] = true -- Translation missing
 
--- ImportExport.lua
+-- Features/ImportExport.lua
 -- L["Not a Forever Loot Finder profile string."] = true -- Translation missing
 -- L["All display and alert settings"] = true -- Translation missing
 -- L["Made with Forever Loot Finder %s"] = true -- Translation missing
@@ -225,7 +225,7 @@ if not L then return end
 -- L["Favourite all pieces"] = true -- Translation missing
 -- L["Owned"] = true -- Translation missing
 
--- UI/FilterBar.lua
+-- UI/Filters/FilterBar.lua
 -- L["Attributes"] = true -- Translation missing
 -- L["Spell"] = true -- Translation missing
 -- L["Physical"] = true -- Translation missing
@@ -373,12 +373,12 @@ if not L then return end
 -- L["%d items"] = true -- Translation missing
 -- L["Nothing to list yet."] = true -- Translation missing
 
--- UI/SlotTab.lua
+-- UI/Tabs/SlotTab.lua
 -- L["No items match the filters."] = true -- Translation missing
 -- L["By slot"] = true -- Translation missing
 -- L["~ counted without \"Pawn upgrades only\": it is checked for the selected slot only."] = true -- Translation missing
 
--- UI/DungeonTab.lua
+-- UI/Tabs/DungeonTab.lua
 -- L["All slots"] = true -- Translation missing
 -- L["Click: open in Dungeon Journal"] = true -- Translation missing
 -- L["Slot:"] = true -- Translation missing
@@ -389,7 +389,7 @@ if not L then return end
 -- L["Group by boss"] = true -- Translation missing
 -- L["Shift-click: waypoint to the entrance"] = true -- Translation missing
 
--- UI/FavouritesTab.lua
+-- UI/Tabs/FavouritesTab.lua
 -- L["Character:"] = true -- Translation missing
 -- L["Export"] = true -- Translation missing
 -- L["Import FDJ favourites"] = true -- Translation missing
@@ -483,7 +483,7 @@ if not L then return end
 -- L["Share this profile as a string. Import asks before replacing."] = true -- Translation missing
 -- L["Profiles"] = true -- Translation missing
 
--- Modules/Crafts.lua
+-- Modules/AtlasLoot/Crafts.lua
 -- L["Blacksmithing"] = true -- Translation missing
 -- L["Leatherworking"] = true -- Translation missing
 -- L["Tailoring"] = true -- Translation missing
@@ -498,7 +498,7 @@ if not L then return end
 -- L["Skinning"] = true -- Translation missing
 -- L["Fishing"] = true -- Translation missing
 
--- UI/QuestTab.lua
+-- UI/Tabs/QuestTab.lua
 -- L["Other quests"] = true -- Translation missing
 -- L["%d quests"] = true -- Translation missing
 -- L["Install Questie for quests outside dungeons."] = true -- Translation missing
@@ -507,7 +507,7 @@ if not L then return end
 -- L["%s (done)"] = true -- Translation missing
 -- L["Group by quest"] = true -- Translation missing
 
--- UI/CraftTab.lua
+-- UI/Tabs/CraftTab.lua
 -- L["Apprentice (1–74)"] = true -- Translation missing
 -- L["Journeyman (75–149)"] = true -- Translation missing
 -- L["Expert (150–224)"] = true -- Translation missing
@@ -562,16 +562,16 @@ if not L then return end
 -- L["The main source: Forever's dungeons, bosses and dungeon quests."] = true -- Translation missing
 -- L["In use: %d dungeons."] = true -- Translation missing
 
--- UI/SourceTabs.lua
+-- UI/Tabs/SourceTabs.lua
 -- L["Needs AtlasLoot."] = true -- Translation missing
 
--- Modules/Quests.lua
+-- Modules/Questie.lua
 -- L["%s (entrance)"] = true -- Translation missing
 
--- Modules/Navigation.lua
+-- Modules/Waypoints.lua
 -- L["Waypoint set: %s"] = true -- Translation missing
 
--- UI/FilterSummary.lua
+-- UI/Filters/FilterSummary.lua
 -- L["auction price up to %s"] = true -- Translation missing
 
 -- Options/CreditsTab.lua

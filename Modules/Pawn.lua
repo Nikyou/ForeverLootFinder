@@ -8,7 +8,7 @@ local Util = ns.Util
 
 local STEP_MS = 3 -- each value is a hidden tooltip scan inside Pawn
 
--- [scale][id] = number or false. the inner tables are Cache.lua's when it's loaded
+-- [scale][id] = number or false. the inner tables are Core/Cache.lua's when it's loaded
 local values = {}
 local signatures = {}
 local slotValues = {} -- [scale][invSlot], false = empty

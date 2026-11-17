@@ -2,8 +2,8 @@
 local _, ns = ...
 local Util = ns.Util
 
-local Loot = {}
-ns.Loot = Loot
+local Lists = {}
+ns.AtlasLootLists = Lists
 
 local MODULES = {
     "AtlasLootClassic_DungeonsAndRaids", "AtlasLootClassic_Factions", "AtlasLootClassic_PvP", "AtlasLootClassic_Collections",
@@ -32,15 +32,15 @@ local stats = status.counts
 local isSecret = Util.IsSecret
 local equippable = Util.Equippable
 
-function Loot.Installed() return ns.AtlasLoot.Installed() and type(ns.AtlasLoot.Get().ItemDB) == "table" end
-function Loot.Enabled() return ns.AtlasLoot.Enabled() end
-function Loot.State() return status.state end
-function Loot.Stats() return stats end
-function Loot.Status() return status end
-function Loot.Entries() return Loot.Enabled() and extra or EMPTY end
-Loot.Extra = Loot.Entries
+function Lists.Installed() return ns.AtlasLoot.Installed() and type(ns.AtlasLoot.Get().ItemDB) == "table" end
+function Lists.Enabled() return ns.AtlasLoot.Enabled() end
+function Lists.State() return status.state end
+function Lists.Stats() return stats end
+function Lists.Status() return status end
+function Lists.Entries() return Lists.Enabled() and extra or EMPTY end
+Lists.Extra = Lists.Entries
 
-function Loot.Name(key) return extra.names[key] end
+function Lists.Name(key) return extra.names[key] end
 
 local function clean(text)
     if type(text) ~= "string" or isSecret(text) then return nil end
@@ -55,7 +55,7 @@ local function squash(text)
     text = text:gsub("%s+", "")
     return text ~= "" and text or nil
 end
-Loot.Squash = squash
+Lists.Squash = squash
 
 local function call(object, method, ...)
     local fn = type(object) == "table" and object[method]
@@ -81,7 +81,7 @@ local function fdjDungeons()
     local byName = {}
     local data = ns.SourceData()
     for _, dungeon in ipairs(data and data.dungeons or {}) do
-        for _, text in ipairs({dungeon.key, ns.Source.DungeonName(dungeon.key)}) do
+        for _, text in ipairs({dungeon.key, ns.DungeonJournal.DungeonName(dungeon.key)}) do
             local key = squash(text)
             if key and not byName[key] then byName[key] = dungeon end
         end
@@ -117,7 +117,7 @@ end
 
 local STANDING = {[4] = "FACTION_STANDING_LABEL4", [5] = "FACTION_STANDING_LABEL5", [6] = "FACTION_STANDING_LABEL6",
                   [7] = "FACTION_STANDING_LABEL7", [8] = "FACTION_STANDING_LABEL8"}
-function Loot.StandingName(standing)
+function Lists.StandingName(standing)
     local value = STANDING[standing] and rawget(_G, STANDING[standing])
     return type(value) == "string" and value or tostring(standing)
 end
@@ -280,7 +280,7 @@ local function dungeonSection(sectionName, section)
     end
     return {kind = section.specialType == "rare" and "rare" or "boss", bossName = text}
 end
-Loot.DungeonSection = dungeonSection
+Lists.DungeonSection = dungeonSection
 
 local CLASSIFY = {
     AtlasLootClassic_DungeonsAndRaids = function(content, typeIndex, key)
@@ -361,14 +361,14 @@ local function loadModules(i)
     ns.AtlasLoot.LoadModule(module, function() C_Timer.After(LOAD_GAP, function() loadModules(i + 1) end) end)
 end
 
-function Loot.CanOpen(source)
+function Lists.CanOpen(source)
     local al = ns.AtlasLoot.Get()
     local frame = al and type(al.GUI) == "table" and al.GUI.frame
     return type(frame) == "table" and source ~= nil and source.alModule ~= nil and source.alContent ~= nil
 end
 
-function Loot.Open(source)
-    if not Loot.CanOpen(source) then return false end
+function Lists.Open(source)
+    if not Lists.CanOpen(source) then return false end
     local frame = ns.AtlasLoot.Get().GUI.frame
     -- Show runs AtlasLoot's auto-select, so pick after it
     if not frame:IsShown() then frame:Show() end
@@ -385,13 +385,13 @@ function Loot.Open(source)
 end
 
 -- the modules are in, only the matching to FDJ's dungeons changes
-function Loot.Reread()
+function Lists.Reread()
     local state = status.state
-    if (state == "done" or state == "nodata") and Loot.Installed() and Loot.Enabled() then ns.Guard(readAll) end
+    if (state == "done" or state == "nodata") and Lists.Installed() and Lists.Enabled() then ns.Guard(readAll) end
 end
 
-function Loot.Init()
-    if not (Loot.Installed() and Loot.Enabled()) then
+function Lists.Init()
+    if not (Lists.Installed() and Lists.Enabled()) then
         status.state = "off"
         return
     end
@@ -399,5 +399,5 @@ function Loot.Init()
     C_Timer.After(LOAD_DELAY, function() loadModules(1) end)
 end
 
-Loot.SetEnabled = ns.AtlasLoot.SetEnabled
-ns.AtlasLoot.AddReader(Loot)
+Lists.SetEnabled = ns.AtlasLoot.SetEnabled
+ns.AtlasLoot.AddReader(Lists)

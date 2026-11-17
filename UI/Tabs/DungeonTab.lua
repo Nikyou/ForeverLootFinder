@@ -4,7 +4,8 @@ local L = ns.L
 
 local function bossGroup(source)
     local label = source.kind == "quest" and format(L["Quest: %s"], source.questName or source.section or "?")
-                    or ns.Source.BossName(source.bossName or source.section or (source.kind == "trash" and L["Trash"]) or "?")
+                    or ns.DungeonJournal.BossName(source.bossName or source.section
+                                                  or (source.kind == "trash" and L["Trash"]) or "?")
     return label, label
 end
 
@@ -21,28 +22,28 @@ local function placeEntries(raids)
                 local placeKey = dungeon.key
                 local bossIndex = dungeon.bosses and dungeon.bosses[1] and dungeon.bosses[1].index or 1
                 list[#list + 1] = {
-                    title = ns.Source.DungeonName(placeKey),
+                    title = ns.DungeonJournal.DungeonName(placeKey),
                     info = table.concat(info, "   "),
                     glow = dungeon.levelMin and level >= dungeon.levelMin and level <= (dungeon.levelMax or dungeon.levelMin),
                     dim = card == nil,
                     -- AtlasLoot's places aren't in the Dungeon Journal
                     onClick = function()
                         if IsShiftKeyDown() then
-                            local target = ns.Navigation.EntranceTarget(placeKey)
-                            if target then ns.Navigation.Go(target) end
+                            local target = ns.Waypoints.EntranceTarget(placeKey)
+                            if target then ns.Waypoints.Go(target) end
                         elseif not dungeon.atlasloot then
-                            ns.Source.OpenDungeon(placeKey, bossIndex)
+                            ns.DungeonJournal.OpenDungeon(placeKey, bossIndex)
                         end
                     end,
                     fillTooltip = function(tooltip)
-                        tooltip:AddLine(ns.Source.DungeonName(placeKey))
+                        tooltip:AddLine(ns.DungeonJournal.DungeonName(placeKey))
                         if dungeon.atlasloot then
                             tooltip:AddLine(dungeon.raid and L["Raid, from AtlasLoot"] or L["From AtlasLoot"], 1, 1, 1)
-                        elseif ns.Source.CanOpenDungeon() then
+                        elseif ns.DungeonJournal.CanOpenDungeon() then
                             tooltip:AddLine(L["Click: open in Dungeon Journal"], 1, 1, 1)
                         end
                         if dungeon.location then tooltip:AddLine(dungeon.location, 1, 1, 1) end
-                        if ns.Navigation.EntranceTarget(placeKey) then
+                        if ns.Waypoints.EntranceTarget(placeKey) then
                             tooltip:AddLine(L["Shift-click: waypoint to the entrance"], 0.6, 0.8, 1)
                         end
                     end,

@@ -42,7 +42,9 @@ function Row.ColumnStatus(key, opts)
         local index = ns.GetIndex()
         if index and index.hasChance then return true end
         local reason
-        if ns.Loot.Installed() then reason = ns.Loot.Enabled() and L["No drop chances known yet."] or turnedOff end
+        if ns.AtlasLootLists.Installed() then
+            reason = ns.AtlasLootLists.Enabled() and L["No drop chances known yet."] or turnedOff
+        end
         return false, {needs = {"AtlasLoot Classic"}, reason = reason}
     elseif key == "price" then
         if ns.Auctionator.Active() then return true end

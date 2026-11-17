@@ -190,7 +190,7 @@ function Labels.QualityRGB(quality)
 end
 
 function Labels.ItemKind(record, info)
-    if not info.slot then return record.slotText and ns.Source.SlotName(record.slotText) or "" end
+    if not info.slot then return record.slotText and ns.DungeonJournal.SlotName(record.slotText) or "" end
     local slot = Labels.Slot(info.slot)
     local itemType = Labels.Type(info.itemType)
     if itemType and itemType ~= slot then return slot .. " " .. Labels.DOT .. " " .. itemType end

@@ -83,11 +83,11 @@ function Dump.FDJText(index, data)
     local lines = {}
     header(lines, "fdj")
     local add = function(text) lines[#lines + 1] = text end
-    add(format("FDJ status: %s, used: %s, version: %s", ns.Source.Status(), tostring(ns.Source.Enabled()),
-               tostring(ns.Source.Version())))
-    add(format("FDJ source line on item tooltips: %s", tostring(ns.Source.ItemSourceLineOn())))
+    add(format("FDJ status: %s, used: %s, version: %s", ns.DungeonJournal.Status(), tostring(ns.DungeonJournal.Enabled()),
+               tostring(ns.DungeonJournal.Version())))
+    add(format("FDJ source line on item tooltips: %s", tostring(ns.DungeonJournal.ItemSourceLineOn())))
     add(format("dungeons: %d, items (one per ID): %d, drop chance field found: %s (keys checked: %s)", #data.dungeons,
-               #index.records, tostring(index.hasChance), table.concat(ns.Source.CHANCE_KEYS, ", ")))
+               #index.records, tostring(index.hasChance), table.concat(ns.DungeonJournal.CHANCE_KEYS, ", ")))
     local kinds = {}
     for _, kind in ipairs(sortedKeys(data.counts)) do kinds[#kinds + 1] = kind .. "=" .. data.counts[kind] end
     add("rows by source: " .. table.concat(kinds, ", "))
@@ -173,7 +173,7 @@ function Dump.FDJText(index, data)
 end
 
 function Dump.FDJ()
-    if not ns.Source.Installed() then
+    if not ns.DungeonJournal.Installed() then
         ns.Print(L["DungeonJournal isn't installed."])
         return
     end
@@ -185,31 +185,31 @@ function Dump.QuestieText()
     local lines = {}
     local function add(text) lines[#lines + 1] = text end
     header(lines, "questie")
-    local Quests = ns.Quests
+    local Questie = ns.Questie
     add(format("Questie installed: %s, on: %s, state: %s",
-               tostring(Quests.Installed()), tostring(Quests.Enabled()), Quests.State()))
+               tostring(Questie.Installed()), tostring(Questie.Enabled()), Questie.State()))
     add(format("LibQuestieDB: %s", tostring(type(rawget(_G, "LibQuestieDB")) == "table")))
-    add(statusLine(Quests.Status()))
-    local stats = Quests.Stats()
+    add(statusLine(Questie.Status()))
+    local stats = Questie.Stats()
     add(format("items in QuestieDB: %d, equippable: %d, quest rewards: %d, quests: %d, hidden quests skipped: %d, errors: %d",
                stats.items, stats.equippable, stats.rewards, stats.quests, stats.hidden, stats.errors))
     add(format("vendor sources: %d (%d items sold by more than 5), creature drop sources: %d (%d items dropped by more "
                .. "than 5), creatures read: %d; switches: quests %s, vendors %s, drops %s", stats.vendors, stats.manyVendors,
-               stats.drops, stats.manyDrops, stats.npcs, tostring(Quests.KindEnabled("quests")),
-               tostring(Quests.KindEnabled("vendors")), tostring(Quests.KindEnabled("drops"))))
+               stats.drops, stats.manyDrops, stats.npcs, tostring(Questie.KindEnabled("quests")),
+               tostring(Questie.KindEnabled("vendors")), tostring(Questie.KindEnabled("drops"))))
     add(format("implausible creature drops skipped: %d (%d items left with no creature)", stats.implausible or 0,
                stats.implausibleItems or 0))
-    if Quests.SodRuleOn() then
+    if Questie.SodRuleOn() then
         add(format("SoD-only vendors and creatures (ids 200000-244999 unused by Forever quests) skipped: %d sources from %d "
                    .. "NPCs; SoD-range NPCs Forever's quests use: %d (%d sources kept)", stats.sodSkipped or 0,
                    stats.sodNpcs or 0, stats.sodRefs or 0, stats.sodKept or 0))
-        local count = Quests.SodItems()
+        local count = Questie.SodItems()
         add(format("SoD gear (ids 190000-244999) left with no Questie source: %d items", count or 0))
     else
         add("SoD-only vendors and creatures: not skipped (QuestieDB has no Quest.GetAllIds)")
     end
     for _, kind in ipairs({"Item", "Quest", "Npc"}) do
-        local keys = Quests.Keys(kind)
+        local keys = Questie.Keys(kind)
         add(format("%s keys: %s", kind, keys and table.concat(keys, ", ") or "not found"))
     end
     add("")
@@ -253,7 +253,7 @@ function Dump.QuestieText()
     add("QuestieDB vendor and creature sources kept: " .. (#kindList > 0 and table.concat(kindList, ", ") or "none"))
     add("creature drops tied to places: " .. (#placeList > 0 and table.concat(placeList, ", ") or "none"))
     local areas = 0
-    for _ in pairs(Quests.Areas()) do areas = areas + 1 end
+    for _ in pairs(Questie.Areas()) do areas = areas + 1 end
     add(format("dungeon areas matched to FDJ dungeons by name: %d", areas))
     add("")
     add("## vendor samples")
@@ -261,14 +261,14 @@ function Dump.QuestieText()
     add("## creature drop samples")
     for _, text in ipairs(dropSamples) do add(text) end
     add("## implausible creature drops skipped (samples): item: creature (id, levels), why")
-    for _, text in ipairs(Quests.SkippedSamples()) do add(text) end
+    for _, text in ipairs(Questie.SkippedSamples()) do add(text) end
     add("## SoD-only NPCs skipped (most items first): id name: items, sells/drops. a Forever NPC here is a mistake")
-    for _, info in ipairs(Quests.SodSkipped()) do
+    for _, info in ipairs(Questie.SodSkipped()) do
         add(format("%d %s: %d items, %s", info.id, info.name, info.items,
                    info.vendor and info.drop and "sells and drops" or info.vendor and "sells" or "drops"))
     end
     add("## SoD gear left with no Questie source (samples). a Forever item here is a mistake")
-    local _, sodItems = Quests.SodItems()
+    local _, sodItems = Questie.SodItems()
     for _, text in ipairs(sodItems or {}) do add(text) end
     return lines
 end
@@ -281,13 +281,14 @@ function Dump.CraftsText()
     add(format("AtlasLoot installed: %s, on: %s, state: %s",
                tostring(Crafts.Installed()), tostring(Crafts.Enabled()), Crafts.State()))
     add(statusLine(Crafts.Status()))
-    add(statusLine(ns.Loot.Status()))
+    add(statusLine(ns.AtlasLootLists.Status()))
     local stats = Crafts.Stats()
     add(format("sections: %d, craft spells: %d, equippable results: %d, spells AtlasLoot has no data for: %d",
                stats.sections, stats.spells, stats.equippable, stats.missing))
-    local loot = ns.Loot.Stats()
+    local loot = ns.AtlasLootLists.Stats()
     add(format("AtlasLoot loot lists: state %s, modules %d, places %d (%d matched to FDJ dungeons), items %d, "
-               .. "set lists skipped %d", ns.Loot.State(), loot.modules, loot.places, loot.matched, loot.items, loot.skippedSets))
+               .. "set lists skipped %d", ns.AtlasLootLists.State(), loot.modules, loot.places, loot.matched, loot.items,
+               loot.skippedSets))
     local shared = 0
     for _, record in ipairs(ns.GetIndex() and ns.GetIndex().records or {}) do
         for _, source in ipairs(record.sources) do if source.chanceFrom then shared = shared + 1 end end
@@ -312,7 +313,7 @@ function Dump.CraftsText()
     table.sort(kinds)
     add("AtlasLoot sources kept after overlaps: " .. (#kinds > 0 and table.concat(kinds, ", ") or "none"))
     local places = {}
-    for place, count in pairs(perPlace) do places[#places + 1] = format("%s %d", ns.Source.DungeonName(place), count) end
+    for place, count in pairs(perPlace) do places[#places + 1] = format("%s %d", ns.DungeonJournal.DungeonName(place), count) end
     table.sort(places)
     add("by place: " .. table.concat(places, ", "))
     local listed, noLevel = 0, {}
@@ -533,12 +534,12 @@ function Dump.StatusText()
     local source = ns.SourceData()
     local fdjError = source and source.error and (", error: " .. tostring(source.error)) or ""
     local index = ns.indexStats
-    add(format("fdj: state %s%s, read %d times, last read in %.0f ms%s", ns.Source.Status(),
-               ns.Source.Enabled() and "" or " (off)", index.fdjReads, index.fdjMs, fdjError))
-    for _, provider in ipairs({ns.Quests, ns.Crafts, ns.Loot}) do add(statusLine(provider.Status())) end
+    add(format("fdj: state %s%s, read %d times, last read in %.0f ms%s", ns.DungeonJournal.Status(),
+               ns.DungeonJournal.Enabled() and "" or " (off)", index.fdjReads, index.fdjMs, fdjError))
+    for _, provider in ipairs({ns.Questie, ns.Crafts, ns.AtlasLootLists}) do add(statusLine(provider.Status())) end
     add(format("index: built %d times, last in %.0f ms, %.0f ms in total", index.builds, index.lastMs, index.ms))
     for _, line in ipairs(Dump.AuctionatorLines()) do add(line) end
-    for _, line in ipairs(ns.Navigation.DumpLines()) do add(line) end
+    for _, line in ipairs(ns.Waypoints.DumpLines()) do add(line) end
     local errors = ns.Errors()
     add("")
     add(format("## errors caught (%d)", #errors))

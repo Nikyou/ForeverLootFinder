@@ -1,8 +1,8 @@
 -- the only file that reads Questie/QuestieDB. read-only. waits for Questie's corrections when Questie is loaded
 local _, ns = ...
 
-local Quests = {}
-ns.Quests = Quests
+local Questie = {}
+ns.Questie = Questie
 
 local FRAME_BUDGET_MS = 6 -- QuestieDB decodes rows on first read, so budget by time, not rows
 local ALONE_DELAY = 5 -- QuestieDB without Questie
@@ -60,16 +60,16 @@ local function questie()
 end
 
 -- Questie itself only adds the hidden-quest corrections
-function Quests.Installed() return db() ~= nil end
-function Quests.Enabled() return ns.addon.db.profile.questie ~= false end
-function Quests.State() return status.state end
-function Quests.Stats() return stats end
-function Quests.Status() return status end
-function Quests.SkippedSamples() return skippedSamples end
-function Quests.SodRuleOn() return foreverNpcs ~= nil end
-function Quests.SodItems() return stats.sodItems, sodItemSamples end
+function Questie.Installed() return db() ~= nil end
+function Questie.Enabled() return ns.addon.db.profile.questie ~= false end
+function Questie.State() return status.state end
+function Questie.Stats() return stats end
+function Questie.Status() return status end
+function Questie.SkippedSamples() return skippedSamples end
+function Questie.SodRuleOn() return foreverNpcs ~= nil end
+function Questie.SodItems() return stats.sodItems, sodItemSamples end
 
-function Quests.SodSkipped()
+function Questie.SodSkipped()
     local list = {}
     for _, info in pairs(sodSkipped) do list[#list + 1] = info end
     table.sort(list, function(a, b)
@@ -82,7 +82,7 @@ end
 
 local KIND_SWITCH = {zoneQuest = "quests", vendor = "vendors", npcDrop = "drops"}
 local KIND_DEFAULTS = {quests = true, vendors = true, drops = true}
-function Quests.KindEnabled(switch)
+function Questie.KindEnabled(switch)
     local kinds = ns.addon.db.profile.questieKinds
     local value
     if type(kinds) == "table" then value = kinds[switch] end
@@ -91,7 +91,7 @@ function Quests.KindEnabled(switch)
     return value ~= false
 end
 
-function Quests.SetKindEnabled(switch, value)
+function Questie.SetKindEnabled(switch, value)
     local profile = ns.addon.db.profile
     profile.questieKinds = profile.questieKinds or {}
     profile.questieKinds[switch] = value and true or false
@@ -99,16 +99,16 @@ function Quests.SetKindEnabled(switch, value)
 end
 
 local filtered, filteredFor, filteredKey
-function Quests.Entries()
-    if not Quests.Enabled() then return {} end
+function Questie.Entries()
+    if not Questie.Enabled() then return {} end
     local key = ""
-    for _, switch in ipairs({"quests", "vendors", "drops"}) do key = key .. (Quests.KindEnabled(switch) and "1" or "0") end
+    for _, switch in ipairs({"quests", "vendors", "drops"}) do key = key .. (Questie.KindEnabled(switch) and "1" or "0") end
     if key == "111" then return entries end
     if filteredFor ~= entries or filteredKey ~= key then
         filtered, filteredFor, filteredKey = {}, entries, key
         for _, entry in ipairs(entries) do
             local switch = KIND_SWITCH[entry.kind]
-            if not switch or Quests.KindEnabled(switch) then filtered[#filtered + 1] = entry end
+            if not switch or Questie.KindEnabled(switch) then filtered[#filtered + 1] = entry end
         end
     end
     return filtered
@@ -126,7 +126,7 @@ local function get(kind, id, field)
     return value
 end
 
-function Quests.Keys(kind)
+function Questie.Keys(kind)
     local lib = db()
     local meta = lib and type(lib.Meta) == "table" and lib.Meta[kind]
     local keys = type(meta) == "table" and meta.keys
@@ -151,7 +151,7 @@ local function ids(list)
 end
 
 -- Forever's own races sit past bit 32
-function Quests.RaceBit(raceID)
+function Questie.RaceBit(raceID)
     if type(raceID) ~= "number" then return nil end
     local lib = db()
     local byID = lib and type(lib.Enum) == "table" and lib.Enum.raceMaskById
@@ -159,14 +159,14 @@ function Quests.RaceBit(raceID)
     return 2 ^ (raceID - 1)
 end
 
-function Quests.FactionRaces(faction)
+function Questie.FactionRaces(faction)
     local lib = db()
     local masks = lib and type(lib.Enum) == "table" and lib.Enum.factionRaceMasks
     local mask = type(masks) == "table" and masks[faction]
     return type(mask) == "number" and mask > 0 and mask or nil
 end
 
-function Quests.ClassBit(classID)
+function Questie.ClassBit(classID)
     if type(classID) ~= "number" or classID < 1 then return nil end
     return 2 ^ (classID - 1)
 end
@@ -320,7 +320,7 @@ local function npc(id)
 end
 
 -- Forever's own creatures have no levels in QuestieDB, the item's required level stands in
-function Quests.ImplausibleDrop(creature, reqLevel, itemLevel)
+function Questie.ImplausibleDrop(creature, reqLevel, itemLevel)
     local req = type(reqLevel) == "number" and reqLevel > 1 and reqLevel or nil
     local level = creature.maxLevel
     if level and req and level + DROP_REQ_GAP < req then return "required level " .. req end
@@ -377,7 +377,7 @@ local function npcEntries(found, item, itemName, kind, list, sodItem)
         local kept = {}
         for _, npcID in ipairs(npcIDs) do
             local info = npc(npcID)
-            local why = info and Quests.ImplausibleDrop(info, reqLevel, itemLevel)
+            local why = info and Questie.ImplausibleDrop(info, reqLevel, itemLevel)
             if why then
                 stats.implausible = stats.implausible + 1
                 if #skippedSamples < SKIPPED_SAMPLES then
@@ -489,7 +489,7 @@ local function supportAreaMaps()
     return areaMaps or nil
 end
 
-function Quests.MapSources()
+function Questie.MapSources()
     local zoneDB = questieModule("ZoneDB")
     local maps = supportAreaMaps()
     local count = 0
@@ -498,7 +498,7 @@ function Quests.MapSources()
 end
 
 -- 0 means hidden
-function Quests.UiMapForArea(area)
+function Questie.UiMapForArea(area)
     if type(area) ~= "number" then return nil end
     local zoneDB = questieModule("ZoneDB")
     local map = zoneDB and Util.SafeCall(zoneDB.GetUiMapIdByAreaId, zoneDB, area)
@@ -531,13 +531,13 @@ local function dungeons()
     return list
 end
 
-function Quests.DungeonEntrances(area)
+function Questie.DungeonEntrances(area)
     local dungeon = dungeons()[area]
     if not dungeon then return nil end
     local out = {}
     for _, location in ipairs(dungeon.locations) do
         local zone, x, y = location[1], location[2], location[3]
-        local map = Quests.UiMapForArea(zone)
+        local map = Questie.UiMapForArea(zone)
         if map and type(x) == "number" and type(y) == "number" then out[#out + 1] = {mapID = map, x = x / 100, y = y / 100} end
     end
     return out, dungeon.name
@@ -545,15 +545,15 @@ end
 
 -- by name, so creature drops and quests find FDJ's dungeons without AtlasLoot
 local placeAreas, placeAreasFor
-function Quests.Areas()
+function Questie.Areas()
     local data = ns.SourceData and ns.SourceData()
-    local squash = ns.Loot and ns.Loot.Squash
-    if not data or not squash or not Quests.Enabled() then return {} end
+    local squash = ns.AtlasLootLists and ns.AtlasLootLists.Squash
+    if not data or not squash or not Questie.Enabled() then return {} end
     local list = dungeons()
     if placeAreasFor == data and placeAreas and next(list) ~= nil then return placeAreas end
     local byName = {}
     for _, dungeon in ipairs(data.dungeons or {}) do
-        for _, text in ipairs({dungeon.key, ns.Source.DungeonName(dungeon.key)}) do
+        for _, text in ipairs({dungeon.key, ns.DungeonJournal.DungeonName(dungeon.key)}) do
             local key = squash(text)
             if key and not byName[key] then byName[key] = dungeon.key end
         end
@@ -569,21 +569,21 @@ end
 
 -- a spawn inside a dungeon becomes the dungeon's entrance
 local spawnCache = {}
-function Quests.Locations(kind, id)
+function Questie.Locations(kind, id)
     local cacheKey = kind .. ":" .. tostring(id)
     if spawnCache[cacheKey] then return spawnCache[cacheKey] end
     local name = get(kind, id, "name")
     local spawns = get(kind, id, "spawns")
     local out = {}
     for area, points in pairs(type(spawns) == "table" and spawns or {}) do
-        local entrances, dungeonName = Quests.DungeonEntrances(area)
+        local entrances, dungeonName = Questie.DungeonEntrances(area)
         if entrances then
             local label = format(L["%s (entrance)"], zoneName(area) or dungeonName or "?")
             for _, point in ipairs(entrances) do
                 out[#out + 1] = {mapID = point.mapID, x = point.x, y = point.y, name = label}
             end
         else
-            local map = Quests.UiMapForArea(area)
+            local map = Questie.UiMapForArea(area)
             for i, point in ipairs(map and type(points) == "table" and points or {}) do
                 if i > 50 then break end
                 local x, y = type(point) == "table" and point[1], type(point) == "table" and point[2]
@@ -597,7 +597,7 @@ function Quests.Locations(kind, id)
     return out
 end
 
-function Quests.Starters(questID)
+function Questie.Starters(questID)
     local startedBy = type(questID) == "number" and get("Quest", questID, "startedBy")
     local out = {}
     if type(startedBy) ~= "table" then return out end
@@ -764,8 +764,8 @@ local function scan()
     run()
 end
 
-function Quests.Init()
-    if not Quests.Installed() or not Quests.Enabled() then
+function Questie.Init()
+    if not Questie.Installed() or not Questie.Enabled() then
         status.state = "off"
         return
     end
@@ -780,10 +780,10 @@ function Quests.Init()
     C_Timer.After(ALONE_DELAY, ready)
 end
 
-function Quests.SetEnabled(value)
+function Questie.SetEnabled(value)
     ns.addon.db.profile.questie = value and true or false
     if value then
-        if status.state == "off" then Quests.Init() else ns.RebuildIndex() end
+        if status.state == "off" then Questie.Init() else ns.RebuildIndex() end
     else
         ns.RebuildIndex()
     end
@@ -798,10 +798,10 @@ local function searchResults()
     return nil
 end
 
-function Quests.CanOpen(questID) return type(questID) == "number" and questie() ~= nil and searchResults() ~= nil end
+function Questie.CanOpen(questID) return type(questID) == "number" and questie() ~= nil and searchResults() ~= nil end
 
-function Quests.Open(questID)
-    if not Quests.CanOpen(questID) then return false end
+function Questie.Open(questID)
+    if not Questie.CanOpen(questID) then return false end
     local module = searchResults()
     return (pcall(module.GetDetailFrame, module, "quest", questID))
 end
@@ -825,7 +825,7 @@ local function loadCompleted()
     allLoaded = false
 end
 
-function Quests.IsCompleted(questID)
+function Questie.IsCompleted(questID)
     if not tried then loadCompleted() end
     local known = completed[questID]
     if known ~= nil then return known end
@@ -837,6 +837,6 @@ function Quests.IsCompleted(questID)
     return completed[questID]
 end
 
-function Quests.OnQuestTurnedIn(questID)
+function Questie.OnQuestTurnedIn(questID)
     if type(questID) == "number" and not isSecret(questID) then completed[questID] = true end
 end

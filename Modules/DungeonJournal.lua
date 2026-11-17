@@ -1,8 +1,8 @@
 -- the only file that touches ForeverDungeonJournal (DungeonJournal on CurseForge). read-only, and optional
 local _, ns = ...
 
-local Source = {}
-ns.Source = Source
+local DungeonJournal = {}
+ns.DungeonJournal = DungeonJournal
 
 local FDJ_ADDON = "ForeverDungeonJournal"
 
@@ -21,7 +21,7 @@ local KNOWN = {
     loot = {"allTrash", "tip"},
 }
 -- FDJ has none of these yet
-Source.CHANCE_KEYS = {"chance", "dropChance", "dropRate", "rate", "pct"}
+DungeonJournal.CHANCE_KEYS = {"chance", "dropChance", "dropRate", "rate", "pct"}
 local QUEST_REWARD_FIELDS = {"rewardItems", "additionalRewardItems", "noteRewardItems"}
 
 local knownSets = {}
@@ -29,7 +29,7 @@ for kind, list in pairs(KNOWN) do
     knownSets[kind] = {}
     for _, key in ipairs(list) do knownSets[kind][key] = true end
 end
-for _, key in ipairs(Source.CHANCE_KEYS) do knownSets.loot[key] = true end
+for _, key in ipairs(DungeonJournal.CHANCE_KEYS) do knownSets.loot[key] = true end
 
 local isSecret = ns.Util.IsSecret
 
@@ -40,29 +40,29 @@ local function namespace()
 end
 
 -- "ok", "missing" or "invalid"
-function Source.Status()
+function DungeonJournal.Status()
     if not ns.Util.AddOnLoaded(FDJ_ADDON) then return "missing" end
     local fdj = namespace()
     if not fdj or type(fdj.DB) ~= "table" or type(fdj.ORDER) ~= "table" then return "invalid" end
     return "ok"
 end
 
-function Source.Installed() return Source.Status() ~= "missing" end
-function Source.Enabled() return ns.addon.db.profile.fdj ~= false end
-function Source.Active() return Source.Enabled() and Source.Status() == "ok" end
+function DungeonJournal.Installed() return DungeonJournal.Status() ~= "missing" end
+function DungeonJournal.Enabled() return ns.addon.db.profile.fdj ~= false end
+function DungeonJournal.Active() return DungeonJournal.Enabled() and DungeonJournal.Status() == "ok" end
 
-function Source.Empty()
+function DungeonJournal.Empty()
     return {dungeons = {}, dungeonByKey = {}, entries = {}, skipped = {}, unknown = {}, counts = {}, empty = true}
 end
 
 -- AtlasLoot matched its dungeons to FDJ's, so it reads again too
-function Source.SetEnabled(value)
+function DungeonJournal.SetEnabled(value)
     ns.addon.db.profile.fdj = value and true or false
-    ns.Loot.Reread()
+    ns.AtlasLootLists.Reread()
     ns.RebuildIndex(true)
 end
 
-function Source.Version()
+function DungeonJournal.Version()
     if not (C_AddOns and C_AddOns.GetAddOnMetadata) then return nil end
     local ok, version = pcall(C_AddOns.GetAddOnMetadata, FDJ_ADDON, "Version")
     return ok and type(version) == "string" and version or nil
@@ -80,7 +80,7 @@ end
 local function count(map, key) map[key] = (map[key] or 0) + 1 end
 
 local function chanceOf(entry)
-    for _, key in ipairs(Source.CHANCE_KEYS) do
+    for _, key in ipairs(DungeonJournal.CHANCE_KEYS) do
         local value = entry[key]
         if type(value) == "number" then return value end
     end
@@ -132,7 +132,7 @@ local function unknownKeys(tbl, kind, unknown)
 end
 
 -- one entry per item and source, Index merges them
-function Source.ReadData(fdj)
+function DungeonJournal.ReadData(fdj)
     local data = {dungeons = {}, dungeonByKey = {}, entries = {}, skipped = {}, unknown = {}, counts = {}}
     if type(fdj) ~= "table" or type(fdj.DB) ~= "table" or type(fdj.ORDER) ~= "table" then
         data.error = "invalid"
@@ -265,9 +265,9 @@ function Source.ReadData(fdj)
     return data
 end
 
-function Source.Read()
+function DungeonJournal.Read()
     local fdj = namespace()
-    local ok, data = pcall(Source.ReadData, fdj)
+    local ok, data = pcall(DungeonJournal.ReadData, fdj)
     if not ok then
         return {dungeons = {}, dungeonByKey = {}, entries = {}, skipped = {}, unknown = {}, counts = {}, error = data}
     end
@@ -284,42 +284,42 @@ local function call(name, ...)
 end
 
 -- looked up every call, FDJ re-wraps its localizers while it loads
-function Source.DungeonName(key)
-    if type(key) == "string" and key:sub(1, 3) == "al:" then return ns.Loot and ns.Loot.Name(key) or key end
+function DungeonJournal.DungeonName(key)
+    if type(key) == "string" and key:sub(1, 3) == "al:" then return ns.AtlasLootLists and ns.AtlasLootLists.Name(key) or key end
     local name = call("LocalizeDungeonName", key)
     return type(name) == "string" and name ~= "" and name or key
 end
 
-function Source.BossName(name)
+function DungeonJournal.BossName(name)
     local localized = call("LocalizeBossName", name)
     return type(localized) == "string" and localized ~= "" and localized or name
 end
 
-function Source.SlotName(text)
+function DungeonJournal.SlotName(text)
     local localized = call("LocalizeItemSlot", text)
     return type(localized) == "string" and localized ~= "" and localized or text
 end
 
 -- boss notes are FDJ locale keys
-function Source.Note(key)
+function DungeonJournal.Note(key)
     local text = call("L", key)
     if type(text) ~= "string" or text == "" then return nil end
     return text
 end
 
-function Source.CanOpenItem()
+function DungeonJournal.CanOpenItem()
     local fdj = namespace()
     return fdj ~= nil and type(fdj.OpenItemSource) == "function"
 end
 
-function Source.CanOpenDungeon()
+function DungeonJournal.CanOpenDungeon()
     local fdj = namespace()
     return fdj ~= nil and type(fdj.OpenBossPage) == "function" and type(fdj.ToggleJournal) == "function"
 end
 
 -- OpenBossPage only fills the journal, it doesn't show it
-function Source.OpenDungeon(key, bossIndex)
-    if not Source.CanOpenDungeon() then return false end
+function DungeonJournal.OpenDungeon(key, bossIndex)
+    if not DungeonJournal.CanOpenDungeon() then return false end
     local fdj = namespace()
     local frame = rawget(_G, "ForeverDungeonJournalFrame")
     local shown = type(frame) == "table" and frame.IsShown and frame:IsShown()
@@ -327,22 +327,22 @@ function Source.OpenDungeon(key, bossIndex)
     return (pcall(fdj.OpenBossPage, key, bossIndex or 1))
 end
 
-function Source.OpenItem(itemID)
-    if not Source.CanOpenItem() then return false end
+function DungeonJournal.OpenItem(itemID)
+    if not DungeonJournal.CanOpenItem() then return false end
     local ok, result = pcall(namespace().OpenItemSource, itemID)
     return ok and result ~= false
 end
 
 -- read every time, the player can toggle it any moment
-function Source.ItemSourceLineOn()
-    if Source.Status() ~= "ok" then return false end
+function DungeonJournal.ItemSourceLineOn()
+    if DungeonJournal.Status() ~= "ok" then return false end
     local saved = rawget(_G, "ForeverDungeonJournalDB")
     if type(saved) ~= "table" then return true end
     return saved.itemSourceStrip ~= false
 end
 
-function Source.FavouriteItems()
-    local saved = Source.Installed() and rawget(_G, "ForeverDungeonJournalCharacterDB")
+function DungeonJournal.FavouriteItems()
+    local saved = DungeonJournal.Installed() and rawget(_G, "ForeverDungeonJournalCharacterDB")
     local list = {}
     if type(saved) ~= "table" or type(saved.favouriteItems) ~= "table" then return list end
     for key, entry in pairs(saved.favouriteItems) do
@@ -365,7 +365,7 @@ local function sameName(a, b)
 end
 
 -- not FDJ's CurrentDungeon: it guesses one Scarlet wing, the reminder wants them all
-function Source.MatchInstance(instanceID, instanceName, mapID)
+function DungeonJournal.MatchInstance(instanceID, instanceName, mapID)
     local fdj = namespace()
     if not fdj or type(fdj.ORDER) ~= "table" then return nil end
     local inOrder = {}
@@ -386,7 +386,7 @@ function Source.MatchInstance(instanceID, instanceName, mapID)
         local key = call("DungeonFromInstanceName", instanceName)
         if key and inOrder[key] then return {key}, false end
         for _, candidate in ipairs(fdj.ORDER) do
-            if sameName(Source.DungeonName(candidate), instanceName) or sameName(candidate, instanceName) then
+            if sameName(DungeonJournal.DungeonName(candidate), instanceName) or sameName(candidate, instanceName) then
                 return {candidate}, false
             end
         end

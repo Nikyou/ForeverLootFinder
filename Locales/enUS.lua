@@ -26,7 +26,7 @@ L["reread the Dungeon Journal, rebuild the lists"] = true
 L["That item isn't listed."] = true
 L["Can't read DungeonJournal's loot data. Forever Loot Finder may need an update."] = true
 
--- Favourites.lua
+-- Features/Favourites.lua
 L["BiS"] = true
 L["Must have"] = true
 L["Nice to have"] = true
@@ -41,11 +41,11 @@ L["and %d more"] = true
 L["no ID"] = true
 L["Skipped:"] = true
 
--- Sets.lua
+-- Features/Sets.lua
 L["%d of %d pieces listed"] = true
 L["%d pieces listed"] = true
 
--- Tooltip.lua
+-- Features/Tooltip.lua
 L["Quest: %s"] = true
 L["Trash: %s"] = true
 L["Trash"] = true
@@ -73,15 +73,15 @@ L["Vendor: %s"] = true
 L["Dropped by %d creatures"] = true
 L["Auction: %s"] = true
 
--- Reminder.lua
+-- Features/Reminder.lua
 L["Favourites in this dungeon"] = true
 L["Click to close"] = true
 
--- DropAlert.lua
+-- Features/DropAlert.lua
 L["Favourite dropped (%s)"] = true
 L["Favourite dropped: %s (%s)"] = true
 
--- Dump.lua
+-- Features/Dump.lua
 L["Ctrl+A, then Ctrl+C to copy."] = true
 L["Close"] = true
 L["Loading items; the dump opens when done."] = true
@@ -94,7 +94,7 @@ L["Full dump"] = true
 L["Usage: /flf dump stats, fdj, questie, crafts, items or all"] = true
 L["DungeonJournal isn't installed."] = true
 
--- ImportExport.lua
+-- Features/ImportExport.lua
 L["Not a Forever Loot Finder profile string."] = true
 L["All display and alert settings"] = true
 L["Made with Forever Loot Finder %s"] = true
@@ -225,7 +225,7 @@ L["Auctionator couldn't add it."] = true
 L["Favourite all pieces"] = true
 L["Owned"] = true
 
--- UI/FilterBar.lua
+-- UI/Filters/FilterBar.lua
 L["Attributes"] = true
 L["Spell"] = true
 L["Physical"] = true
@@ -373,12 +373,12 @@ L["Paused in combat"] = true
 L["%d items"] = true
 L["Nothing to list yet."] = true
 
--- UI/SlotTab.lua
+-- UI/Tabs/SlotTab.lua
 L["No items match the filters."] = true
 L["By slot"] = true
 L["~ counted without \"Pawn upgrades only\": it is checked for the selected slot only."] = true
 
--- UI/DungeonTab.lua
+-- UI/Tabs/DungeonTab.lua
 L["All slots"] = true
 L["Click: open in Dungeon Journal"] = true
 L["Slot:"] = true
@@ -389,7 +389,7 @@ L["Raids and world bosses need AtlasLoot."] = true
 L["Group by boss"] = true
 L["Shift-click: waypoint to the entrance"] = true
 
--- UI/FavouritesTab.lua
+-- UI/Tabs/FavouritesTab.lua
 L["Character:"] = true
 L["Export"] = true
 L["Import FDJ favourites"] = true
@@ -483,7 +483,7 @@ L["Reset this profile?"] = true
 L["Share this profile as a string. Import asks before replacing."] = true
 L["Profiles"] = true
 
--- Modules/Crafts.lua
+-- Modules/AtlasLoot/Crafts.lua
 L["Blacksmithing"] = true
 L["Leatherworking"] = true
 L["Tailoring"] = true
@@ -498,7 +498,7 @@ L["Herbalism"] = true
 L["Skinning"] = true
 L["Fishing"] = true
 
--- UI/QuestTab.lua
+-- UI/Tabs/QuestTab.lua
 L["Other quests"] = true
 L["%d quests"] = true
 L["Install Questie for quests outside dungeons."] = true
@@ -507,7 +507,7 @@ L["Quests"] = true
 L["%s (done)"] = true
 L["Group by quest"] = true
 
--- UI/CraftTab.lua
+-- UI/Tabs/CraftTab.lua
 L["Apprentice (1–74)"] = true
 L["Journeyman (75–149)"] = true
 L["Expert (150–224)"] = true
@@ -562,16 +562,16 @@ L["Use for dungeon loot and quests"] = true
 L["The main source: Forever's dungeons, bosses and dungeon quests."] = true
 L["In use: %d dungeons."] = true
 
--- UI/SourceTabs.lua
+-- UI/Tabs/SourceTabs.lua
 L["Needs AtlasLoot."] = true
 
--- Modules/Quests.lua
+-- Modules/Questie.lua
 L["%s (entrance)"] = true
 
--- Modules/Navigation.lua
+-- Modules/Waypoints.lua
 L["Waypoint set: %s"] = true
 
--- UI/FilterSummary.lua
+-- UI/Filters/FilterSummary.lua
 L["auction price up to %s"] = true
 
 -- Options/CreditsTab.lua

@@ -1,4 +1,4 @@
--- the index and the filter context live in State.lua
+-- the index and the filter context live in Core/State.lua
 local ADDON_NAME, ns = ...
 local L = LibStub("AceLocale-3.0"):GetLocale("ForeverLootFinder")
 
@@ -54,7 +54,7 @@ local defaults = {
         questTab = {byQuest = true},
         tabs = {dungeon = true, raids = true, quests = true, crafts = true, reputation = true, pvp = true, events = true},
         craftTab = {bySkill = false, learnedFirst = true},
-        -- priority = {drops = "fdj>atlasloot", ...}, see State.lua
+        -- priority = {drops = "fdj>atlasloot", ...}, see Core/State.lua
     },
     char = {
         filters = ns.Filter.Defaults(),
@@ -220,7 +220,7 @@ function addon:OnProfileChanged()
     self:Migrate("profile")
     LibStub("LibDBIcon-1.0"):Refresh(ADDON_NAME, self.db.profile.minimap)
     if started then
-        for _, provider in ipairs({ns.Quests, ns.Crafts, ns.Loot}) do
+        for _, provider in ipairs({ns.Questie, ns.Crafts, ns.AtlasLootLists}) do
             if provider.Enabled() and provider.State() == "off" then provider.Init() end
         end
         ns.Owned.ScanSyndicator()
@@ -248,7 +248,7 @@ end
 local fdjNoticeShown = false
 -- FDJ is optional, so only a broken one gets a message
 function ns.FDJMessage()
-    if ns.Source.Enabled() and ns.Source.Status() == "invalid" then
+    if ns.DungeonJournal.Enabled() and ns.DungeonJournal.Status() == "invalid" then
         return L["Can't read DungeonJournal's loot data. Forever Loot Finder may need an update."]
     end
     return nil
@@ -304,7 +304,7 @@ local HANDLERS = {
     -- FDJ loads before FLF as a rule, a late one is still read
     ADDON_LOADED = function(name)
         if name == "ForeverDungeonJournal" then
-            ns.Loot.Reread()
+            ns.AtlasLootLists.Reread()
             ns.RebuildIndex(true)
         end
     end,
@@ -313,7 +313,7 @@ local HANDLERS = {
     START_LOOT_ROLL = function(...) ns.DropAlert.OnLootRoll(...) end,
     CHAT_MSG_LOOT = function(...) ns.DropAlert.OnChatLoot(...) end,
     QUEST_TURNED_IN = function(...)
-        ns.Quests.OnQuestTurnedIn(...)
+        ns.Questie.OnQuestTurnedIn(...)
         ns.FireChange("quests")
     end,
     AUCTION_HOUSE_CLOSED = function() ns.Auctionator.Invalidate() end,
@@ -322,7 +322,7 @@ local HANDLERS = {
     -- an index still missing an addon's items would prune them
     PLAYER_LOGOUT = function()
         local settled = ns.IndexSettled()
-        for _, provider in ipairs({ns.Quests, ns.Crafts, ns.Loot}) do
+        for _, provider in ipairs({ns.Questie, ns.Crafts, ns.AtlasLootLists}) do
             local state = provider.State()
             if state == "waiting" or state == "scanning" then settled = false end
         end
@@ -346,9 +346,9 @@ function addon:OnEnable()
     ns.Pawn.Init()
     ns.Owned.Scan()
     ns.Owned.HookSyndicator()
-    ns.Quests.Init()
+    ns.Questie.Init()
     ns.Crafts.Init()
-    ns.Loot.Init()
+    ns.AtlasLootLists.Init()
     ns.Auctionator.Init()
     ns.Tooltip.Enable()
     local frame = CreateFrame("Frame")

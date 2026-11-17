@@ -1,4 +1,4 @@
--- shared by Crafts.lua and Loot.lua. read-only
+-- shared by Crafts.lua and Lists.lua. read-only
 local _, ns = ...
 local Util = ns.Util
 

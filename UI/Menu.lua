@@ -19,19 +19,21 @@ end
 local function showEntries(root, row, record, id)
     -- only for what FDJ lists itself
     local fdj = firstSource(row, record, function(source) return source.provider == "fdj" and source.dungeon ~= nil end)
-    if fdj and ns.Source.CanOpenDungeon() then
-        root:CreateButton(L["Show in Dungeon Journal"], function() ns.Source.OpenDungeon(fdj.dungeon, fdj.bossIndex) end)
-    elseif fdj and id and ns.Source.CanOpenItem() then
-        root:CreateButton(L["Show in Dungeon Journal"], function() ns.Source.OpenItem(id) end)
+    if fdj and ns.DungeonJournal.CanOpenDungeon() then
+        root:CreateButton(L["Show in Dungeon Journal"], function() ns.DungeonJournal.OpenDungeon(fdj.dungeon, fdj.bossIndex) end)
+    elseif fdj and id and ns.DungeonJournal.CanOpenItem() then
+        root:CreateButton(L["Show in Dungeon Journal"], function() ns.DungeonJournal.OpenItem(id) end)
     end
-    local atlas = firstSource(row, record, function(source) return source.provider == "atlasloot" and ns.Loot.CanOpen(source) end)
-    if atlas then root:CreateButton(L["Show in AtlasLoot"], function() ns.Loot.Open(atlas) end) end
+    local atlas = firstSource(row, record, function(source)
+        return source.provider == "atlasloot" and ns.AtlasLootLists.CanOpen(source)
+    end)
+    if atlas then root:CreateButton(L["Show in AtlasLoot"], function() ns.AtlasLootLists.Open(atlas) end) end
     local quest = firstSource(row, record, function(source)
-        return source.questID ~= nil and ns.Quests.CanOpen(source.questID)
+        return source.questID ~= nil and ns.Questie.CanOpen(source.questID)
     end)
     if quest then
         root:CreateButton(format(L["Quest in Questie: %s"], quest.questName or quest.section or "?"),
-                          function() ns.Quests.Open(quest.questID) end)
+                          function() ns.Questie.Open(quest.questID) end)
     end
 end
 
@@ -40,12 +42,12 @@ local function waypointEntries(root, row, record)
     local seen, count = {}, 0
     for _, list in ipairs({row and row.sources or {}, record.sources}) do
         for _, source in ipairs(list) do
-            for _, target in ipairs(ns.Navigation.Targets(source)) do
+            for _, target in ipairs(ns.Waypoints.Targets(source)) do
                 local key = target.name .. ":" .. target.mapID
                 if count < MAX_WAYPOINTS and not seen[key] then
                     seen[key] = true
                     count = count + 1
-                    root:CreateButton(format(L["Waypoint: %s"], target.name), function() ns.Navigation.Go(target) end)
+                    root:CreateButton(format(L["Waypoint: %s"], target.name), function() ns.Waypoints.Go(target) end)
                 end
             end
         end

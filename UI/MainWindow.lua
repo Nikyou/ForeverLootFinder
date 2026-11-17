@@ -486,7 +486,7 @@ end
 -- a tab's empty text. when no addon has anything, and none is still reading, it says which addons FLF reads
 function MainWindow.EmptyText(text)
     if #ns.GetIndex().records > 0 then return text end
-    for _, provider in ipairs({ns.Quests, ns.Crafts, ns.Loot}) do
+    for _, provider in ipairs({ns.Questie, ns.Crafts, ns.AtlasLootLists}) do
         local state = provider.State()
         if state == "waiting" or state == "scanning" then return text end
     end

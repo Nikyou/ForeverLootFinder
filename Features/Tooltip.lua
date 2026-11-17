@@ -17,7 +17,7 @@ local isSecret = ns.Util.IsSecret
 function Tooltip.DungeonLabel(key, dungeonByKey)
     local dungeon = dungeonByKey and dungeonByKey[key]
     -- its provider may be turned off
-    local name = (key ~= nil and ns.Source.DungeonName(key)) or (dungeon and dungeon.name) or tostring(key or "?")
+    local name = (key ~= nil and ns.DungeonJournal.DungeonName(key)) or (dungeon and dungeon.name) or tostring(key or "?")
     if dungeon and dungeon.levelText then return format("%s (%s)", name, (dungeon.levelText:gsub("%-", "–"))) end
     return name
 end
@@ -72,12 +72,12 @@ function Tooltip.SourceText(source, dungeonByKey, withDungeon)
     end
     if source.kind == "reputation" then
         local name = source.factionName or L["Reputation"]
-        local text = source.standing and format("%s: %s", name, ns.Loot.StandingName(source.standing)) or name
+        local text = source.standing and format("%s: %s", name, ns.AtlasLootLists.StandingName(source.standing)) or name
         return text .. Tooltip.ViaQuestNote(source)
     end
     if source.kind == "pvp" then
         local text = source.section and format(L["PvP: %s"], source.section) or L["PvP"]
-        if source.standing then text = text .. " " .. MUTED .. "(" .. ns.Loot.StandingName(source.standing) .. ")|r" end
+        if source.standing then text = text .. " " .. MUTED .. "(" .. ns.AtlasLootLists.StandingName(source.standing) .. ")|r" end
         return text
     end
     if source.kind == "event" then
@@ -101,7 +101,7 @@ function Tooltip.SourceText(source, dungeonByKey, withDungeon)
         local mobs = source.mobs and source.mobs ~= "" and source.mobs or nil
         where = mobs and format(L["Trash: %s"], mobs) or L["Trash"]
     else
-        where = ns.Source.BossName(source.bossName or "?") or "?"
+        where = ns.DungeonJournal.BossName(source.bossName or "?") or "?"
     end
     local notes = {}
     if source.kind == "rare" then notes[#notes + 1] = L["rare"] end
@@ -229,7 +229,7 @@ function Tooltip.Add(tooltip, record, own)
     local lines = Tooltip.Lines(record, index and index.dungeonByKey, {
         sources = showSource and (own and own.sources or ns.DoableSources(record.sources, own and own.charKey)) or nil,
         showSource = showSource,
-        fdjLineOn = not (own and own.noItem) and ns.Source.ItemSourceLineOn(),
+        fdjLineOn = not (own and own.noItem) and ns.DungeonJournal.ItemSourceLineOn(),
         showAll = IsShiftKeyDown(),
         showFavourite = profile.tooltip.favourite and record.id and record.id > 0,
         who = record.id and record.id > 0 and whoNames(record.id) or nil,

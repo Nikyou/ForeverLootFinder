@@ -76,7 +76,7 @@ local function create(parent)
     local left = W.Column(parent, 0, Options.COLUMN)
     controls.fdj = section(left, "DungeonJournal", L["Use for dungeon loot and quests"],
                            L["The main source: Forever's dungeons, bosses and dungeon quests."],
-                           function(value) ns.Source.SetEnabled(value) end)
+                           function(value) ns.DungeonJournal.SetEnabled(value) end)
     local syndicatorHelp = L["Knows your gear, bags, bank and mail across sessions. Without it, the bank counts once opened."]
     controls.syndicator = section(left, "Syndicator", L["Use for owned items"], syndicatorHelp,
                                   function(value)
@@ -87,14 +87,14 @@ local function create(parent)
     end)
     left.title("QuestieDB")
     controls.questie = {box = left.check(L["Use for quests, vendors and creature drops"],
-                                         function(value) ns.Quests.SetEnabled(value) end)}
+                                         function(value) ns.Questie.SetEnabled(value) end)}
     controls.questieKinds = {}
     for _, kind in ipairs({
         {key = "quests", label = L["Quest rewards"]}, {key = "vendors", label = L["Vendors"]},
         {key = "drops", label = L["Creature drops"]},
     }) do
         controls.questieKinds[kind.key] = left.check(kind.label,
-                                                     function(value) ns.Quests.SetKindEnabled(kind.key, value) end, 20)
+                                                     function(value) ns.Questie.SetKindEnabled(kind.key, value) end, 20)
     end
     left.help(L["Questie's database: quest rewards, vendor goods and creature drops."])
     controls.questie.status = left.label("")
@@ -108,7 +108,7 @@ local function create(parent)
 
     left.title(L["Waypoints"])
     controls.waypoints = W.Dropdown(parent, Options.COLUMN - 20, function()
-        local hasTomTom, hasPin = ns.Navigation.HasTomTom(), ns.Navigation.HasPin()
+        local hasTomTom, hasPin = ns.Waypoints.HasTomTom(), ns.Waypoints.HasPin()
         local function needs(names)
             return function(tooltip)
                 tooltip:AddLine(L["Needs one of these addons:"], 1, 1, 1, true)
@@ -175,32 +175,32 @@ end
 local function refresh()
     local p = profile()
     local fdjText = good(format(L["In use: %d dungeons."], #ns.SourceData().dungeons))
-    if ns.Source.Status() == "invalid" then fdjText = ns.FDJMessage() or "" end
-    setStatus(controls.fdj, ns.Source.Installed(), p.fdj ~= false, fdjText)
+    if ns.DungeonJournal.Status() == "invalid" then fdjText = ns.FDJMessage() or "" end
+    setStatus(controls.fdj, ns.DungeonJournal.Installed(), p.fdj ~= false, fdjText)
     setStatus(controls.syndicator, type(rawget(_G, "Syndicator")) == "table", p.syndicator ~= false,
               ns.Owned.HasSyndicator() and good(L["In use."]) or STATE_TEXT.waiting)
-    local questState = ns.Quests.State()
-    local qs = ns.Quests.Stats()
+    local questState = ns.Questie.State()
+    local qs = ns.Questie.Stats()
     local questText = questState == "done" and good(format(L["%d quest rewards, %d vendor, %d creature sources."],
                                                            qs.rewards, qs.vendors, qs.drops))
                         or STATE_TEXT[questState] or ""
-    setStatus(controls.questie, ns.Quests.Installed(), p.questie ~= false, questText)
-    local kindsUsable = ns.Quests.Installed() and p.questie ~= false
+    setStatus(controls.questie, ns.Questie.Installed(), p.questie ~= false, questText)
+    local kindsUsable = ns.Questie.Installed() and p.questie ~= false
     for key, box in pairs(controls.questieKinds) do
-        box:SetChecked(ns.Quests.KindEnabled(key))
+        box:SetChecked(ns.Questie.KindEnabled(key))
         box:SetEnabled(kindsUsable)
         box.Text:SetTextColor(unpack(kindsUsable and ns.Style.TEXT or ns.Style.MUTED))
     end
-    controls.waypoints:SetValue(ns.Navigation.Setting(), true)
-    local method = ns.Navigation.Method()
+    controls.waypoints:SetValue(ns.Waypoints.Setting(), true)
+    local method = ns.Waypoints.Method()
     controls.waypointStatus:SetText(method == "tomtom" and good(L["In use: TomTom."])
                                       or method == "pin" and good(L["In use: the game's map pin."])
                                       or muted(L["Not available: install TomTom."]))
-    local craftState, lootState = ns.Crafts.State(), ns.Loot.State()
+    local craftState, lootState = ns.Crafts.State(), ns.AtlasLootLists.State()
     local atlasText
     if craftState == "done" or lootState == "done" then
         atlasText = good(format(L["%d crafted, %d other items."], ns.Crafts.Stats().equippable,
-                                ns.Loot.Stats().items))
+                                ns.AtlasLootLists.Stats().items))
     else
         atlasText = STATE_TEXT[lootState] or STATE_TEXT[craftState] or ""
     end

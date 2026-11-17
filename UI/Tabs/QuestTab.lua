@@ -73,8 +73,8 @@ ns.Cards.Tab({
     end,
     entries = entries,
     emptyHint = function()
-        if not ns.Quests.Installed() then return L["Install Questie for quests outside dungeons."] end
-        local state = ns.Quests.State()
+        if not ns.Questie.Installed() then return L["Install Questie for quests outside dungeons."] end
+        local state = ns.Questie.State()
         if state == "scanning" or state == "waiting" then return L["Reading Questie..."] end
     end,
 })

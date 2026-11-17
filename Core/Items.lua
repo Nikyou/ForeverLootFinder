@@ -1,4 +1,4 @@
--- item data, loaded a slice per frame. Cache.lua keeps it between sessions
+-- item data, loaded a slice per frame. Core/Cache.lua keeps it between sessions
 local _, ns = ...
 local Index, Restrictions, StatMap, Util = ns.Index, ns.Restrictions, ns.StatMap, ns.Util
 

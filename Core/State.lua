@@ -12,16 +12,16 @@ local scheduled = false
 local sourceData, sourceReadAt, sourceForced
 ns.indexStats = {builds = 0, ms = 0, lastMs = 0, fdjReads = 0, fdjMs = 0}
 
--- without FDJ (or with it off) an empty table, a new one each time that changes, Quests.Areas caches by it
+-- without FDJ (or with it off) an empty table, a new one each time that changes, Questie.Areas caches by it
 function ns.SourceData(force)
-    if not ns.Source.Active() then
-        if not (sourceData and sourceData.empty) then sourceData = ns.Source.Empty() end
+    if not ns.DungeonJournal.Active() then
+        if not (sourceData and sourceData.empty) then sourceData = ns.DungeonJournal.Empty() end
         return sourceData
     end
     if force or sourceForced or not sourceData or sourceData.empty or GetTime() - sourceReadAt > FDJ_REREAD then
         sourceForced = false
         local started = Util.Clock()
-        sourceData = ns.Source.Read()
+        sourceData = ns.DungeonJournal.Read()
         sourceReadAt = GetTime()
         local stats = ns.indexStats
         stats.fdjReads, stats.fdjMs = stats.fdjReads + 1, Util.Clock() - started
@@ -33,9 +33,9 @@ local function build()
     local data = ns.SourceData()
     local started = Util.Clock()
     index = ns.Index.Build(data, {
-        {provider = "questie", entries = ns.Quests.Entries(), areas = ns.Quests.Areas()},
+        {provider = "questie", entries = ns.Questie.Entries(), areas = ns.Questie.Areas()},
         {provider = "atlasloot", entries = ns.Crafts.Entries()},
-        ns.Loot.Entries(),
+        ns.AtlasLootLists.Entries(),
     }, ns.Priority())
     dirty = false
     ns.Sets.Invalidate()
@@ -120,8 +120,8 @@ function ns.Character(charKey)
     if cached then return cached end
     local data = ns.addon.db.global.characters[charKey] or {}
     local character = {key = charKey, class = data.class, race = data.race, level = data.level or 1, faction = data.faction}
-    character.raceBit = ns.Quests.RaceBit(data.raceID)
-    character.factionRaces = data.faction and ns.Quests.FactionRaces(data.faction)
+    character.raceBit = ns.Questie.RaceBit(data.raceID)
+    character.factionRaces = data.faction and ns.Questie.FactionRaces(data.faction)
     character.professions = data.professions
     -- alts saved before classID was kept
     local classID = data.classID
@@ -136,7 +136,7 @@ function ns.Character(charKey)
         end
     end
     character.classID = classID
-    character.classBit = ns.Quests.ClassBit(classID)
+    character.classBit = ns.Questie.ClassBit(classID)
     character.raceNames = {}
     if data.raceID and C_CreatureInfo then
         local info = Util.SafeCall(C_CreatureInfo.GetRaceInfo, data.raceID)
@@ -191,7 +191,7 @@ function ns.FilterContext(charKey)
         hidden = ns.addon.db.char.hidden,
         dungeonByKey = idx and idx.dungeonByKey or {},
         -- only the logged-in character's quest log is known
-        completed = character.key == ns.charKey and ns.Quests.IsCompleted or nil,
+        completed = character.key == ns.charKey and ns.Questie.IsCompleted or nil,
         pawnUpgrade = compare and function(record, info)
             if not info.loaded then return nil end
             -- asking queues it, the row stays greyed till then

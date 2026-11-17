@@ -208,7 +208,7 @@ function Favourites.FDJPlan()
         if not record then return false end
         return ns.Items.Info(record).slot ~= nil
     end
-    return Favourites.PlanImport(ns.Source.FavouriteItems(), Favourites.List(), known)
+    return Favourites.PlanImport(ns.DungeonJournal.FavouriteItems(), Favourites.List(), known)
 end
 
 function Favourites.FDJSummary(plan)
@@ -233,4 +233,4 @@ function Favourites.ApplyFDJ(plan)
     ns.FireChange("favourites")
 end
 
-function Favourites.HasFDJList() return #ns.Source.FavouriteItems() > 0 end
+function Favourites.HasFDJList() return #ns.DungeonJournal.FavouriteItems() > 0 end

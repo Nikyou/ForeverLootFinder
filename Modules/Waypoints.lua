@@ -3,10 +3,10 @@ local _, ns = ...
 local L = ns.L
 local Util = ns.Util
 
-local Navigation = {}
-ns.Navigation = Navigation
+local Waypoints = {}
+ns.Waypoints = Waypoints
 
-Navigation.SETTINGS = {"auto", "tomtom", "pin"}
+Waypoints.SETTINGS = {"auto", "tomtom", "pin"}
 local MAX_TARGETS = 3
 local MAX_GIVERS = 2
 
@@ -25,8 +25,8 @@ local function pinAPI()
     return nil
 end
 
-function Navigation.HasTomTom() return tomtom() ~= nil end
-function Navigation.HasPin() return pinAPI() ~= nil end
+function Waypoints.HasTomTom() return tomtom() ~= nil end
+function Waypoints.HasPin() return pinAPI() ~= nil end
 
 local function pinWorksOn(mapID)
     local map = pinAPI()
@@ -35,24 +35,24 @@ local function pinWorksOn(mapID)
     return Util.SafeCall(map.CanSetUserWaypointOnMap, mapID) == true
 end
 
-function Navigation.Setting()
+function Waypoints.Setting()
     local value = ns.addon.db.profile.waypoints
     if value == "tomtom" or value == "pin" then return value end
     return "auto"
 end
 
-function Navigation.Method()
-    local setting = Navigation.Setting()
+function Waypoints.Method()
+    local setting = Waypoints.Setting()
     if setting ~= "pin" and tomtom() then return "tomtom" end
     if setting ~= "tomtom" and pinAPI() then return "pin" end
     return nil
 end
 
-function Navigation.Available() return Navigation.Method() ~= nil end
+function Waypoints.Available() return Waypoints.Method() ~= nil end
 
-function Navigation.MethodFor(mapID)
+function Waypoints.MethodFor(mapID)
     if type(mapID) ~= "number" then return nil end
-    local method = Navigation.Method()
+    local method = Waypoints.Method()
     if method == "pin" and not pinWorksOn(mapID) then return nil end
     return method
 end
@@ -70,9 +70,9 @@ local function playerPosition()
 end
 
 -- nearest on the player's map, else the first
-function Navigation.Nearest(points)
+function Waypoints.Nearest(points)
     local usable = {}
-    for _, point in ipairs(points or {}) do if Navigation.MethodFor(point.mapID) then usable[#usable + 1] = point end end
+    for _, point in ipairs(points or {}) do if Waypoints.MethodFor(point.mapID) then usable[#usable + 1] = point end end
     if #usable == 0 then return nil end
     local mapID, px, py = playerPosition()
     local best, bestDistance
@@ -86,12 +86,12 @@ function Navigation.Nearest(points)
 end
 
 -- FDJ's entrance, else QuestieDB's (AtlasLoot's raids too)
-function Navigation.EntranceTarget(placeKey)
-    if not placeKey or not Navigation.Available() then return nil end
+function Waypoints.EntranceTarget(placeKey)
+    if not placeKey or not Waypoints.Available() then return nil end
     local index = ns.GetIndex()
     local place = index and index.dungeonByKey[placeKey]
     if not place then return nil end
-    local name = format(L["%s (entrance)"], ns.Source.DungeonName(placeKey))
+    local name = format(L["%s (entrance)"], ns.DungeonJournal.DungeonName(placeKey))
     local points = {}
     local entrance = place.entrance
     if entrance then
@@ -99,27 +99,27 @@ function Navigation.EntranceTarget(placeKey)
     else
         for area, key in pairs(index.placeByArea or {}) do
             if key == placeKey then
-                for _, point in ipairs(ns.Quests.DungeonEntrances(area) or {}) do
+                for _, point in ipairs(ns.Questie.DungeonEntrances(area) or {}) do
                     points[#points + 1] = {mapID = point.mapID, x = point.x, y = point.y, name = name}
                 end
             end
         end
     end
-    return Navigation.Nearest(points)
+    return Waypoints.Nearest(points)
 end
 
 local function npcTarget(npcIDs)
     local points = {}
     for _, id in ipairs(npcIDs or {}) do
-        for _, point in ipairs(ns.Quests.Locations("Npc", id)) do points[#points + 1] = point end
+        for _, point in ipairs(ns.Questie.Locations("Npc", id)) do points[#points + 1] = point end
     end
-    return Navigation.Nearest(points)
+    return Waypoints.Nearest(points)
 end
 
 -- only points some method can mark
-function Navigation.Targets(source)
+function Waypoints.Targets(source)
     local out, seen = {}, {}
-    if not source or not Navigation.Available() or not ns.Quests.Installed() and not source.dungeon then return out end
+    if not source or not Waypoints.Available() or not ns.Questie.Installed() and not source.dungeon then return out end
     local function add(target)
         if not target or #out >= MAX_TARGETS then return end
         local key = target.name .. ":" .. target.mapID
@@ -127,26 +127,26 @@ function Navigation.Targets(source)
         seen[key] = true
         out[#out + 1] = target
     end
-    if source.questID and ns.Quests.Installed() then
+    if source.questID and ns.Questie.Installed() then
         local givers = 0
-        for _, giver in ipairs(ns.Quests.Starters(source.questID)) do
+        for _, giver in ipairs(ns.Questie.Starters(source.questID)) do
             if givers >= MAX_GIVERS then break end
-            local target = Navigation.Nearest(ns.Quests.Locations(giver.kind, giver.id))
+            local target = Waypoints.Nearest(ns.Questie.Locations(giver.kind, giver.id))
             if target then
                 givers = givers + 1
                 add(target)
             end
         end
     end
-    if source.kind == "vendor" and ns.Quests.Installed() then
+    if source.kind == "vendor" and ns.Questie.Installed() then
         add(npcTarget(source.npcs or (source.npcID and {source.npcID})))
     end
-    if source.dungeon then add(Navigation.EntranceTarget(source.dungeon)) end
+    if source.dungeon then add(Waypoints.EntranceTarget(source.dungeon)) end
     return out
 end
 
-function Navigation.Go(target)
-    local method = target and Navigation.MethodFor(target.mapID)
+function Waypoints.Go(target)
+    local method = target and Waypoints.MethodFor(target.mapID)
     local done = false
     if method == "tomtom" then
         local addon = tomtom()
@@ -165,22 +165,22 @@ function Navigation.Go(target)
     return done
 end
 
-function Navigation.DumpLines()
+function Waypoints.DumpLines()
     local map = rawget(_G, "C_Map")
     local lines = {}
     lines[#lines + 1] = format("navigation: setting %s, in use %s; TomTom %s, map pin %s (map check %s, super track %s)",
-                               Navigation.Setting(), tostring(Navigation.Method() or "none"), tostring(Navigation.HasTomTom()),
-                               tostring(Navigation.HasPin()),
+                               Waypoints.Setting(), tostring(Waypoints.Method() or "none"), tostring(Waypoints.HasTomTom()),
+                               tostring(Waypoints.HasPin()),
                                tostring(type(map) == "table" and type(map.CanSetUserWaypointOnMap) == "function"),
                                tostring(type(rawget(_G, "C_SuperTrack")) == "table"))
-    local sources = ns.Quests.MapSources()
+    local sources = ns.Questie.MapSources()
     local index = ns.GetIndex()
     local fdjEntrances, places, questieEntrances = 0, 0, 0
     for _, place in ipairs(index and index.dungeons or {}) do
         places = places + 1
         if place.entrance then
             fdjEntrances = fdjEntrances + 1
-        elseif Navigation.EntranceTarget(place.key) then
+        elseif Waypoints.EntranceTarget(place.key) then
             questieEntrances = questieEntrances + 1
         end
     end

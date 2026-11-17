@@ -45,7 +45,7 @@ end
 
 local function bossText(boss)
     if boss.kind == "quest" then return boss.label end
-    return ns.Source.BossName(boss.label)
+    return ns.DungeonJournal.BossName(boss.label)
 end
 
 local function itemText(entry)
@@ -163,7 +163,7 @@ function Reminder.ShowWindow(groups, wings)
     end
     local rows = 0
     for _, group in ipairs(groups) do
-        if wings then add(ns.Source.DungeonName(group.dungeon), true) end
+        if wings then add(ns.DungeonJournal.DungeonName(group.dungeon), true) end
         for _, entry in ipairs(group.items) do
             rows = rows + 1
             if rows > MAX_ROWS then break end
@@ -178,18 +178,18 @@ end
 function Reminder.ShowChat(groups, wings)
     ns.Print(L["Favourites in this dungeon"])
     for _, group in ipairs(groups) do
-        if wings then print("  |cffffd100" .. ns.Source.DungeonName(group.dungeon) .. "|r") end
+        if wings then print("  |cffffd100" .. ns.DungeonJournal.DungeonName(group.dungeon) .. "|r") end
         for _, entry in ipairs(group.items) do print("    " .. itemText(entry)) end
     end
 end
 
 -- AtlasLoot's places, by name: all there is without FDJ
 function Reminder.MatchPlace(index, instanceName)
-    local squash = ns.Loot.Squash
+    local squash = ns.AtlasLootLists.Squash
     local wanted = type(instanceName) == "string" and not ns.IsSecret(instanceName) and squash(instanceName)
     if not wanted then return nil end
     for _, place in ipairs(index.dungeons) do
-        if place.atlasloot and squash(ns.Source.DungeonName(place.key)) == wanted then return {place.key} end
+        if place.atlasloot and squash(ns.DungeonJournal.DungeonName(place.key)) == wanted then return {place.key} end
     end
     return nil
 end
@@ -211,7 +211,7 @@ function Reminder.Check(isReload)
     local index = ns.GetIndex()
     local mapID = C_Map and C_Map.GetBestMapForUnit and C_Map.GetBestMapForUnit("player")
     if ns.IsSecret(mapID) then mapID = nil end
-    local keys, wings = ns.Source.MatchInstance(instanceID, name, mapID)
+    local keys, wings = ns.DungeonJournal.MatchInstance(instanceID, name, mapID)
     if not keys then keys = Reminder.MatchPlace(index, name) end
     if not keys then return end
     local groups = Reminder.Collect(index, ns.Favourites.List(), keys,

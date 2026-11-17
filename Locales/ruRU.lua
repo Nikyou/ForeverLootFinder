@@ -26,7 +26,7 @@ L["reread the Dungeon Journal, rebuild the lists"] = "перечитать Dunge
 L["That item isn't listed."] = "Этого предмета нет в списках."
 L["Can't read DungeonJournal's loot data. Forever Loot Finder may need an update."] = "Не удаётся прочитать добычу DungeonJournal. Возможно, нужно обновить Forever Loot Finder."
 
--- Favourites.lua
+-- Features/Favourites.lua
 L["BiS"] = "БиС"
 L["Must have"] = "Обязательно"
 L["Nice to have"] = "Желательно"
@@ -41,11 +41,11 @@ L["and %d more"] = "и ещё %d"
 L["no ID"] = "нет ID"
 L["Skipped:"] = "Пропущено:"
 
--- Sets.lua
+-- Features/Sets.lua
 L["%d of %d pieces listed"] = "В списке %d из %d"
 L["%d pieces listed"] = "Предметов комплекта в списке: %d"
 
--- Tooltip.lua
+-- Features/Tooltip.lua
 L["Quest: %s"] = "Задание: %s"
 L["Trash: %s"] = "Трэш: %s"
 L["Trash"] = "Трэш"
@@ -73,15 +73,15 @@ L["Vendor: %s"] = "Торговец: %s"
 L["Dropped by %d creatures"] = "Добыча с существ: %d"
 L["Auction: %s"] = "Аукцион: %s"
 
--- Reminder.lua
+-- Features/Reminder.lua
 L["Favourites in this dungeon"] = "Избранное в этом подземелье"
 L["Click to close"] = "Щелчок закрывает окно"
 
--- DropAlert.lua
+-- Features/DropAlert.lua
 L["Favourite dropped (%s)"] = "Выпало избранное (%s)"
 L["Favourite dropped: %s (%s)"] = "Выпало избранное: %s (%s)"
 
--- Dump.lua
+-- Features/Dump.lua
 L["Ctrl+A, then Ctrl+C to copy."] = "Ctrl+A, затем Ctrl+C — скопировать."
 L["Close"] = "Закрыть"
 L["Loading items; the dump opens when done."] = "Загрузка предметов; выгрузка откроется после."
@@ -94,7 +94,7 @@ L["Full dump"] = "Полная выгрузка"
 L["Usage: /flf dump stats, fdj, questie, crafts, items or all"] = "Использование: /flf dump stats, fdj, questie, crafts, items или all"
 L["DungeonJournal isn't installed."] = "DungeonJournal не установлен."
 
--- ImportExport.lua
+-- Features/ImportExport.lua
 L["Not a Forever Loot Finder profile string."] = "Это не строка профиля Forever Loot Finder."
 L["All display and alert settings"] = "Все настройки отображения и оповещений"
 L["Made with Forever Loot Finder %s"] = "Создано в Forever Loot Finder %s"
@@ -225,7 +225,7 @@ L["Auctionator couldn't add it."] = "Auctionator не смог его добав
 L["Favourite all pieces"] = "Весь комплект в избранное"
 L["Owned"] = "Есть"
 
--- UI/FilterBar.lua
+-- UI/Filters/FilterBar.lua
 L["Attributes"] = "Основные"
 L["Spell"] = "Заклинания"
 L["Physical"] = "Физические"
@@ -373,12 +373,12 @@ L["Paused in combat"] = "Пауза: идёт бой"
 L["%d items"] = "Предметов: %d"
 L["Nothing to list yet."] = "Пока нечего показать."
 
--- UI/SlotTab.lua
+-- UI/Tabs/SlotTab.lua
 L["No items match the filters."] = "Нет предметов под эти фильтры."
 L["By slot"] = "По ячейкам"
 L["~ counted without \"Pawn upgrades only\": it is checked for the selected slot only."] = "~ — без учёта «Только улучшения по Pawn»: это проверяется только для выбранной ячейки."
 
--- UI/DungeonTab.lua
+-- UI/Tabs/DungeonTab.lua
 L["All slots"] = "Все ячейки"
 L["Click: open in Dungeon Journal"] = "Щелчок — открыть в Dungeon Journal"
 L["Slot:"] = "Ячейка:"
@@ -389,7 +389,7 @@ L["Raids and world bosses need AtlasLoot."] = "Для рейдов и миров
 L["Group by boss"] = "Группировать по боссам"
 L["Shift-click: waypoint to the entrance"] = "Shift+щелчок: путевая точка ко входу"
 
--- UI/FavouritesTab.lua
+-- UI/Tabs/FavouritesTab.lua
 L["Character:"] = "Персонаж:"
 L["Export"] = "Экспорт"
 L["Import FDJ favourites"] = "Импорт из FDJ"
@@ -483,7 +483,7 @@ L["Reset this profile?"] = "Сбросить этот профиль?"
 L["Share this profile as a string. Import asks before replacing."] = "Поделиться профилем через строку. Импорт спросит перед заменой."
 L["Profiles"] = "Профили"
 
--- Modules/Crafts.lua
+-- Modules/AtlasLoot/Crafts.lua
 L["Blacksmithing"] = "Кузнечное дело"
 L["Leatherworking"] = "Кожевничество"
 L["Tailoring"] = "Портняжное дело"
@@ -498,7 +498,7 @@ L["Herbalism"] = "Травничество"
 L["Skinning"] = "Снятие шкур"
 L["Fishing"] = "Рыбная ловля"
 
--- UI/QuestTab.lua
+-- UI/Tabs/QuestTab.lua
 L["Other quests"] = "Другие задания"
 L["%d quests"] = "Заданий: %d"
 L["Install Questie for quests outside dungeons."] = "Установите Questie для заданий вне подземелий."
@@ -507,7 +507,7 @@ L["Quests"] = "Задания"
 L["%s (done)"] = "%s (выполнено)"
 L["Group by quest"] = "Группировать по заданиям"
 
--- UI/CraftTab.lua
+-- UI/Tabs/CraftTab.lua
 L["Apprentice (1–74)"] = "Ученик (1–74)"
 L["Journeyman (75–149)"] = "Подмастерье (75–149)"
 L["Expert (150–224)"] = "Умелец (150–224)"
@@ -562,16 +562,16 @@ L["Use for dungeon loot and quests"] = "Добыча и задания подз�
 L["The main source: Forever's dungeons, bosses and dungeon quests."] = "Главный источник: подземелья Forever, боссы и задания подземелий."
 L["In use: %d dungeons."] = "Используется: подземелий: %d."
 
--- UI/SourceTabs.lua
+-- UI/Tabs/SourceTabs.lua
 L["Needs AtlasLoot."] = "Нужен AtlasLoot."
 
--- Modules/Quests.lua
+-- Modules/Questie.lua
 L["%s (entrance)"] = "%s (вход)"
 
--- Modules/Navigation.lua
+-- Modules/Waypoints.lua
 L["Waypoint set: %s"] = "Путевая точка: %s"
 
--- UI/FilterSummary.lua
+-- UI/Filters/FilterSummary.lua
 L["auction price up to %s"] = "цена на аукционе до %s"
 
 -- Options/CreditsTab.lua

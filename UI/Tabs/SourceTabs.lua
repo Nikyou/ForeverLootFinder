@@ -3,11 +3,11 @@ local _, ns = ...
 local L = ns.L
 
 local function standingLabel(standing)
-    return standing and ns.Loot.StandingName(standing) or ""
+    return standing and ns.AtlasLootLists.StandingName(standing) or ""
 end
 
 local function emptyHint()
-    if ns.Loot.Installed() then return nil end
+    if ns.AtlasLootLists.Installed() then return nil end
     return L["Needs AtlasLoot."]
 end
 
