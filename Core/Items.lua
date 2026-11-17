@@ -117,11 +117,13 @@ local function scheduleBuild()
     C_Timer.After(0, buildSlice)
 end
 
--- an item doesn't change within a session: once built in full from fresh data it stays, even when the client drops it
--- from its cache. asking again would never end, the client holds fewer items than FLF lists. one from the saved cache
--- is still brought up to date by the first answer
+-- an item doesn't change within a session: once built in full it stays, even when the client drops it from its cache.
+-- asking again would never end, the client holds fewer items than FLF lists. one from the saved cache is brought up to
+-- date by the first answer only
+local refreshed = {}
 local function complete(info)
-    return info ~= nil and info.loaded and info.tooltipLoaded and not info.partial and not info.fromCache
+    return info ~= nil and info.loaded and info.tooltipLoaded and not info.partial
+           and (not info.fromCache or refreshed[info.id])
 end
 
 local function markDirty(id)
@@ -213,6 +215,13 @@ local function build(record, quick)
     end
     instant(record, info)
     info.failed = failed[id]
+    -- GetItemInfo asks the server again for anything the client lacks, and an item the server doesn't know answers
+    -- "no" every time: that never ends
+    if failed[id] or gaveUp[id] then
+        info.name, info.quality = record.name, record.quality
+        info.missing = failed[id] and "failed" or "noanswer"
+        return info
+    end
     local name, link, quality, ilvl, minLevel, _, _, _, _, texture, _, _, _, bindType, _, setID = C_Item.GetItemInfo(id)
     if name and not isSecret(name) then
         markDone(seen, id)
@@ -522,12 +531,21 @@ function Items.OnItemInfo(id, success)
     if isSecret(id) or type(id) ~= "number" or not tracked[id] then return end
     -- someone else asked for an item already built (another addon, or the client refilling its cache)
     local record = recordOf[id]
-    if success ~= false and record and complete(cache[record.key]) then
+    local info = record and cache[record.key]
+    if success ~= false and info and info.fromCache and info.loaded and not refreshed[id] then
+        -- from the saved cache: this answer brings it up to date, later ones are ignored
+        refreshed[id] = true
+    elseif success ~= false and complete(info) then
         timing.ignored = timing.ignored + 1
         if not seen[id] then
             markDone(seen, id)
             failed[id], gaveUp[id] = nil, nil
         end
+        return
+    end
+    -- the server said so already
+    if success == false and failed[id] then
+        timing.ignored = timing.ignored + 1
         return
     end
     if success == false then
