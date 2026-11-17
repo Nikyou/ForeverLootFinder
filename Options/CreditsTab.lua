@@ -7,7 +7,7 @@ local QUESTIE_TEAM = "Aero, Logon, Muehe, TheCrux (BreakBB), Drejjmit, Dyaxler, 
 local function addons()
     return {
         {name = "DungeonJournal (ForeverDungeonJournal)", by = format(L["By %s"], "Exehn"),
-         use = L["Dungeon loot, bosses and quests. Required."]},
+         use = L["Dungeon loot, bosses and quests."]},
         {name = format(L["%s (comes with %s)"], "QuestieDB", "Questie"),
          by = format(L["By the Questie team: %s and others"], QUESTIE_TEAM),
          use = L["Quest rewards, vendors and creature drops."]},
@@ -18,6 +18,8 @@ local function addons()
          use = L["Items in bags, bank and mail across characters."]},
         {name = "Auctionator", by = format(L["By %s"], "plusmouse, Borjamacare"),
          use = L["Auction prices and shopping lists."]},
+        {name = "Attune", by = format(L["By %s"], "CixiDelmont"), use = L["Quest rewards from Wowhead's Forever pages."]},
+        {name = "SilverDragon", by = format(L["By %s"], "Kemayo"), use = L["Rare creatures and their loot."]},
     }
 end
 

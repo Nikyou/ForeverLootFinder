@@ -14,6 +14,8 @@ Forever Loot Finder gets its item lists from other addons. It works without them
 * **DungeonJournal**: Forever's dungeons with their bosses, loot and quests.
 * **Questie**: quest rewards, vendors, creature drops and world drops.
 * **AtlasLoot Classic Forever**: raids and world bosses, crafted gear, reputation, PvP and event rewards, world drops, drop chances, and BiS lists you can add to your favourites.
+* **Attune**: quest rewards the others miss.
+* **SilverDragon**: rare creatures and what they drop.
 * **Pawn**: item scores, upgrade percent and the "Pawn upgrades only" filter.
 * **Baganator**: what you own in your bags, bank and mail on all your characters.
 * **Auctionator**: auction prices and its shopping list.
@@ -71,3 +73,5 @@ Forever Loot Finder reads its data from these addons. Thanks to their authors.
 * [Pawn](https://www.curseforge.com/wow/addons/pawn) by Vger
 * [Syndicator](https://www.curseforge.com/wow/addons/syndicator) and [Baganator](https://www.curseforge.com/wow/addons/baganator) by plusmouse
 * [Auctionator](https://www.curseforge.com/wow/addons/auctionator) by plusmouse and Borjamacare
+* Attune by CixiDelmont
+* SilverDragon by Kemayo
