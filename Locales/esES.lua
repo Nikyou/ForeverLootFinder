@@ -74,6 +74,8 @@ if not L then return end
 -- L["Dropped by %d creatures"] = true -- Translation missing
 -- L["Auction: %s"] = true -- Translation missing
 -- L["creatures %s"] = true -- Translation missing
+-- L["Combine: %s"] = true -- Translation missing
+-- L["extremely rare"] = true -- Translation missing
 
 -- Features/Reminder.lua
 -- L["Favourites in this dungeon"] = true -- Translation missing
@@ -391,6 +393,7 @@ if not L then return end
 -- L["Raids and world bosses need AtlasLoot."] = true -- Translation missing
 -- L["Group by boss"] = true -- Translation missing
 -- L["Shift-click: waypoint to the entrance"] = true -- Translation missing
+-- L["Combined"] = true -- Translation missing
 
 -- UI/Tabs/FavouritesTab.lua
 -- L["Character:"] = true -- Translation missing
@@ -571,6 +574,12 @@ if not L then return end
 -- L["Use for dungeon loot and quests"] = true -- Translation missing
 -- L["The main source: Forever's dungeons, bosses and dungeon quests."] = true -- Translation missing
 -- L["In use: %d dungeons."] = true -- Translation missing
+-- L["Use for quests the others miss"] = true -- Translation missing
+-- L["Quest rewards from Wowhead's Forever pages. QuestieDB and DungeonJournal come first."] = true -- Translation missing
+-- L["Use for rare creatures"] = true -- Translation missing
+-- L["Rares and their loot. DungeonJournal and QuestieDB come first."] = true -- Translation missing
+-- L["%d quests, %d rewards."] = true -- Translation missing
+-- L["%d rares, %d items."] = true -- Translation missing
 
 -- UI/Tabs/SourceTabs.lua
 -- L["Needs AtlasLoot."] = true -- Translation missing
@@ -586,7 +595,6 @@ if not L then return end
 
 -- Options/CreditsTab.lua
 -- L["By %s"] = true -- Translation missing
--- L["Dungeon loot, bosses and quests. Required."] = true -- Translation missing
 -- L["%s (comes with %s)"] = true -- Translation missing
 -- L["By the Questie team: %s and others"] = true -- Translation missing
 -- L["Quest rewards, vendors and creature drops."] = true -- Translation missing
@@ -597,6 +605,9 @@ if not L then return end
 -- L["Made by %s"] = true -- Translation missing
 -- L["It reads its data from these addons. Thanks to their authors!"] = true -- Translation missing
 -- L["Credits"] = true -- Translation missing
+-- L["Dungeon loot, bosses and quests."] = true -- Translation missing
+-- L["Quest rewards from Wowhead's Forever pages."] = true -- Translation missing
+-- L["Rare creatures and their loot."] = true -- Translation missing
 
 -- Modules/AtlasLoot/BiS.lua
 -- L["%s, phase %d"] = true -- Translation missing
@@ -614,3 +625,6 @@ if not L then return end
 -- L["not on this server"] = true -- Translation missing
 -- L["Hidden by Loot Finder: %s."] = true -- Translation missing
 -- L["You can still add it."] = true -- Translation missing
+
+-- Modules/Attune.lua
+-- L["Quest %d"] = true -- Translation missing

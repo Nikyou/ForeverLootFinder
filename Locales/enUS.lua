@@ -74,6 +74,8 @@ L["Vendor: %s"] = true
 L["Dropped by %d creatures"] = true
 L["Auction: %s"] = true
 L["creatures %s"] = true
+L["Combine: %s"] = true
+L["extremely rare"] = true
 
 -- Features/Reminder.lua
 L["Favourites in this dungeon"] = true
@@ -391,6 +393,7 @@ L["From AtlasLoot"] = true
 L["Raids and world bosses need AtlasLoot."] = true
 L["Group by boss"] = true
 L["Shift-click: waypoint to the entrance"] = true
+L["Combined"] = true
 
 -- UI/Tabs/FavouritesTab.lua
 L["Character:"] = true
@@ -571,6 +574,12 @@ L["In use: %d of %d sellable items priced."] = true
 L["Use for dungeon loot and quests"] = true
 L["The main source: Forever's dungeons, bosses and dungeon quests."] = true
 L["In use: %d dungeons."] = true
+L["Use for quests the others miss"] = true
+L["Quest rewards from Wowhead's Forever pages. QuestieDB and DungeonJournal come first."] = true
+L["Use for rare creatures"] = true
+L["Rares and their loot. DungeonJournal and QuestieDB come first."] = true
+L["%d quests, %d rewards."] = true
+L["%d rares, %d items."] = true
 
 -- UI/Tabs/SourceTabs.lua
 L["Needs AtlasLoot."] = true
@@ -586,7 +595,6 @@ L["auction price up to %s"] = true
 
 -- Options/CreditsTab.lua
 L["By %s"] = true
-L["Dungeon loot, bosses and quests. Required."] = true
 L["%s (comes with %s)"] = true
 L["By the Questie team: %s and others"] = true
 L["Quest rewards, vendors and creature drops."] = true
@@ -597,6 +605,9 @@ L["Auction prices and shopping lists."] = true
 L["Made by %s"] = true
 L["It reads its data from these addons. Thanks to their authors!"] = true
 L["Credits"] = true
+L["Dungeon loot, bosses and quests."] = true
+L["Quest rewards from Wowhead's Forever pages."] = true
+L["Rare creatures and their loot."] = true
 
 -- Modules/AtlasLoot/BiS.lua
 L["%s, phase %d"] = true
@@ -614,3 +625,6 @@ L["removed quest"] = true
 L["not on this server"] = true
 L["Hidden by Loot Finder: %s."] = true
 L["You can still add it."] = true
+
+-- Modules/Attune.lua
+L["Quest %d"] = true

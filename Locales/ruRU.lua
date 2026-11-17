@@ -74,6 +74,8 @@ L["Vendor: %s"] = "Торговец: %s"
 L["Dropped by %d creatures"] = "Добыча с существ: %d"
 L["Auction: %s"] = "Аукцион: %s"
 L["creatures %s"] = "существа: %s"
+L["Combine: %s"] = "Собрать: %s"
+L["extremely rare"] = "крайне редко"
 
 -- Features/Reminder.lua
 L["Favourites in this dungeon"] = "Избранное в этом подземелье"
@@ -391,6 +393,7 @@ L["From AtlasLoot"] = "Из AtlasLoot"
 L["Raids and world bosses need AtlasLoot."] = "Для рейдов и мировых боссов нужен AtlasLoot."
 L["Group by boss"] = "Группировать по боссам"
 L["Shift-click: waypoint to the entrance"] = "Shift+щелчок: путевая точка ко входу"
+L["Combined"] = "Сборные"
 
 -- UI/Tabs/FavouritesTab.lua
 L["Character:"] = "Персонаж:"
@@ -571,6 +574,12 @@ L["In use: %d of %d sellable items priced."] = "Используется: цен
 L["Use for dungeon loot and quests"] = "Добыча и задания подземелий"
 L["The main source: Forever's dungeons, bosses and dungeon quests."] = "Главный источник: подземелья Forever, боссы и задания подземелий."
 L["In use: %d dungeons."] = "Используется: подземелий: %d."
+L["Use for quests the others miss"] = "Использовать для заданий, которых нет у других"
+L["Quest rewards from Wowhead's Forever pages. QuestieDB and DungeonJournal come first."] = "Награды за задания со страниц Wowhead для Forever. QuestieDB и DungeonJournal важнее."
+L["Use for rare creatures"] = "Использовать для редких существ"
+L["Rares and their loot. DungeonJournal and QuestieDB come first."] = "Редкие существа и их добыча. DungeonJournal и QuestieDB важнее."
+L["%d quests, %d rewards."] = "Заданий: %d, наград: %d."
+L["%d rares, %d items."] = "Редких: %d, предметов: %d."
 
 -- UI/Tabs/SourceTabs.lua
 L["Needs AtlasLoot."] = "Нужен AtlasLoot."
@@ -586,7 +595,6 @@ L["auction price up to %s"] = "цена на аукционе до %s"
 
 -- Options/CreditsTab.lua
 L["By %s"] = "Автор: %s"
-L["Dungeon loot, bosses and quests. Required."] = "Добыча подземелий, боссы и задания. Обязателен."
 L["%s (comes with %s)"] = "%s (входит в %s)"
 L["By the Questie team: %s and others"] = "Команда Questie: %s и другие"
 L["Quest rewards, vendors and creature drops."] = "Награды за задания, торговцы и добыча с существ."
@@ -597,6 +605,9 @@ L["Auction prices and shopping lists."] = "Цены аукциона и спис
 L["Made by %s"] = "Автор аддона: %s"
 L["It reads its data from these addons. Thanks to their authors!"] = "Данные берутся из этих аддонов. Спасибо их авторам!"
 L["Credits"] = "Благодарности"
+L["Dungeon loot, bosses and quests."] = "Добыча, боссы и задания подземелий."
+L["Quest rewards from Wowhead's Forever pages."] = "Награды за задания со страниц Wowhead для Forever."
+L["Rare creatures and their loot."] = "Редкие существа и их добыча."
 
 -- Modules/AtlasLoot/BiS.lua
 L["%s, phase %d"] = "%s, фаза %d"
@@ -614,3 +625,6 @@ L["removed quest"] = "удалённое задание"
 L["not on this server"] = "нет на сервере"
 L["Hidden by Loot Finder: %s."] = "Скрыт Loot Finder: %s."
 L["You can still add it."] = "Его всё равно можно добавить."
+
+-- Modules/Attune.lua
+L["Quest %d"] = "Задание %d"
