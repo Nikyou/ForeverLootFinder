@@ -15,9 +15,14 @@ local MAX_EACH = 5 -- more than this make one "many" source
 local MANY_SAMPLE = 40
 local MANY_ZONES = 4
 local MANY_NPCS = 5
+-- droppers spread over this many zones: a world drop, any creature of the right level can have it
+local WORLD_ZONES = 4
 -- QuestieDB's Forever data has joke drops: Sulfuras on a levelless "Super Hogger", Molten Core rings on level 5
 -- boars. item level is capped at 60 so Naxxramas (92 from level 63 bosses) stays
 local DROP_REQ_GAP, DROP_ILVL_GAP, DROP_ILVL_CAP = 10, 20, 60
+-- the Molten Core copies (288890-288931, Bonereaver's Edge, Band of Sulfuras) mostly have no level of their own, so
+-- they're judged by the original. Wowhead lists them as not available to players
+local ORIGINAL_LAST = 25000
 local SKIPPED_SAMPLES = 25
 -- QuestieDB still has SoD's NPCs (rune brokers, Mokvar, guards selling SoD gear). skip those unless a Forever quest
 -- uses them, or a SoD-era quest that rewards a Forever item. that's what keeps Pix Xizzix
@@ -35,7 +40,7 @@ local entries = {}
 local status = Util.NewStatus("questie", {items = 0, equippable = 0, rewards = 0, quests = 0, hidden = 0, errors = 0, ms = 0,
                                           vendors = 0, drops = 0, manyVendors = 0, manyDrops = 0, npcs = 0,
                                           implausible = 0, implausibleItems = 0, sodSkipped = 0, sodNpcs = 0, sodKept = 0,
-                                          sodRefs = 0, sodItems = 0})
+                                          sodRefs = 0, sodItems = 0, worldDrops = 0})
 local stats = status.counts
 local skippedSamples = {}
 -- SoD-range NPCs that Forever's quests use. nil without Quest.GetAllIds, then nothing is skipped
@@ -43,6 +48,12 @@ local foreverNpcs
 local sodSkipped = {}
 local keptSodQuests = {}
 local sodItemSamples = {}
+-- id -> name of every wearable item, to find one by name when adding a favourite
+local itemNames = {}
+-- id -> why a wearable item with QuestieDB sources got none: "sod", "implausible" or "hidden"
+local skipReasons = {}
+-- lowercased name -> item level of classic items, for Forever's copies
+local originals = {}
 local scanToken = 0
 
 local isSecret = Util.IsSecret
@@ -66,6 +77,8 @@ function Questie.State() return status.state end
 function Questie.Stats() return stats end
 function Questie.Status() return status end
 function Questie.SkippedSamples() return skippedSamples end
+function Questie.ItemNames() return itemNames end
+function Questie.SkipReason(id) return skipReasons[id] end
 function Questie.SodRuleOn() return foreverNpcs ~= nil end
 function Questie.SodItems() return stats.sodItems, sodItemSamples end
 
@@ -374,6 +387,9 @@ local function npcEntries(found, item, itemName, kind, list, sodItem)
     if kind == "npcDrop" then
         -- before the count, so a few real droppers don't vanish into a "many" source
         local reqLevel, itemLevel = get("Item", item, "requiredLevel"), get("Item", item, "itemLevel")
+        local original = item >= FOREVER_ITEM_FIRST and type(itemName) == "string" and originals[itemName:lower()]
+        -- not the required level: a levelless creature (Super Hogger) would borrow it and pass
+        if original and original > (type(itemLevel) == "number" and itemLevel or 0) then itemLevel = original end
         local kept = {}
         for _, npcID in ipairs(npcIDs) do
             local info = npc(npcID)
@@ -435,6 +451,12 @@ local function npcEntries(found, item, itemName, kind, list, sodItem)
         end
     end
     if #entry.npcs == 0 then return 0 end
+    if kind == "npcDrop" and zoneCount >= WORLD_ZONES then
+        entry.kind, entry.worldDrop, entry.mobs = "world", true, nil
+        entry.zones, entry.npcs = {}, {}
+        found[#found + 1] = entry
+        return 1, true
+    end
     entry.moreZones = zoneCount > #entry.zones or nil
     -- all in one zone, Index may tie it to a dungeon
     if zoneCount == 1 then zoneFields(entry, next(zoneSet)) end
@@ -649,6 +671,8 @@ local function scan()
         return
     end
     local list = ids(Util.SafeCall(lib.Item.GetAllIds))
+    -- classic items first, so their names are known when Forever's copies come up
+    table.sort(list)
     status.state, status.error = "scanning", nil
     stats.items, stats.equippable, stats.rewards, stats.quests, stats.hidden, stats.errors = #list, 0, 0, 0, 0, 0
     stats.vendors, stats.drops, stats.manyVendors, stats.manyDrops, stats.npcs = 0, 0, 0, 0, 0
@@ -662,7 +686,10 @@ local function scan()
     wipe(refQuests)
     wipe(keptSodQuests)
     wipe(sodItemSamples)
-    stats.sodItems = 0
+    wipe(originals)
+    wipe(itemNames)
+    wipe(skipReasons)
+    stats.sodItems, stats.worldDrops = 0, 0
     -- foreverNpcs has to be complete before any source is judged
     local questIDs = type(lib.Quest.GetAllIds) == "function" and Util.SafeCall(lib.Quest.GetAllIds) or nil
     foreverNpcs = type(questIDs) == "table" and {} or nil
@@ -715,6 +742,13 @@ local function scan()
             if equippable(id) then
                 stats.equippable = stats.equippable + 1
                 local itemName = get("Item", id, "name")
+                if type(itemName) == "string" then itemNames[id] = itemName end
+                local sodBefore, implausibleBefore, hiddenBefore = stats.sodSkipped, stats.implausible, stats.hidden
+                if id < ORIGINAL_LAST and type(itemName) == "string" then
+                    local key = itemName:lower()
+                    local ilvl = get("Item", id, "itemLevel")
+                    if type(ilvl) == "number" and not originals[key] then originals[key] = ilvl end
+                end
                 local rewards = get("Item", id, "questRewards")
                 local sodItem = foreverNpcs ~= nil and id >= SOD_ITEM_FIRST and id <= SOD_ITEM_LAST
                 local before = #found
@@ -742,9 +776,23 @@ local function scan()
                 stats.vendors = stats.vendors + sold
                 if found[#found] and found[#found].many and #found > before then stats.manyVendors = stats.manyVendors + 1 end
                 before = #found
-                local dropped = npcEntries(found, id, itemName, "npcDrop", get("Item", id, "npcDrops"), sodItem)
+                local dropped, world = npcEntries(found, id, itemName, "npcDrop", get("Item", id, "npcDrops"), sodItem)
                 stats.drops = stats.drops + dropped
-                if found[#found] and found[#found].many and #found > before then stats.manyDrops = stats.manyDrops + 1 end
+                if world then
+                    stats.worldDrops = stats.worldDrops + 1
+                elseif found[#found] and found[#found].many and #found > before then
+                    stats.manyDrops = stats.manyDrops + 1
+                end
+                if #found == itemStart then
+                    -- SoD first: its gear is often a joke drop too
+                    if stats.sodSkipped > sodBefore then
+                        skipReasons[id] = "sod"
+                    elseif stats.implausible > implausibleBefore then
+                        skipReasons[id] = "implausible"
+                    elseif stats.hidden > hiddenBefore then
+                        skipReasons[id] = "hidden"
+                    end
+                end
                 if sodItem and #found == itemStart and (type(rewards) == "table" or get("Item", id, "vendors")
                                                         or get("Item", id, "npcDrops")) then
                     stats.sodItems = stats.sodItems + 1

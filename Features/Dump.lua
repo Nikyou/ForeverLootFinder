@@ -199,6 +199,7 @@ function Dump.QuestieText()
                tostring(Questie.KindEnabled("vendors")), tostring(Questie.KindEnabled("drops"))))
     add(format("implausible creature drops skipped: %d (%d items left with no creature)", stats.implausible or 0,
                stats.implausibleItems or 0))
+    add(format("world drops (creatures in %d+ zones): %d items", 4, stats.worldDrops or 0))
     if Questie.SodRuleOn() then
         add(format("SoD-only vendors and creatures (ids 200000-244999 unused by Forever quests) skipped: %d sources from %d "
                    .. "NPCs; SoD-range NPCs Forever's quests use: %d (%d sources kept)", stats.sodSkipped or 0,

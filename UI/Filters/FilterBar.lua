@@ -142,7 +142,18 @@ local CHECKS = {
     reputation = atlasSource("reputation", L["Reputation rewards"], L["no reputation"]),
     pvp = atlasSource("pvp", L["PvP rewards"], L["no PvP"]),
     event = atlasSource("event", L["World events"], L["no world events"]),
-    world = atlasSource("world", L["World drops"], L["no world drops"]),
+    world = {
+        field = "world",
+        group = "sources",
+        default = true,
+        label = L["World drops"],
+        -- AtlasLoot's world epics, or QuestieDB's creature drops spread over many zones
+        usable = function(_, env)
+            if env.atlas or env.creatures then return true end
+            return false, {needs = {"AtlasLoot Classic", "Questie"}, reason = env.atlasWhy.reason or env.creatureWhy.reason}
+        end,
+        summary = {[false] = L["no world drops"]},
+    },
     faction = {field = "faction", default = false, label = L["Hide the other faction"],
                summary = {[false] = L["both factions"]}},
     chanceOn = {

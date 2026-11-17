@@ -171,7 +171,7 @@ function Filter.Context(state, character, opts)
     ctx.armor = state.armor or Classes.ArmorPreselect(ctx.class, ctx.level)
     ctx.weapons = state.weapons or Classes.WeaponPreselect(ctx.class)
     ctx.maxLevel = Filter.MaxLevel(state, ctx.level)
-    ctx.search = state.search and state.search:lower():gsub("^%s+", ""):gsub("%s+$", "") or ""
+    ctx.search = state.search and ns.Util.Lower(state.search):gsub("^%s+", ""):gsub("%s+$", "") or ""
     ctx.stats = state.stats
     ctx.wanted, ctx.excluded = statLists(state.stats)
     return ctx
@@ -263,7 +263,8 @@ function Filter.Sources(record, state, ctx, info)
                 ok = false
             end
         end
-        if ok and ctx.maxLevel and source.kind == "npcDrop" and source.levelMin and source.levelMin > ctx.maxLevel then
+        if ok and ctx.maxLevel and (source.kind == "npcDrop" or source.kind == "world") and source.levelMin
+          and source.levelMin > ctx.maxLevel then
             ok = false
         end
         if ok and ctx.maxLevel and source.reqLevel and source.reqLevel > ctx.maxLevel then ok = false end
@@ -392,8 +393,8 @@ function Filter.Evaluate(record, info, state, ctx, ignoreSlot, skipUpgrade)
 
     local search = ctx.search
     if search ~= "" then
-        local name = (info.name or record.name or ""):lower()
-        if not name:find(search, 1, true) and not (record.name or ""):lower():find(search, 1, true) then
+        local name = ns.Util.Lower(info.name or record.name or "")
+        if not name:find(search, 1, true) and not ns.Util.Lower(record.name or ""):find(search, 1, true) then
             return "fail", nil, "search"
         end
     end

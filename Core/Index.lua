@@ -168,7 +168,7 @@ local SOURCE_FIELDS = {
     "chanceFrom",
     -- count, ids and zones only on a "many" source
     "npcID", "npcName", "npcLevel", "npcs", "zone", "zones", "moreZones", "levelMin", "levelMax", "rare", "many", "count",
-    "creature",
+    "creature", "worldDrop",
 }
 
 -- FDJ knows Forever's dungeons best, Questie has quest IDs and levels, AtlasLoot has craft skill levels
@@ -323,6 +323,29 @@ end
 
 local LIST_KINDS = {reputation = true, pvp = true, event = true, world = true}
 
+-- AtlasLoot's world epics and QuestieDB's spread-out drops are the same thing: one line, AtlasLoot's section with
+-- QuestieDB's creature levels
+local function mergeWorld(record)
+    local first
+    local kept = {}
+    for _, source in ipairs(record.sources) do
+        if source.kind ~= "world" then
+            kept[#kept + 1] = source
+        elseif not first then
+            first = source
+            kept[#kept + 1] = source
+        else
+            if source.section and not first.section then first.section, first.provider = source.section, source.provider end
+            first.levelMin = math.min(first.levelMin or source.levelMin or 99, source.levelMin or first.levelMin or 99)
+            if first.levelMin == 99 then first.levelMin = nil end
+            first.levelMax = math.max(first.levelMax or 0, source.levelMax or 0)
+            if first.levelMax == 0 then first.levelMax = nil end
+            first.worldDrop = first.worldDrop or source.worldDrop
+        end
+    end
+    if #kept < #record.sources then record.sources = kept end
+end
+
 -- reputation pages also list quest rewards: take the quest's level so a done quest hides it too
 -- (Earthpower Vest on Cenarion Circle's page)
 local function crossCheckQuests(record)
@@ -382,6 +405,7 @@ function Index.Build(data, extras, priority)
     for _, record in ipairs(index.records) do
         shareChances(record)
         resolveOverlaps(record, priority, index.dungeonByKey)
+        mergeWorld(record)
         for _, source in ipairs(record.sources) do tieToPlace(source, index.placeByArea, index.dungeonByKey) end
         crossCheckQuests(record)
         if #record.sources > 1 then table.sort(record.sources, sourceOrder) end
