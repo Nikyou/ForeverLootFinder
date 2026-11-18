@@ -171,7 +171,7 @@ local SOURCE_FIELDS = {
     "npcID", "npcName", "npcLevel", "npcs", "zone", "zones", "moreZones", "levelMin", "levelMax", "rare", "many", "count",
     "creature", "worldDrop",
     -- FDJ: the halves of a combined item, an extremely rare drop, which trash drops it
-    "parts", "rareDrop", "sourceTip",
+    "parts", "rareDrop", "chanceGuess", "sourceTip",
 }
 
 -- FDJ knows Forever's dungeons best, Questie has quest IDs and levels, AtlasLoot has craft skill levels
@@ -210,17 +210,17 @@ local function rankOf(priority, group, provider)
     return 99
 end
 
--- FDJ has no drop chances, so its bosses borrow AtlasLoot's before the overlap drops one of them
+-- where FDJ has no drop chance its bosses borrow AtlasLoot's before the overlap drops one of them
 local function shareChances(record)
     local sources = record.sources
     if #sources < 2 then return end
     for _, from in ipairs(sources) do
-        if from.chance and not from.rareDrop and from.dungeon and Index.DROP_KINDS[from.kind] then
+        if from.chance and not from.chanceGuess and from.dungeon and Index.DROP_KINDS[from.kind] then
             local same, sameBoss = {}, nil
             local boss = lower(from.bossName)
             for _, to in ipairs(sources) do
                 if to ~= from and to.provider ~= from.provider and to.dungeon == from.dungeon and Index.DROP_KINDS[to.kind]
-                  and (not to.chance or to.rareDrop) then
+                  and (not to.chance or to.chanceGuess) then
                     same[#same + 1] = to
                     if boss and lower(to.bossName) == boss then sameBoss = to end
                 end

@@ -14,6 +14,13 @@ Tooltip.STAR = "|T" .. Tooltip.STAR_TEXTURE .. ":12:12|t"
 
 local isSecret = ns.Util.IsSecret
 
+-- "21%", "0.1%", "<0.1%"
+function Tooltip.ChanceText(chance)
+    if chance >= 10 then return format("%d%%", math.floor(chance + 0.5)) end
+    if chance >= 0.1 then return (format("%.1f", chance):gsub("%.0$", "")) .. "%" end
+    return "<0.1%"
+end
+
 function Tooltip.DungeonLabel(key, dungeonByKey)
     local dungeon = dungeonByKey and dungeonByKey[key]
     -- its provider may be turned off
@@ -122,11 +129,10 @@ function Tooltip.SourceText(source, dungeonByKey, withDungeon)
     if source.kind == "probable" then notes[#notes + 1] = L["unconfirmed"] end
     if source.sourceTip and source.sourceTip ~= source.bossName then notes[#notes + 1] = source.sourceTip end
     if source.faction then notes[#notes + 1] = source.faction == "Horde" and L["Horde"] or L["Alliance"] end
-    -- FDJ says "extremely rare", the chance behind it is only a stand-in
-    if source.rareDrop and not source.chanceFrom then
-        notes[#notes + 1] = L["extremely rare"]
-    elseif source.chance then
-        notes[#notes + 1] = format("%.1f%%", source.chance)
+    if source.rareDrop then notes[#notes + 1] = L["extremely rare"] end
+    -- without a real number FDJ's note says it all
+    if source.chance and not (source.chanceGuess and not source.chanceFrom) then
+        notes[#notes + 1] = Tooltip.ChanceText(source.chance)
     end
     if #notes > 0 then where = where .. " " .. MUTED .. "(" .. table.concat(notes, ", ") .. ")|r" end
     if withDungeon == false or source.dungeon == nil then return where end

@@ -318,7 +318,7 @@ function Row.Bind(button, data, opts)
         for _, source in ipairs(data.sources or record.sources) do
             if source.chance and (not best or source.chance > best) then best = source.chance end
         end
-        cells.chance:SetText(best and format("%.1f%%", best) or "")
+        cells.chance:SetText(best and Labels.Chance(best) or "")
     end
     if opts.price then
         -- nothing for bind on pickup, a dash for unseen

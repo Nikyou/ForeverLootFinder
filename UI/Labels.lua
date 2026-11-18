@@ -6,8 +6,7 @@ local Labels = {}
 
 function Labels.Chance(percent)
     if type(percent) ~= "number" then return "" end
-    if percent >= 10 or percent == math.floor(percent) then return format("%d%%", math.floor(percent + 0.5)) end
-    return format("%.1f%%", percent)
+    return ns.Tooltip.ChanceText(percent)
 end
 ns.Labels = Labels
 

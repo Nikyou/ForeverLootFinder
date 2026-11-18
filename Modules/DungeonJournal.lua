@@ -20,9 +20,10 @@ local KNOWN = {
     },
     loot = {"allTrash", "tip", "dropNote", "makes", "sourceTip"},
 }
--- FDJ's notes put Spellshock Leggings at 1/440 and Bloodletter Scalpel at 1/611
+-- a stand-in for FDJ's "extremely rare" note when it has no number (Spellshock Leggings was 1/440, Bloodletter
+-- Scalpel 1/611 in its notes)
 DungeonJournal.RARE_DROP_CHANCE = 0.2
--- FDJ has none of these yet
+-- on the loot row itself, in case FDJ ever puts it there. since 2.0.11 it's in FDJ.DROP_RATES instead
 DungeonJournal.CHANCE_KEYS = {"chance", "dropChance", "dropRate", "rate", "pct"}
 local QUEST_REWARD_FIELDS = {"rewardItems", "additionalRewardItems", "noteRewardItems"}
 
@@ -81,16 +82,20 @@ end
 
 local function count(map, key) map[key] = (map[key] or 0) + 1 end
 
-local function chanceOf(entry)
+-- FDJ.DROP_RATES[dungeon][boss][itemID] = %, from Wowhead Forever's kill counts (Classic's for bosses with few kills)
+local function chanceOf(entry, rates, base)
     for _, key in ipairs(DungeonJournal.CHANCE_KEYS) do
         local value = entry[key]
         if type(value) == "number" then return value end
     end
-    return nil
+    local byBoss = rates and base.dungeon and rates[base.dungeon]
+    local items = type(byBoss) == "table" and base.bossName and byBoss[base.bossName]
+    local value = type(items) == "table" and items[tonumber(entry[1])]
+    return type(value) == "number" and value or nil
 end
 
 -- tuple: {itemID, name, slot text, quality, mobs?, "RANDOM_ENCHANT"?, allTrash = true?, tip = {}?}
-local function lootEntry(item, base, unknown)
+local function lootEntry(item, base, unknown, rates)
     if type(item) ~= "table" then return nil end
     local entry = {}
     for key, value in pairs(base) do entry[key] = value end
@@ -102,10 +107,10 @@ local function lootEntry(item, base, unknown)
     entry.randomBonus = item[6] == "RANDOM_ENCHANT"
     entry.allTrash = item.allTrash == true
     if type(item.tip) == "table" then entry.tip = item.tip end
-    entry.chance = chanceOf(item)
+    entry.chance = chanceOf(item, rates, base)
     if item.dropNote == "EXTREMELY_RARE_DROP" then
         entry.rareDrop = true
-        entry.chance = entry.chance or DungeonJournal.RARE_DROP_CHANCE
+        if not entry.chance then entry.chance, entry.chanceGuess = DungeonJournal.RARE_DROP_CHANCE, true end
     end
     if type(item.sourceTip) == "string" and item.sourceTip ~= "" then entry.sourceTip = item.sourceTip end
     for key in pairs(item) do
@@ -180,6 +185,7 @@ function DungeonJournal.ReadData(fdj)
         end
     end
     local shared = type(fdj.SHARED_BY_BOSS) == "table" and fdj.SHARED_BY_BOSS or {}
+    local rates = type(fdj.DROP_RATES) == "table" and fdj.DROP_RATES or nil
 
     for order, key in ipairs(fdj.ORDER) do
         local dungeon = type(key) == "string" and fdj.DB[key]
@@ -240,7 +246,7 @@ function DungeonJournal.ReadData(fdj)
                             faction = faction,
                         }
                         for _, item in ipairs(type(boss.loot) == "table" and boss.loot or {}) do
-                            add(lootEntry(item, base, unknown))
+                            add(lootEntry(item, base, unknown, rates))
                             local made = type(item) == "table" and type(item.makes) == "table" and tonumber(item.makes[1])
                             if made and not combined[made] then
                                 combined[made] = true
@@ -255,7 +261,7 @@ function DungeonJournal.ReadData(fdj)
                             faction = faction,
                         }
                         for _, item in ipairs(type(boss.probableLoot) == "table" and boss.probableLoot or {}) do
-                            add(lootEntry(item, probableBase, unknown))
+                            add(lootEntry(item, probableBase, unknown, rates))
                         end
                     end
                 end
@@ -274,7 +280,7 @@ function DungeonJournal.ReadData(fdj)
                         kind = "shared",
                         faction = boss.faction,
                     }
-                    for _, item in ipairs(list) do add(lootEntry(item, base, unknown)) end
+                    for _, item in ipairs(list) do add(lootEntry(item, base, unknown, rates)) end
                 end
             end
             for _, quest in ipairs(type(dungeon.quests) == "table" and dungeon.quests or {}) do
