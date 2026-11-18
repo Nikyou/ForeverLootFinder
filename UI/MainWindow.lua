@@ -426,8 +426,8 @@ end
 
 function MainWindow.UpdateStatus()
     if not frame then return end
-    local done, total = ns.Items.Progress()
-    local busy = done < total or ns.Pawn.IsBusy()
+    local pending = ns.Items.Pending()
+    local busy = pending > 0 or ns.Pawn.IsBusy()
     local tick = busy and frame:IsShown()
     if tick and not frame.statusTicker then
         frame.statusTicker = C_Timer.NewTicker(1, function() ns.Guard(MainWindow.UpdateStatus) end)
@@ -437,9 +437,7 @@ function MainWindow.UpdateStatus()
     end
     if not frame:IsShown() then return end
     local parts = {}
-    if done < total then
-        parts[#parts + 1] = format(L["Loading items: %s / %s"], BreakUpLargeNumbers(done), BreakUpLargeNumbers(total))
-    end
+    if pending > 0 then parts[#parts + 1] = format(L["Loading %s items..."], BreakUpLargeNumbers(pending)) end
     if ns.Pawn.IsBusy() then parts[#parts + 1] = L["Pawn values..."] end
     if ns.inCombat then parts[#parts + 1] = L["Paused in combat"] end
     if MainWindow.shownCount then parts[#parts + 1] = format(L["%d items"], MainWindow.shownCount) end
@@ -541,9 +539,8 @@ ns.OnChange(function(kinds) MainWindow.Refresh(kinds) end)
 function MainWindow.OnOpen()
     -- a scale may have been edited while the window was closed
     if ns.Pawn.CheckScales() then ns.FireChange("pawn") end
-    ns.Items.Request(MainWindow.RecordsOfSlot(ns.Filters().slot), true)
-    ns.Items.Request(ns.GetIndex().records)
-    MainWindow.Refresh()
+    -- the tab asks for what it shows
+    MainWindow.Refresh({tab = true})
 end
 
 function MainWindow.Toggle()

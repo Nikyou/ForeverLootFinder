@@ -19,6 +19,8 @@ local later, laterHead, inLater = {}, 1, {}
 -- Pawn had nothing for these a few times this session (often not in the client's cache): left alone till next login
 local LATER_TRIES, LATER_RETRY = 3, 2
 local laterTries, noValue = {}, {}
+-- the other slots' items the client doesn't have: not queued again till ItemReady
+local waiting = {}
 local paused = false
 local listeners = {}
 local changePending = false
@@ -98,8 +100,16 @@ local function valueOf(item, scale)
 end
 
 -- nil: Pawn needs the item cached first
+-- Pawn reads the item through a tooltip, which asks the server again for one the client doesn't have
+local function clientHas(id)
+    if not C_Item.IsItemDataCachedByID then return true end
+    local ok, result = pcall(C_Item.IsItemDataCachedByID, id)
+    return not ok or result == true
+end
+
 function Pawn.Compute(id, scale)
     if not Pawn.Exists(scale) then return nil end
+    if not clientHas(id) then return nil, "uncached" end
     local ok, item = call("PawnGetItemData", "item:" .. id)
     if not ok then return nil end
     if type(item) ~= "table" then
@@ -206,7 +216,7 @@ function Pawn.Peek(id, scale)
     if value == nil then
         local key = scale .. ":" .. id
         if noValue[key] then return false end
-        if not position[key] and not inLater[key] then
+        if not position[key] and not inLater[key] and not waiting[key] then
             inLater[key] = true
             later[#later + 1] = {id = id, scale = scale, key = key}
         end
@@ -227,6 +237,7 @@ local function popLater()
 end
 
 local function pending() return live > 0 or laterHead <= #later end
+
 
 function Pawn.Forget(id)
     for _, byScale in pairs(values) do byScale[id] = nil end
@@ -263,6 +274,28 @@ local function round(value)
     return math.floor(value * 100 + 0.5) / 100
 end
 
+-- the item loader just got it: score it for the scales in use while the client surely has it
+function Pawn.ItemReady(id)
+    if not Pawn.IsReady() then return end
+    local any = false
+    for scale in pairs(signatures) do
+        local byScale = scaleValues(scale)
+        if byScale[id] == nil and Pawn.Exists(scale) then
+            local value = Pawn.Compute(id, scale)
+            if value ~= nil then
+                byScale[id] = round(value)
+                noValue[scale .. ":" .. id] = nil
+                waiting[scale .. ":" .. id] = nil
+                any = true
+            end
+        end
+    end
+    if any and not changePending then
+        changePending = true
+        C_Timer.After(0.5, notify)
+    end
+end
+
 local passStart
 function Pawn.Step()
     if paused or not pending() then return end
@@ -278,11 +311,19 @@ function Pawn.Step()
         end
         if not job then break end
         local started = Util.Clock()
-        local value = Pawn.Compute(job.id, job.scale)
+        local value, why = Pawn.Compute(job.id, job.scale)
         Pawn.timing.count = Pawn.timing.count + 1
         Pawn.timing.ms = Pawn.timing.ms + (Util.Clock() - started)
         if value ~= nil then
             scaleValues(job.scale)[job.id] = round(value)
+        elseif why == "uncached" then
+            -- the shown slot's: the item loader fetches it (within its limits). the other slots' wait till they're shown
+            -- or the client has them anyway. ItemReady scores it then
+            if fromLater then
+                waiting[job.key] = true
+            elseif ns.Items and ns.Items.Refetch then
+                ns.Items.Refetch(job.id)
+            end
         elseif fromLater then
             laterTries[job.key] = (laterTries[job.key] or 0) + 1
             if laterTries[job.key] >= LATER_TRIES then
@@ -326,6 +367,7 @@ function Pawn.ClearValues()
     wipe(inLater)
     wipe(laterTries)
     wipe(noValue)
+    wipe(waiting)
     live, laterHead = 0, 1
     cleared()
 end
@@ -347,6 +389,7 @@ function Pawn.CheckScales()
     if changed then
         wipe(laterTries)
         wipe(noValue)
+        wipe(waiting)
         cleared()
     end
     return changed

@@ -83,7 +83,8 @@ local function create(parent)
         button:HookScript("OnEnter", function(self)
             if not (ui.approximate and ui.approximate[slot] and slot ~= ns.Filters().slot) then return end
             if GameTooltip:GetOwner() ~= self then GameTooltip:SetOwner(self, "ANCHOR_RIGHT") end
-            GameTooltip:AddLine(L["~ Pawn is still working out some of these. The number may drop."], 1, 1, 1, true)
+            GameTooltip:AddLine(L["~ Some of these haven't loaded yet, or Pawn hasn't scored them. Open the slot to load them."],
+                                1, 1, 1, true)
             GameTooltip:Show()
         end)
         button:HookScript("OnLeave", function(self) if GameTooltip:GetOwner() == self then GameTooltip:Hide() end end)
@@ -98,11 +99,16 @@ local function refresh(ctx, kinds)
     if not index then return end
     local filters = ns.Filters()
     ctx = ctx or ns.FilterContext()
+    -- only the slot shown is asked for; QuestieDB and AtlasLoot may add items after it was
+    if (kinds and (kinds.tab or kinds.data)) or ui.requestedSlot ~= filters.slot then
+        ui.requestedSlot = filters.slot
+        ns.Items.Request(ns.MainWindow.RecordsOfSlot(filters.slot), true)
+    end
     local rows, counts, approximate = ns.Filter.RunWithCounts(index.records, ns.Items.Info, filters, ctx, filters.slot)
     ui.approximate = approximate
     for slot, button in pairs(ui.slots) do
         local count = counts[slot] or 0
-        -- items Pawn hasn't scored yet count as upgrades till then, so it can only drop
+        -- items not loaded or scored yet are a guess till the slot is opened
         local about = approximate and approximate[slot] and slot ~= filters.slot and count > 0
         button.count:SetText((about and "~" or "") .. count)
         button:SetRowSelected(slot == filters.slot)

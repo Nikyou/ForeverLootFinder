@@ -1,12 +1,15 @@
--- item data, loaded a slice per frame. Core/Cache.lua keeps it between sessions
+-- item data. only what's on screen is asked for (a slot, a tab's cards, the favourites); everything else comes from
+-- Core/Cache.lua, which keeps it between sessions, or waits till it's shown
 local _, ns = ...
 local Index, Restrictions, StatMap, Util = ns.Index, ns.Restrictions, ns.StatMap, ns.Util
 
 local Items = {}
 ns.Items = Items
 
-local MAX_REQUESTS = 80 -- per frame, the server answers at its own pace anyway
-local BURST_REQUESTS = 300 -- what's on screen, asked at once so the answers come in one go
+-- asked and not answered yet. more than this and the server starts dropping requests: no answer, then given up
+local MAX_IN_FLIGHT = 60
+local MAX_REQUESTS = 30 -- per frame
+local REFETCHES = 2 -- per item and session, for one the client dropped before it was finished
 local BUILD_MS = 4 -- leaves Pawn its share of the frame
 local BURST_BUILD_MS = 10
 local REDRAW_DELAY = 0.4
@@ -25,6 +28,8 @@ local failed = {} -- the server doesn't know it
 local seen = {}
 local tooltipTries = {}
 local askedAt, asks = {}, {}
+local inFlight = 0
+local refetches, refetchQueue, refetchHead = {}, {}, 1
 local gaveUp = {} -- no answer after ANSWER_TRIES requests
 local started = false -- the window was opened
 local tracked = {} -- ids in the index
@@ -49,6 +54,28 @@ local timing = Items.timing
 local isSecret = Util.IsSecret
 
 local function isDone(id) return seen[id] or failed[id] or gaveUp[id] end
+
+local function ask(id)
+    if not askedAt[id] then inFlight = inFlight + 1 end
+    askedAt[id] = GetTime()
+    -- may fire GET_ITEM_INFO_RECEIVED synchronously
+    pcall(C_Item.RequestLoadItemDataByID, id)
+end
+
+local function settle(id)
+    if askedAt[id] then
+        askedAt[id] = nil
+        inFlight = inFlight - 1
+    end
+end
+
+-- false: the client doesn't have it. calling GetItemInfo then asks the server again, every time
+local function clientHas(id)
+    if not C_Item.IsItemDataCachedByID then return nil end
+    local ok, result = pcall(C_Item.IsItemDataCachedByID, id)
+    if not ok then return nil end
+    return result == true
+end
 
 -- every way an item becomes done goes through here, or the count drifts
 local function markDone(set, id)
@@ -84,7 +111,7 @@ local changePending, pendingSince, lastChange = false, 0, 0
 local function notify()
     changePending = false
     timing.redraws = timing.redraws + 1
-    if not timing.loadDone and timing.loadStarted and doneCount >= trackedCount and not buildWork() then
+    if not timing.loadDone and timing.loadStarted and Items.Pending() == 0 and not buildWork() then
         timing.loadDone = GetTime()
     end
     for _, fn in ipairs(listeners) do ns.Guard(fn) end
@@ -222,6 +249,11 @@ local function build(record, quick)
         info.missing = failed[id] and "failed" or "noanswer"
         return info
     end
+    -- not loaded yet, or dropped again: the request queue asks, the answer builds it
+    if clientHas(id) == false then
+        info.name, info.quality = record.name, record.quality
+        return info
+    end
     local name, link, quality, ilvl, minLevel, _, _, _, _, texture, _, _, _, bindType, _, setID = C_Item.GetItemInfo(id)
     if name and not isSecret(name) then
         markDone(seen, id)
@@ -318,7 +350,7 @@ function Items.Info(record, now)
     if info.partial then markDirty(id) end
     if old and old.loaded and not info.loaded and not failed[id] then
         -- evicted from the client cache: keep what we had, ask again only if it wasn't finished
-        if not complete(old) then pcall(C_Item.RequestLoadItemDataByID, id) end
+        if not complete(old) then Items.Refetch(id) end
         return old
     end
     if not info.partial then keep(id, info) end
@@ -385,8 +417,6 @@ function Items.Track(index)
             if isDone(id) then doneCount = doneCount + 1 end
         end
     end
-    -- Questie and AtlasLoot often finish after the window opened
-    if started then Items.Request(index.records) end
 end
 
 function Items.Tracked() return trackedCount > 0 and tracked or nil end
@@ -407,6 +437,12 @@ function Items.Request(records, isUrgent)
     for _, record in ipairs(records) do
         local id = record.id
         if id and id > 0 then
+            -- a favourite no addon lists isn't in the index, its answer still has to find it
+            if not tracked[id] then
+                tracked[id], recordOf[id] = true, record
+                trackedCount = trackedCount + 1
+                if isDone(id) then doneCount = doneCount + 1 end
+            end
             if isUrgent then
                 hurry[id] = true
                 if dirty[id] and deferred then buildFirst[#buildFirst + 1] = id end
@@ -428,21 +464,13 @@ function Items.Request(records, isUrgent)
     if wake then wake() end
 end
 
-local function cached(id)
-    if C_Item.IsItemDataCachedByID then
-        local ok, result = pcall(C_Item.IsItemDataCachedByID, id)
-        if ok then return result == true end
-    end
-    return C_Item.GetItemInfo(id) ~= nil
-end
-
 local head = 1
 local function nextID()
     while urgentHead <= #urgent do
         local id = urgent[urgentHead]
         urgentHead = urgentHead + 1
         inUrgent[id] = nil
-        if not requested[id] then return id, true end
+        if not requested[id] then return id end
     end
     wipe(urgent)
     urgentHead = 1
@@ -453,32 +481,66 @@ local function nextID()
     return nil
 end
 
+-- the answer builds it right away: a build later may find the client has dropped it again
+local function built(id)
+    local record = recordOf[id]
+    if not record then return end
+    dirty[id] = true
+    ns.Guard(Items.Info, record, true)
+    if ns.Pawn and ns.Pawn.ItemReady then ns.Guard(ns.Pawn.ItemReady, id) end
+end
+
+-- once more for an item the client dropped before it was finished (or Pawn could read it), a few times a session
+function Items.Refetch(id)
+    if not tracked[id] or failed[id] or gaveUp[id] or askedAt[id] then return end
+    local count = refetches[id] or 0
+    if count >= REFETCHES then return end
+    refetches[id] = count + 1
+    refetchQueue[#refetchQueue + 1] = id
+    if wake then wake() end
+end
+
+local function nextRefetch()
+    while refetchHead <= #refetchQueue do
+        local id = refetchQueue[refetchHead]
+        refetchHead = refetchHead + 1
+        if not askedAt[id] then return id end
+    end
+    wipe(refetchQueue)
+    refetchHead = 1
+    return nil
+end
+
 local function step()
     if paused then return end
-    local burst = urgentHead <= #urgent
-    local left = Util.BackgroundLeft(burst)
+    local left = Util.BackgroundLeft(urgentHead <= #urgent)
     if left <= 0 then return end
     local clock = Util.Clock()
     local sent = 0
-    while sent < (burst and BURST_REQUESTS or MAX_REQUESTS) and Util.Clock() - clock < left do
-        local id, fromUrgent = nextID()
-        if not id then break end
-        -- the urgent list ran out mid-frame: the rest at the normal pace
-        if burst and not fromUrgent then
-            burst = false
-            if sent >= MAX_REQUESTS then break end
-        end
-        if not requested[id] then
-            requested[id] = true
+    while sent < MAX_REQUESTS and inFlight < MAX_IN_FLIGHT and Util.Clock() - clock < left do
+        local id = nextID()
+        if id then
+            if not requested[id] then
+                requested[id] = true
+                sent = sent + 1
+                if clientHas(id) ~= false and C_Item.GetItemInfo(id) then
+                    markDone(seen, id)
+                    built(id)
+                    scheduleChange()
+                else
+                    asks[id] = 1
+                    ask(id)
+                end
+            end
+        else
+            id = nextRefetch()
+            if not id then break end
             sent = sent + 1
-            if cached(id) then
-                markDone(seen, id)
-                markDirty(id)
+            if clientHas(id) then
+                built(id)
                 scheduleChange()
             else
-                askedAt[id], asks[id] = GetTime(), 1
-                -- may fire GET_ITEM_INFO_RECEIVED synchronously, which only marks and schedules
-                pcall(C_Item.RequestLoadItemDataByID, id)
+                ask(id)
             end
         end
     end
@@ -500,23 +562,23 @@ local function checkWaiting()
     lastCheck = now
     local changed = false
     for id, at in pairs(askedAt) do
-        if seen[id] or failed[id] or gaveUp[id] then
-            askedAt[id] = nil
+        if failed[id] or gaveUp[id] then
+            settle(id)
         elseif now - at > ANSWER_TIMEOUT then
-            if cached(id) then
+            if clientHas(id) then
                 markDone(seen, id)
-                markDirty(id)
-                askedAt[id] = nil
+                settle(id)
+                built(id)
                 changed = true
             elseif (asks[id] or 1) >= ANSWER_TRIES then
-                markDone(gaveUp, id)
+                -- a refetch of an item seen before isn't given up: it just stays as it was
+                if not seen[id] then markDone(gaveUp, id) end
+                settle(id)
                 markDirty(id)
-                askedAt[id] = nil
                 changed = true
             else
                 asks[id] = (asks[id] or 1) + 1
-                askedAt[id] = now
-                pcall(C_Item.RequestLoadItemDataByID, id)
+                ask(id)
             end
         end
     end
@@ -529,6 +591,7 @@ end
 
 function Items.OnItemInfo(id, success)
     if isSecret(id) or type(id) ~= "number" or not tracked[id] then return end
+    settle(id)
     -- someone else asked for an item already built (another addon, or the client refilling its cache)
     local record = recordOf[id]
     local info = record and cache[record.key]
@@ -541,6 +604,7 @@ function Items.OnItemInfo(id, success)
             markDone(seen, id)
             failed[id], gaveUp[id] = nil, nil
         end
+        if ns.Pawn and ns.Pawn.ItemReady then ns.Guard(ns.Pawn.ItemReady, id) end
         return
     end
     -- the server said so already
@@ -551,16 +615,23 @@ function Items.OnItemInfo(id, success)
     if success == false then
         if seen[id] then return end
         markDone(failed, id)
+        gaveUp[id] = nil
+        markDirty(id)
     else
         markDone(seen, id)
-        failed[id] = nil
+        failed[id], gaveUp[id] = nil, nil
+        built(id)
     end
-    gaveUp[id] = nil
-    markDirty(id)
     scheduleChange()
 end
 
 function Items.Progress() return doneCount, trackedCount end
+
+-- what's asked for and not in yet: the status line's "loading"
+function Items.Pending()
+    return math.max(0, #urgent - urgentHead + 1) + math.max(0, #queue - head + 1) + inFlight
+           + math.max(0, #refetchQueue - refetchHead + 1)
+end
 
 -- loaded, failed, noanswer, waiting or queued
 function Items.LoadState(id)
@@ -575,7 +646,8 @@ function Items.QueueInfo()
     local toBuild = 0
     for _ in pairs(dirty) do toBuild = toBuild + 1 end
     return {queued = math.max(0, #queue - head + 1), urgent = math.max(0, #urgent - urgentHead + 1), started = started,
-            paused = paused, toBuild = toBuild}
+            paused = paused, toBuild = toBuild, inFlight = inFlight,
+            refetches = math.max(0, #refetchQueue - refetchHead + 1)}
 end
 
 function Items.Waiting()
@@ -595,7 +667,9 @@ function Items.SetPaused(value)
     end
 end
 
-local function busy() return urgentHead <= #urgent or head <= #queue or next(askedAt) ~= nil end
+local function busy()
+    return urgentHead <= #urgent or head <= #queue or refetchHead <= #refetchQueue or next(askedAt) ~= nil
+end
 
 function Items.Init()
     deferred = true

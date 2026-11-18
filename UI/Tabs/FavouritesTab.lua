@@ -84,6 +84,12 @@ local function refresh(ctx, kinds)
             rows[#rows + 1] = {record = stub, info = info, status = status, sources = {}}
         end
     end
+    if (kinds and (kinds.tab or kinds.data)) or ui.requestedFor ~= key then
+        ui.requestedFor = key
+        local wanted = {}
+        for _, row in ipairs(rows) do wanted[#wanted + 1] = row.record end
+        ns.Items.Request(wanted, true)
+    end
     local function placeOf(source)
         if not source then return "?", L["Other"], 9999 end
         if source.dungeon then
