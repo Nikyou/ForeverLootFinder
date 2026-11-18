@@ -1,4 +1,7 @@
 #### 1.2
+* Fixed the game slowing down while items load: items were asked for again and again when the game had already dropped them, and Pawn did the same for items it scored.
+* Items are asked for at the server's pace, so far fewer end up with no answer.
+* Only what you're looking at is loaded: the selected slot, the open tab or your favourites. Everything else shows what was saved last time, Pawn scores included, until you open it.
 * Dungeon drop chances now come from DungeonJournal (2.0.11 or later), measured on Forever. AtlasLoot's fill in where it has none.
 * "Extremely rare" drops show their real chance too.
 
