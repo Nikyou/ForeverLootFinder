@@ -449,26 +449,30 @@ end
 
 -- rows of one slot and the rail's counts in one pass. the Pawn upgrade check is the slow part, so only the
 -- shown slot gets it; the third result says the other counts skipped it
--- third result: the slots whose count is a guess ("Pawn upgrades only" with values still missing), or false.
--- only the selected slot asks Pawn first, the others use what's known and queue the rest behind it
+-- third result: the other slots whose count is a guess, or false. items there load when the slot is shown, and
+-- "Pawn upgrades only" uses the values Pawn has, queueing the rest behind the selected slot's
 function Filter.RunWithCounts(records, infoOf, state, ctx, slot)
     local rows, counts, approximate = {}, {}, false
     local peek = slot ~= nil and state.pawnUpgradesOnly and ctx.pawnUpgrade ~= nil
+    local function rough(itemSlot)
+        approximate = approximate or {}
+        approximate[itemSlot] = true
+    end
     for _, record in ipairs(records) do
         local info = infoOf(record)
         local itemSlot = info.slot
         if itemSlot then
-            local other = peek and itemSlot ~= slot
+            local elsewhere = slot ~= nil and itemSlot ~= slot
+            local other = peek and elsewhere
             local status, sources = Filter.Evaluate(record, info, state, ctx, true, other)
             local shows = Filter.Shows(status, ctx)
+            -- an item with no ID never loads, it isn't a guess
+            local loadable = record.id and record.id > 0
+            if elsewhere and status == "unknown" and loadable then rough(itemSlot) end
             if shows and other then
                 local upgrade = ctx.pawnUpgradePeek and ctx.pawnUpgradePeek(record, info)
                 if upgrade == nil then
-                    -- only what Pawn can still score makes it rough: no ID or not loaded is the loading's business
-                    if record.id and record.id > 0 and info.loaded then
-                        approximate = approximate or {}
-                        approximate[itemSlot] = true
-                    end
+                    if loadable then rough(itemSlot) end
                 elseif upgrade <= 0 then
                     shows = false
                 end
