@@ -372,16 +372,16 @@ L["Reread Pawn values (after editing a scale)"] = "Перечитать оцен
 L["Filters"] = "Фильтры"
 L["Reset"] = "Сброс"
 L["Reset filters to class defaults"] = "Сбросить фильтры к стандартным для класса"
-L["Loading items: %s / %s"] = "Загрузка предметов: %s / %s"
 L["Pawn values..."] = "Оценки Pawn..."
 L["Paused in combat"] = "Пауза: идёт бой"
 L["%d items"] = "Предметов: %d"
 L["Nothing to list yet."] = "Пока нечего показать."
+L["Loading %s items..."] = "Загрузка предметов: %s..."
 
 -- UI/Tabs/SlotTab.lua
 L["No items match the filters."] = "Нет предметов под эти фильтры."
 L["By slot"] = "По ячейкам"
-L["~ Pawn is still working out some of these. The number may drop."] = "~ Pawn ещё считает часть предметов. Число может уменьшиться."
+L["~ Some of these haven't loaded yet, or Pawn hasn't scored them. Open the slot to load them."] = "~ Часть предметов ещё не загружена или не оценена Pawn. Откройте ячейку, чтобы загрузить их."
 
 -- UI/Tabs/DungeonTab.lua
 L["All slots"] = "Все ячейки"

@@ -372,16 +372,16 @@ if not L then return end
 -- L["Filters"] = true -- Translation missing
 -- L["Reset"] = true -- Translation missing
 -- L["Reset filters to class defaults"] = true -- Translation missing
--- L["Loading items: %s / %s"] = true -- Translation missing
 -- L["Pawn values..."] = true -- Translation missing
 -- L["Paused in combat"] = true -- Translation missing
 -- L["%d items"] = true -- Translation missing
 -- L["Nothing to list yet."] = true -- Translation missing
+-- L["Loading %s items..."] = true -- Translation missing
 
 -- UI/Tabs/SlotTab.lua
 -- L["No items match the filters."] = true -- Translation missing
 -- L["By slot"] = true -- Translation missing
--- L["~ Pawn is still working out some of these. The number may drop."] = true -- Translation missing
+-- L["~ Some of these haven't loaded yet, or Pawn hasn't scored them. Open the slot to load them."] = true -- Translation missing
 
 -- UI/Tabs/DungeonTab.lua
 -- L["All slots"] = true -- Translation missing

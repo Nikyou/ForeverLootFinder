@@ -372,16 +372,16 @@ L["Reread Pawn values (after editing a scale)"] = true
 L["Filters"] = true
 L["Reset"] = true
 L["Reset filters to class defaults"] = true
-L["Loading items: %s / %s"] = true
 L["Pawn values..."] = true
 L["Paused in combat"] = true
 L["%d items"] = true
 L["Nothing to list yet."] = true
+L["Loading %s items..."] = true
 
 -- UI/Tabs/SlotTab.lua
 L["No items match the filters."] = true
 L["By slot"] = true
-L["~ Pawn is still working out some of these. The number may drop."] = true
+L["~ Some of these haven't loaded yet, or Pawn hasn't scored them. Open the slot to load them."] = true
 
 -- UI/Tabs/DungeonTab.lua
 L["All slots"] = true
