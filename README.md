@@ -11,7 +11,7 @@
 
 Forever Loot Finder gets its item lists from other addons. It works without them, but then has little to show. The more of these you have, the more it lists:
 
-* **DungeonJournal**: Forever's dungeons with their bosses, loot and quests.
+* **DungeonJournal**: Forever's dungeons with their bosses, loot, drop chances and quests.
 * **Questie**: quest rewards, vendors, creature drops and world drops.
 * **AtlasLoot Classic Forever**: raids and world bosses, crafted gear, reputation, PvP and event rewards, world drops, drop chances, and BiS lists you can add to your favourites.
 * **Attune**: quest rewards the others miss.
