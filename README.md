@@ -73,5 +73,5 @@ Forever Loot Finder reads its data from these addons. Thanks to their authors.
 * [Pawn](https://www.curseforge.com/wow/addons/pawn) by Vger
 * [Syndicator](https://www.curseforge.com/wow/addons/syndicator) and [Baganator](https://www.curseforge.com/wow/addons/baganator) by plusmouse
 * [Auctionator](https://www.curseforge.com/wow/addons/auctionator) by plusmouse and Borjamacare
-* Attune by CixiDelmont
-* SilverDragon by Kemayo
+* [Attune](https://www.curseforge.com/wow/addons/attune) by CixiDelmont
+* [Silver Dragon](https://www.curseforge.com/wow/addons/silver-dragon) by Kemayo
