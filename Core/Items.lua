@@ -579,6 +579,13 @@ local function checkWaiting()
     if now - lastCheck < CHECK_EVERY then return end
     lastCheck = now
     local changed = false
+    -- recounted, so a count that ever drifted can't hold back every request after it
+    local count = 0
+    for _ in pairs(askedAt) do count = count + 1 end
+    if count ~= inFlight then
+        timing.recounts = (timing.recounts or 0) + 1
+        inFlight = count
+    end
     for id, at in pairs(askedAt) do
         if failed[id] or gaveUp[id] then
             settle(id)
@@ -647,12 +654,13 @@ function Items.Progress() return doneCount, trackedCount end
 
 -- for /flf dump pawn: where an item is in loading
 function Items.Diagnose(id)
-    local hasIt
+    local hasIt = "no API"
     if C_Item.IsItemDataCachedByID then
         local ok, result = pcall(C_Item.IsItemDataCachedByID, id)
-        hasIt = ok and result or nil
+        if ok then hasIt = tostring(result) else hasIt = "error" end
     end
-    return {state = (Items.LoadState(id)), client = hasIt, refetches = refetches[id] or 0, waiting = askedAt[id] ~= nil}
+    return {state = (Items.LoadState(id)), client = hasIt, refetches = refetches[id] or 0, waiting = askedAt[id] ~= nil,
+            requested = requested[id] == true, urgent = inUrgent[id] == true, tracked = tracked[id] == true}
 end
 
 -- what's asked for and not in yet: the status line's "loading"
@@ -674,7 +682,7 @@ function Items.QueueInfo()
     local toBuild = 0
     for _ in pairs(dirty) do toBuild = toBuild + 1 end
     return {queued = math.max(0, #queue - head + 1), urgent = math.max(0, #urgent - urgentHead + 1), started = started,
-            paused = paused, toBuild = toBuild, inFlight = inFlight,
+            paused = paused, toBuild = toBuild, inFlight = inFlight, recounts = timing.recounts or 0,
             refetches = math.max(0, #refetchQueue - refetchHead + 1)}
 end
 

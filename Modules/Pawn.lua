@@ -316,6 +316,7 @@ end
 -- for /flf dump pawn, no side effects
 function Pawn.Known(id, scale) return scale and values[scale] and values[scale][id] end
 function Pawn.ReadyTries(id) return readyTries[id] or 0 end
+function Pawn.Waiting(id, scale) return scale ~= nil and waiting[scale .. ":" .. id] == true end
 
 local passStart
 function Pawn.Step()
