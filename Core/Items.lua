@@ -17,7 +17,9 @@ local BURST_BUILD_MS = 10
 local REDRAW_DELAY = 0.4
 local REDRAW_MAX_WAIT = 2 -- during a long burst
 local TOOLTIP_RETRIES, TOOLTIP_RETRY_DELAY = 5, 1
-local ANSWER_TIMEOUT, ANSWER_TRIES, CHECK_EVERY = 15, 3, 5
+-- the server answers in well under a second, or never (an item it won't talk about). one that never answers holds a
+-- place among the requests in flight, so it's given up soon
+local ANSWER_TIMEOUT, ANSWER_TRIES, CHECK_EVERY = 5, 2, 1
 local UNKNOWN_ICON = 134400
 
 local BIND = {[1] = "BOP", [2] = "BOE", [3] = "BOU", [4] = "QUEST"}
@@ -536,8 +538,19 @@ local function step()
     local clock = Util.Clock()
     local sent = 0
     while sent < MAX_REQUESTS and inFlight < MAX_IN_FLIGHT and Util.Clock() - clock < left do
-        local id = nextID()
+        -- a refetch is for something on screen that needs it now (Pawn, or a row that lost its data): first
+        local id = nextRefetch()
         if id then
+            sent = sent + 1
+            if clientHas(id) then
+                built(id)
+                scheduleChange()
+            else
+                ask(id)
+            end
+        else
+            id = nextID()
+            if not id then break end
             if not requested[id] then
                 requested[id] = true
                 sent = sent + 1
@@ -549,16 +562,6 @@ local function step()
                     asks[id] = 1
                     ask(id)
                 end
-            end
-        else
-            id = nextRefetch()
-            if not id then break end
-            sent = sent + 1
-            if clientHas(id) then
-                built(id)
-                scheduleChange()
-            else
-                ask(id)
             end
         end
     end

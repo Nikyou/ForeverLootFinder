@@ -55,7 +55,6 @@ local function selectSlot(slot)
     local filters = ns.Filters()
     if filters.slot == slot then return end
     filters.slot = slot
-    ns.Items.Request(ns.MainWindow.RecordsOfSlot(slot), true)
     ns.FireChange("filters")
 end
 
@@ -99,12 +98,15 @@ local function refresh(ctx, kinds)
     if not index then return end
     local filters = ns.Filters()
     ctx = ctx or ns.FilterContext()
-    -- only the slot shown is asked for; QuestieDB and AtlasLoot may add items after it was
-    if (kinds and (kinds.tab or kinds.data)) or ui.requestedSlot ~= filters.slot then
-        ui.requestedSlot = filters.slot
-        ns.Items.Request(ns.MainWindow.RecordsOfSlot(filters.slot), true)
-    end
     local rows, counts, approximate = ns.Filter.RunWithCounts(index.records, ns.Items.Info, filters, ctx, filters.slot)
+    -- only the rows shown are asked for, not the slot's items the filters hide. again when the filters change, or
+    -- QuestieDB and AtlasLoot add items after the slot was opened
+    if (kinds and (kinds.tab or kinds.data or kinds.filters)) or ui.requestedSlot ~= filters.slot then
+        ui.requestedSlot = filters.slot
+        local wanted = {}
+        for _, row in ipairs(rows) do wanted[#wanted + 1] = row.record end
+        ns.Items.Request(wanted, true)
+    end
     ui.approximate = approximate
     for slot, button in pairs(ui.slots) do
         local count = counts[slot] or 0

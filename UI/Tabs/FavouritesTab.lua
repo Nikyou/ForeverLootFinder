@@ -84,7 +84,7 @@ local function refresh(ctx, kinds)
             rows[#rows + 1] = {record = stub, info = info, status = status, sources = {}}
         end
     end
-    if (kinds and (kinds.tab or kinds.data)) or ui.requestedFor ~= key then
+    if (kinds and (kinds.tab or kinds.data or kinds.filters)) or ui.requestedFor ~= key then
         ui.requestedFor = key
         local wanted = {}
         for _, row in ipairs(rows) do wanted[#wanted + 1] = row.record end

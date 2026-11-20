@@ -273,7 +273,7 @@ function Cards.Tab(spec)
         ui.view:Render(list, ns.MainWindow.RowOptions(nil, nil, ctx))
         -- new data keeps the scroll position
         if (kinds and kinds.tab) or ui.shownSlot ~= slot then ui.view:ScrollToTop() end
-        if (kinds and (kinds.tab or kinds.data)) or ui.shownSlot ~= slot then
+        if (kinds and (kinds.tab or kinds.data or kinds.filters)) or ui.shownSlot ~= slot then
             -- only this tab's items are asked for, card by card, top first: the first dungeon (raid, zone) fills in
             -- before the next
             local records = {}
