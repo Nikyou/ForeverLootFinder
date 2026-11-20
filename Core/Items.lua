@@ -9,7 +9,9 @@ ns.Items = Items
 -- asked and not answered yet. more than this and the server starts dropping requests: no answer, then given up
 local MAX_IN_FLIGHT = 60
 local MAX_REQUESTS = 30 -- per frame
-local REFETCHES = 2 -- per item and session, for one the client dropped before it was finished
+-- per item and view (opening a slot or tab again allows more), for one the client dropped before it was finished or
+-- before Pawn could read it
+local REFETCHES = 2
 local BUILD_MS = 4 -- leaves Pawn its share of the frame
 local BURST_BUILD_MS = 10
 local REDRAW_DELAY = 0.4
@@ -442,6 +444,7 @@ function Items.Request(records, isUrgent)
         wipe(urgent)
         wipe(inUrgent)
         firstHead, urgentHead = 1, 1
+        if ns.Pawn and ns.Pawn.ResetWaiting then ns.Pawn.ResetWaiting() end
     end
     local later = {}
     for _, record in ipairs(records) do
@@ -456,6 +459,7 @@ function Items.Request(records, isUrgent)
             if isUrgent then
                 hurry[id] = true
                 if dirty[id] and deferred then buildFirst[#buildFirst + 1] = id end
+                refetches[id] = nil
             end
             if requested[id] then
             elseif isUrgent then
@@ -501,9 +505,12 @@ local function built(id)
     if ns.Pawn and ns.Pawn.ItemReady then ns.Guard(ns.Pawn.ItemReady, id) end
 end
 
--- once more for an item the client dropped before it was finished (or Pawn could read it), a few times a session
+-- once more for an item the client dropped before it was finished (or Pawn could read it). one the server didn't
+-- answer earlier may still show from the cache, it's worth asking again
 function Items.Refetch(id)
-    if not tracked[id] or failed[id] or gaveUp[id] or askedAt[id] then return end
+    if not tracked[id] or failed[id] or askedAt[id] then return end
+    local record = recordOf[id]
+    if gaveUp[id] and not (record and cache[record.key] and cache[record.key].loaded) then return end
     local count = refetches[id] or 0
     if count >= REFETCHES then return end
     refetches[id] = count + 1
@@ -637,6 +644,16 @@ function Items.OnItemInfo(id, success)
 end
 
 function Items.Progress() return doneCount, trackedCount end
+
+-- for /flf dump pawn: where an item is in loading
+function Items.Diagnose(id)
+    local hasIt
+    if C_Item.IsItemDataCachedByID then
+        local ok, result = pcall(C_Item.IsItemDataCachedByID, id)
+        hasIt = ok and result or nil
+    end
+    return {state = (Items.LoadState(id)), client = hasIt, refetches = refetches[id] or 0, waiting = askedAt[id] ~= nil}
+end
 
 -- what's asked for and not in yet: the status line's "loading"
 function Items.Pending()

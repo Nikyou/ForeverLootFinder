@@ -203,9 +203,13 @@ end
 function Pawn.Lookup(id, scale)
     if not id or id <= 0 or not scale then return nil end
     local value = scaleValues(scale)[id]
-    if value == nil then want(id, scale) end
+    -- one Pawn couldn't read waits for its data (ItemReady) or the next view, it isn't queued on every redraw
+    if value == nil and not waiting[scale .. ":" .. id] then want(id, scale) end
     return value
 end
+
+-- a slot or tab opened: what waited is tried again
+function Pawn.ResetWaiting() wipe(waiting) end
 
 function Pawn.Value(id, scale) return Pawn.Lookup(id, scale) or nil end
 
@@ -275,9 +279,13 @@ local function round(value)
 end
 
 -- the item loader just got it: score it for the scales in use while the client surely has it
+local READY_TRIES, READY_RETRY = 4, 0.5
+local readyTries = {}
+
+-- Pawn reads a tooltip, and its lines can come a moment after the item's data: a few more tries then
 function Pawn.ItemReady(id)
     if not Pawn.IsReady() then return end
-    local any = false
+    local any, missing = false, false
     for scale in pairs(signatures) do
         local byScale = scaleValues(scale)
         if byScale[id] == nil and Pawn.Exists(scale) then
@@ -287,14 +295,27 @@ function Pawn.ItemReady(id)
                 noValue[scale .. ":" .. id] = nil
                 waiting[scale .. ":" .. id] = nil
                 any = true
+            else
+                missing = true
             end
         end
+    end
+    if missing then
+        local tries = (readyTries[id] or 0) + 1
+        readyTries[id] = tries
+        if tries < READY_TRIES then C_Timer.After(READY_RETRY, function() ns.Guard(Pawn.ItemReady, id) end) end
+    else
+        readyTries[id] = nil
     end
     if any and not changePending then
         changePending = true
         C_Timer.After(0.5, notify)
     end
 end
+
+-- for /flf dump pawn, no side effects
+function Pawn.Known(id, scale) return scale and values[scale] and values[scale][id] end
+function Pawn.ReadyTries(id) return readyTries[id] or 0 end
 
 local passStart
 function Pawn.Step()
@@ -303,6 +324,7 @@ function Pawn.Step()
     if left <= 0 then return end
     local clock = Util.Clock()
     passStart = passStart or clock
+    local stored = 0
     repeat
         local job = pop()
         local fromLater = false
@@ -316,15 +338,18 @@ function Pawn.Step()
         Pawn.timing.ms = Pawn.timing.ms + (Util.Clock() - started)
         if value ~= nil then
             scaleValues(job.scale)[job.id] = round(value)
+            stored = stored + 1
         elseif why == "uncached" then
             -- the shown slot's: the item loader fetches it (within its limits). the other slots' wait till they're shown
             -- or the client has them anyway. ItemReady scores it then
-            if fromLater then
-                waiting[job.key] = true
-            elseif ns.Items and ns.Items.Refetch then
-                ns.Items.Refetch(job.id)
-            end
-        elseif fromLater then
+            waiting[job.key] = true
+            if not fromLater and ns.Items and ns.Items.Refetch then ns.Items.Refetch(job.id) end
+        elseif not fromLater then
+            -- the client has it but Pawn got nothing: its tooltip may be a moment behind
+            waiting[job.key] = true
+            local id = job.id
+            C_Timer.After(READY_RETRY, function() ns.Guard(Pawn.ItemReady, id) end)
+        else
             laterTries[job.key] = (laterTries[job.key] or 0) + 1
             if laterTries[job.key] >= LATER_TRIES then
                 noValue[job.key] = true
@@ -342,7 +367,8 @@ function Pawn.Step()
         Pawn.timing.lastPassMs = Util.Clock() - passStart
         passStart = nil
     end
-    if not changePending then
+    -- only new values redraw: a redraw asks again, and nothing new would only go round
+    if stored > 0 and not changePending then
         changePending = true
         C_Timer.After(pending() and 1 or 0.3, notify)
     end
