@@ -337,8 +337,13 @@ function Filter.Evaluate(record, info, state, ctx, ignoreSlot, skipUpgrade)
         if not ctx.weapons[itemType] then return "fail", nil, "weapon" end
     end
 
-    local quality = info.quality or record.quality or 0
-    if quality < (state.minQuality or 0) then return "fail", nil, "quality" end
+    -- not known till it loads: unknown, not a fail, or a row hidden for it would never be asked for
+    local quality = info.quality or record.quality
+    if quality == nil and record.id and record.id > 0 and not info.loaded then
+        unknown = true
+    elseif (quality or 0) < (state.minQuality or 0) then
+        return "fail", nil, "quality"
+    end
 
     if ctx.maxLevel then
         if info.minLevel == nil then
