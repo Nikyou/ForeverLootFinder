@@ -442,7 +442,9 @@ local function compareLines(tooltip, row, opts)
     end
     local set = (info.setID or info.setName) and ns.Sets.For(record)
     if set then tooltip:AddLine(format(L["Set: %s (%s)"], ns.Sets.Name(set), ns.Sets.Summary(set, L)), 1, 0.82, 0, true) end
-    if row.status == "unknown" then tooltip:AddLine(L["Item data still loading."], 0.7, 0.7, 0.7, true) end
+    if row.status == "unknown" then
+        tooltip:AddLine(info.loaded and L["Pawn hasn't scored it yet."] or L["Item data still loading."], 0.7, 0.7, 0.7, true)
+    end
     if info.missing == "failed" then
         tooltip:AddLine(L["Not on this server: it says the item doesn't exist."], 1, 0.25, 0.25, true)
     elseif info.missing == "noanswer" then

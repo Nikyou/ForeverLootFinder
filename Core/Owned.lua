@@ -201,8 +201,10 @@ function Owned.CompareWith(env, record, info)
         candidates = {MAIN_HAND}
         if not (mainHand and mainHand.twoHand) then candidates[2] = OFF_HAND end
     elseif info.slot == "OFFHAND" and mainHand and mainHand.twoHand then
-        -- an off-hand alone can't be weighed against a two-hander
+        -- an off-hand alone can't be weighed against a two-hander, so it's no upgrade by itself. known, not pending:
+        -- "Pawn upgrades only" would otherwise wait on it for good
         result.twoHandBlock = true
+        result.upgradeKnown = true
         return result
     elseif (info.slot == "ONEHAND") and env.dualWield and not (mainHand and mainHand.twoHand) then
         candidates = {MAIN_HAND, OFF_HAND}
