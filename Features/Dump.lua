@@ -570,6 +570,35 @@ function Dump.AllText(index)
     return lines
 end
 
+-- the selected slot's items without a Pawn value, and where each is stuck
+function Dump.PawnText()
+    local lines = {}
+    header(lines, "pawn")
+    lines[#lines + 1] = Dump.PawnLine()
+    local scale = ns.ActiveScale()
+    local slot = ns.Filters().slot
+    lines[#lines + 1] = format("active scale: %s; selected slot: %s", tostring(scale), tostring(slot))
+    if not scale then return lines end
+    lines[#lines + 1] = ""
+    lines[#lines + 1] = "## no value yet: id;name;loaded;in client;load state;refetches this view;asked and waiting;tries on arrival"
+    local missing, total = 0, 0
+    for _, record in ipairs(ns.MainWindow.RecordsOfSlot(slot)) do
+        if record.id and record.id > 0 then
+            total = total + 1
+            if ns.Pawn.Known(record.id, scale) == nil then
+                missing = missing + 1
+                local info = ns.Items.Info(record)
+                local d = ns.Items.Diagnose(record.id)
+                lines[#lines + 1] = format("%d;%s;%s;%s;%s;%d;%s;%d", record.id, tostring(info.name), tostring(info.loaded),
+                                           tostring(d.client), tostring(d.state), d.refetches, tostring(d.waiting),
+                                           ns.Pawn.ReadyTries(record.id))
+            end
+        end
+    end
+    table.insert(lines, 4, format("items in the slot: %d, without a value: %d", total, missing))
+    return lines
+end
+
 function Dump.Start(arg)
     if arg == "stats" then
         Dump.Stats()
@@ -579,6 +608,8 @@ function Dump.Start(arg)
         show(L["Questie dump"], Dump.QuestieText())
     elseif arg == "crafts" then
         show(L["Crafted items dump"], Dump.CraftsText())
+    elseif arg == "pawn" then
+        show(L["Pawn dump"], Dump.PawnText())
     elseif arg == "items" or arg == "all" then
         local index = ns.GetIndex()
         if arg == "items" then
@@ -587,6 +618,6 @@ function Dump.Start(arg)
             show(L["Full dump"], Dump.AllText(index))
         end
     else
-        ns.Print(L["Usage: /flf dump stats, fdj, questie, crafts, items or all"])
+        ns.Print(L["Usage: /flf dump stats, fdj, questie, crafts, items, pawn or all"])
     end
 end

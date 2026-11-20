@@ -383,6 +383,7 @@ local function printHelp()
     line("dump questie", L["Questie data"])
     line("dump crafts", L["AtlasLoot and profession data"])
     line("dump items", L["items not loaded, and why"])
+    line("dump pawn", L["the selected slot's items with no Pawn value, and why"])
     line("dump all", L["all dumps but stats"])
 end
 
