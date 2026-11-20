@@ -210,6 +210,7 @@ L["Last seen at auction %d days ago."] = true
 L["Not seen at auction for 21+ days."] = true
 L["Not on this server: it says the item doesn't exist."] = true
 L["Maybe not on this server: it never sent the item."] = true
+L["Pawn hasn't scored it yet."] = true
 
 -- UI/Menu.lua
 L["Remove from favourites"] = true

@@ -210,6 +210,7 @@ L["Last seen at auction %d days ago."] = "Последний раз на аук�
 L["Not seen at auction for 21+ days."] = "Не было на аукционе больше 21 дня."
 L["Not on this server: it says the item doesn't exist."] = "Нет на этом сервере: он сообщает, что такого предмета нет."
 L["Maybe not on this server: it never sent the item."] = "Возможно, нет на сервере: он так и не прислал данные."
+L["Pawn hasn't scored it yet."] = "Pawn ещё не оценил предмет."
 
 -- UI/Menu.lua
 L["Remove from favourites"] = "Убрать из избранного"
