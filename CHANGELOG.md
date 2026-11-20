@@ -2,6 +2,7 @@
 * Items with nothing saved from earlier sessions load first, before the ones already shown from the cache.
 * "Pawn upgrades only" with a two-hander equipped: off-hands no longer stay greyed as "still loading".
 * A greyed row's tooltip now says whether the item is still loading or Pawn just hasn't scored it yet.
+* Fixed items staying greyed without a Pawn value until you hovered them, and "Pawn values..." blinking in the status line without end.
 
 #### 1.2
 * Fixed the game slowing down while items load: items were asked for again and again when the game had already dropped them, and Pawn did the same for items it scored.
