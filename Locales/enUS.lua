@@ -26,6 +26,7 @@ L["reread the Dungeon Journal, rebuild the lists"] = true
 L["Can't read DungeonJournal's loot data. Forever Loot Finder may need an update."] = true
 L["That item can't be worn."] = true
 L["No addon lists where it's from, so it shows only under Favourites."] = true
+L["the selected slot's items with no Pawn value, and why"] = true
 
 -- Features/Favourites.lua
 L["BiS"] = true
@@ -95,8 +96,9 @@ L["Questie dump"] = true
 L["Crafted items dump"] = true
 L["Item data dump"] = true
 L["Full dump"] = true
-L["Usage: /flf dump stats, fdj, questie, crafts, items or all"] = true
 L["DungeonJournal isn't installed."] = true
+L["Pawn dump"] = true
+L["Usage: /flf dump stats, fdj, questie, crafts, items, pawn or all"] = true
 
 -- Features/ImportExport.lua
 L["Not a Forever Loot Finder profile string."] = true

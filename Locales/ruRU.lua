@@ -26,6 +26,7 @@ L["reread the Dungeon Journal, rebuild the lists"] = "перечитать Dunge
 L["Can't read DungeonJournal's loot data. Forever Loot Finder may need an update."] = "Не удаётся прочитать добычу DungeonJournal. Возможно, нужно обновить Forever Loot Finder."
 L["That item can't be worn."] = "Этот предмет нельзя надеть."
 L["No addon lists where it's from, so it shows only under Favourites."] = "Ни один аддон не знает, откуда он, поэтому он виден только в «Избранном»."
+L["the selected slot's items with no Pawn value, and why"] = "предметы выбранной ячейки без оценки Pawn и почему"
 
 -- Features/Favourites.lua
 L["BiS"] = "БиС"
@@ -95,8 +96,9 @@ L["Questie dump"] = "Выгрузка Questie"
 L["Crafted items dump"] = "Выгрузка создаваемых предметов"
 L["Item data dump"] = "Выгрузка данных предметов"
 L["Full dump"] = "Полная выгрузка"
-L["Usage: /flf dump stats, fdj, questie, crafts, items or all"] = "Использование: /flf dump stats, fdj, questie, crafts, items или all"
 L["DungeonJournal isn't installed."] = "DungeonJournal не установлен."
+L["Pawn dump"] = "Дамп Pawn"
+L["Usage: /flf dump stats, fdj, questie, crafts, items, pawn or all"] = "Использование: /flf dump stats, fdj, questie, crafts, items, pawn или all"
 
 -- Features/ImportExport.lua
 L["Not a Forever Loot Finder profile string."] = "Это не строка профиля Forever Loot Finder."
