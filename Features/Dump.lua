@@ -570,32 +570,45 @@ function Dump.AllText(index)
     return lines
 end
 
--- the selected slot's items without a Pawn value, and where each is stuck
+-- the selected slot's shown items without a Pawn value, and where each is stuck
 function Dump.PawnText()
     local lines = {}
     header(lines, "pawn")
     lines[#lines + 1] = Dump.PawnLine()
     local scale = ns.ActiveScale()
     local slot = ns.Filters().slot
+    local q = ns.Items.QueueInfo()
     lines[#lines + 1] = format("active scale: %s; selected slot: %s", tostring(scale), tostring(slot))
+    lines[#lines + 1] = format("item loader: asked and waiting %d, on-screen queue %d, refetch queue %d, other queue %d, "
+                               .. "to build %d, paused %s, started %s, count fixes %d", q.inFlight or 0, q.urgent or 0,
+                               q.refetches or 0, q.queued or 0, q.toBuild or 0, tostring(q.paused), tostring(q.started),
+                               q.recounts or 0)
     if not scale then return lines end
-    lines[#lines + 1] = ""
-    lines[#lines + 1] = "## no value yet: id;name;loaded;in client;load state;refetches this view;asked and waiting;tries on arrival"
-    local missing, total = 0, 0
+    local ctx = ns.FilterContext()
+    local filters = ns.Filters()
+    local shown, missing, out = 0, 0, {}
     for _, record in ipairs(ns.MainWindow.RecordsOfSlot(slot)) do
         if record.id and record.id > 0 then
-            total = total + 1
-            if ns.Pawn.Known(record.id, scale) == nil then
-                missing = missing + 1
-                local info = ns.Items.Info(record)
-                local d = ns.Items.Diagnose(record.id)
-                lines[#lines + 1] = format("%d;%s;%s;%s;%s;%d;%s;%d", record.id, tostring(info.name), tostring(info.loaded),
-                                           tostring(d.client), tostring(d.state), d.refetches, tostring(d.waiting),
-                                           ns.Pawn.ReadyTries(record.id))
+            local info = ns.Items.Info(record)
+            local status = ns.Filter.Evaluate(record, info, filters, ctx, true, true)
+            if ns.Filter.Shows(status, ctx) then
+                shown = shown + 1
+                if ns.Pawn.Known(record.id, scale) == nil then
+                    missing = missing + 1
+                    local d = ns.Items.Diagnose(record.id)
+                    out[#out + 1] = format("%d;%s;%s;%s;%s;%s;%s;%s;%d;%s;%d;%s", record.id, tostring(info.name), status,
+                                           tostring(info.loaded), tostring(info.fromCache == true), d.client, d.state,
+                                           tostring(d.requested), d.refetches, tostring(d.waiting),
+                                           ns.Pawn.ReadyTries(record.id), tostring(ns.Pawn.Waiting(record.id, scale)))
+                end
             end
         end
     end
-    table.insert(lines, 4, format("items in the slot: %d, without a value: %d", total, missing))
+    lines[#lines + 1] = format("shown in the slot: %d, without a value: %d", shown, missing)
+    lines[#lines + 1] = ""
+    lines[#lines + 1] = "## no value yet: id;name;status;loaded;from cache;in client;load state;requested;refetches this view;"
+                        .. "asked and waiting;Pawn tries on arrival;Pawn waits for it"
+    for _, line in ipairs(out) do lines[#lines + 1] = line end
     return lines
 end
 
