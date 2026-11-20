@@ -423,10 +423,19 @@ function Items.Tracked() return trackedCount > 0 and tracked or nil end
 
 local urgent, inUrgent, urgentHead = {}, {}, 1 -- what's on screen jumps the queue, in its order
 
+-- has something to show already: built this session, or saved in the cache
+local function hasData(record)
+    local info = cache[record.key]
+    if info and info.loaded then return true end
+    return ns.Cache ~= nil and ns.Cache.Get(record.id) ~= nil
+end
+
+-- isUrgent: the category shown (a slot, a tab's cards, the favourites). items with nothing to show go first, then the
+-- cached ones, which the answer brings up to date. each keeps the order it came in (card by card)
 function Items.Request(records, isUrgent)
     started = true
     timing.loadStarted = timing.loadStarted or GetTime()
-    -- the newest view wins, what it replaced is in the normal queue too
+    -- the newest view wins, what it replaced waits till it's shown again
     if isUrgent then
         wipe(hurry)
         wipe(buildFirst)
@@ -434,6 +443,7 @@ function Items.Request(records, isUrgent)
         wipe(inUrgent)
         firstHead, urgentHead = 1, 1
     end
+    local later = {}
     for _, record in ipairs(records) do
         local id = record.id
         if id and id > 0 then
@@ -452,7 +462,7 @@ function Items.Request(records, isUrgent)
                 -- each slot click asks again
                 if not inUrgent[id] then
                     inUrgent[id] = true
-                    urgent[#urgent + 1] = id
+                    if hasData(record) then later[#later + 1] = id else urgent[#urgent + 1] = id end
                 end
             elseif not queued[id] then
                 queued[id] = true
@@ -460,6 +470,7 @@ function Items.Request(records, isUrgent)
             end
         end
     end
+    for _, id in ipairs(later) do urgent[#urgent + 1] = id end
     scheduleBuild()
     if wake then wake() end
 end
