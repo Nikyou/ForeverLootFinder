@@ -125,8 +125,33 @@ function Cards.Create(parent, top)
             c.glow:SetShown(entry.glow and true or false)
             c:SetAlpha(entry.dim and 0.45 or 1)
             local inner, labelCount = Cards.TOP, 0
+            -- entry.inline: each group a block (its label over its icons), the blocks side by side
+            local x, lineHeight = 12, 0
             for _, group in ipairs(entry.groups or {}) do
-                if group.label and group.label ~= "" then
+                local left, top = 12, inner
+                if entry.inline then
+                    local label = group.label and group.label ~= "" and groupLabel(c, labelCount + 1) or nil
+                    local labelWidth = 0
+                    if label then
+                        label:SetText(group.label)
+                        labelWidth = label:GetStringWidth() + 8
+                    end
+                    local blockWidth = math.max(labelWidth, math.min(#group.rows, perLine) * (ICON + GAP))
+                    if x > 12 and x + blockWidth > width - 12 then
+                        inner, x, lineHeight = inner + lineHeight, 12, 0
+                    end
+                    left, top = x, inner
+                    if label then
+                        labelCount = labelCount + 1
+                        label:ClearAllPoints()
+                        label:SetPoint("TOPLEFT", c, "TOPLEFT", left, -top)
+                        label:SetWidth(blockWidth)
+                        label:Show()
+                        top = top + 16
+                    end
+                    x = x + blockWidth + 10
+                    lineHeight = math.max(lineHeight, (top - inner) + math.ceil(#group.rows / perLine) * (ICON + GAP) + 4)
+                elseif group.label and group.label ~= "" then
                     labelCount = labelCount + 1
                     local label = groupLabel(c, labelCount)
                     label:ClearAllPoints()
@@ -135,6 +160,7 @@ function Cards.Create(parent, top)
                     label:SetText(group.label)
                     label:Show()
                     inner = inner + 16
+                    top = inner
                 end
                 for n, row in ipairs(group.rows) do
                     used = used + 1
@@ -143,7 +169,7 @@ function Cards.Create(parent, top)
                     b.data = row
                     local column, line = (n - 1) % perLine, math.floor((n - 1) / perLine)
                     b:ClearAllPoints()
-                    b:SetPoint("TOPLEFT", c, "TOPLEFT", 12 + column * (ICON + GAP), -(inner + line * (ICON + GAP)))
+                    b:SetPoint("TOPLEFT", c, "TOPLEFT", left + column * (ICON + GAP), -(top + line * (ICON + GAP)))
                     b.icon:SetTexture(row.info.icon or 134400)
                     b.border:SetVertexColor(Labels.QualityRGB(row.info.quality))
                     local tier = row.record.id > 0 and ns.Favourites.Get(row.record.id)
@@ -151,13 +177,17 @@ function Cards.Create(parent, top)
                     if tier then W.SetStar(b.star, tier) end
                     local chance = profile.cardChance ~= false and group.chances and group.chances[n]
                     b.chance:SetText(chance and ns.Labels.Chance(chance) or "")
-                    b:SetAlpha((row.status == "unknown" or row.status == "missing" or row.filteredOut) and 0.5 or 1)
+                    b:SetAlpha((row.status == "unknown" or row.status == "missing" or
+                                (row.filteredOut and row.filteredOut ~= "level")) and 0.5 or 1)
+                    -- too high a level for now: red, not faded
+                    if row.filteredOut == "level" then b.icon:SetVertexColor(1, 0.3, 0.3) else b.icon:SetVertexColor(1, 1, 1) end
                     b:SetFrameLevel(c:GetFrameLevel() + 5)
                     b:Show()
                     ns.Row.RefreshTooltip(b)
                 end
-                inner = inner + math.ceil(#group.rows / perLine) * (ICON + GAP) + 4
+                if not entry.inline then inner = inner + math.ceil(#group.rows / perLine) * (ICON + GAP) + 4 end
             end
+            inner = inner + lineHeight
             for n = labelCount + 1, #c.labels do c.labels[n]:Hide() end
             c:SetHeight(math.max(36, inner + 6))
             c:Show()
@@ -238,7 +268,7 @@ local function plainEntries(_, order, _, _)
 end
 
 -- spec: key, label, accept, card, group?, grouping?, onSource?, entries?, emptyHint?, rows?. see DungeonTab for a full
--- one. rows(slot, ctx) -> rows, ctx replaces the filtered list
+-- one. rows(slot, ctx) -> rows, ctx replaces the filtered list. alsoLoad() -> records asked for after the shown ones
 -- each gets (source, ctx, row): a tab can go by the item itself, not its sources (SetsTab)
 -- without spec.grouping a tab with group() always groups
 function Cards.Tab(spec)
@@ -287,6 +317,9 @@ function Cards.Tab(spec)
                 for _, group in ipairs(entry.groups or {}) do
                     for _, row in ipairs(group.rows) do records[#records + 1] = row.record end
                 end
+            end
+            if spec.alsoLoad then
+                for _, record in ipairs(spec.alsoLoad()) do records[#records + 1] = record end
             end
             ns.Items.Request(records, true)
         end

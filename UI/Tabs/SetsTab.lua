@@ -9,8 +9,12 @@ for i, slot in ipairs(ns.Index.SLOTS) do SLOT_ORDER[slot] = i end
 
 local function setOf(row) return row and row.info and ns.Sets.KeyOf(row.info) end
 
+-- whether an item is a set piece is only known once its data is in, so every item the character might use and that
+-- hasn't loaded is asked for too, after the pieces shown
+local maybePieces = {}
+
 -- the filters pick the sets, but a set shows whole: what an item is like (binding, quality, stats, price, Pawn, owned,
--- search) doesn't take a piece out. who can use it and where it comes from still do
+-- search) and the level limit don't take a piece out. who can use it and where it comes from still do
 local function wholeSets(state)
     local loose = {}
     for key, value in pairs(state) do loose[key] = value end
@@ -27,6 +31,12 @@ end
 local function rows(slot, ctx)
     local shown
     shown, ctx = ns.MainWindow.Rows(nil, slot, nil, ctx)
+    wipe(maybePieces)
+    for _, row in ipairs(shown) do
+        if row.status == "unknown" and not row.info.loaded and row.record.id > 0 then
+            maybePieces[#maybePieces + 1] = row.record
+        end
+    end
     local picked, any = {}, false
     for _, row in ipairs(shown) do
         local key = setOf(row)
@@ -44,17 +54,27 @@ local function rows(slot, ctx)
         local key = ns.Sets.KeyOf(ns.Items.Info(record))
         if key and picked[key] then records[#records + 1] = record end
     end
-    -- the search box is read from the context, not the filters
-    local looseCtx = setmetatable({search = ""}, {__index = ctx})
+    -- the search box and the level limit are read from the context, not the filters
+    local looseCtx = setmetatable({search = "", maxLevel = false}, {__index = ctx})
     local whole = ns.Filter.Run(records, ns.Items.Info, wholeSets(ns.Filters()), looseCtx)
-    -- a piece the filters would hide stays, greyed, and its tooltip says which filter
+    -- a piece the filters would hide stays, greyed (red when it's only the level), and its tooltip says why
     local filters = ns.Filters()
+    local noLevel = setmetatable({maxLevel = false}, {__index = ctx})
     for _, row in ipairs(whole) do
         if not passed[row.record] then
             local status, _, why = ns.Filter.Evaluate(row.record, row.info, filters, ctx)
-            if status == "fail" then row.filteredOut = why end
+            if status == "fail" then
+                local without = ns.Filter.Evaluate(row.record, row.info, filters, noLevel)
+                row.filteredOut = without ~= "fail" and "level" or why
+            end
         end
     end
+    -- in equipment order within a slot's block too
+    table.sort(whole, function(a, b)
+        local sa, sb = SLOT_ORDER[a.info.slot] or 99, SLOT_ORDER[b.info.slot] or 99
+        if sa ~= sb then return sa < sb end
+        return (a.info.name or "") < (b.info.name or "")
+    end)
     return ns.MainWindow.PrepareRows(whole, ctx), ctx
 end
 
@@ -80,7 +100,7 @@ local function entries(_, order)
         local info = card.total and format(L["%d of %d pieces"], card.count or 0, card.total)
                        or format(L["%d items"], card.count or 0)
         if card.level and card.level > 1 then info = info .. "   " .. format(L["level %d"], card.level) end
-        list[#list + 1] = {title = card.title, info = info, groups = card.list}
+        list[#list + 1] = {title = card.title, info = info, groups = card.list, inline = true}
     end
     return list
 end
@@ -95,6 +115,7 @@ ns.Cards.Tab({
         local name = row.info.setName or ns.Sets.Name({key = key})
         return key, name, 0
     end,
+    -- a header per slot, the slots side by side
     group = function(_, _, row)
         local slot = row.info.slot
         return slot, ns.Labels.Slot(slot), SLOT_ORDER[slot] or 99
@@ -102,5 +123,6 @@ ns.Cards.Tab({
     onSource = onSource,
     entries = entries,
     rows = rows,
+    alsoLoad = function() return maybePieces end,
     emptyHint = function() return L["No set pieces match the filters."] end,
 })
