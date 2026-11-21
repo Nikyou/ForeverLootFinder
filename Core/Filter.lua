@@ -46,7 +46,7 @@ function Filter.Defaults()
         setsOnly = false,
         special = false,
         minQuality = 2,
-        -- AtlasLoot's drop rates
+        -- FDJ's or AtlasLoot's drop chances
         chance = {on = false, min = 5, keepUnknown = true},
         -- max is in gold. items with no price stay
         price = {only = false, maxOn = false, max = 50},
@@ -452,10 +452,8 @@ function Filter.CountBySlot(records, infoOf, state, ctx)
     return counts
 end
 
--- rows of one slot and the rail's counts in one pass. the Pawn upgrade check is the slow part, so only the
--- shown slot gets it; the third result says the other counts skipped it
--- third result: the other slots whose count is a guess, or false. items there load when the slot is shown, and
--- "Pawn upgrades only" uses the values Pawn has, queueing the rest behind the selected slot's
+-- rows of one slot and the rail's counts in one pass. third result: the other slots whose count is a guess, or
+-- false. their items load when the slot is shown, and "Pawn upgrades only" uses the values Pawn already has
 function Filter.RunWithCounts(records, infoOf, state, ctx, slot)
     local rows, counts, approximate = {}, {}, false
     local peek = slot ~= nil and state.pawnUpgradesOnly and ctx.pawnUpgrade ~= nil

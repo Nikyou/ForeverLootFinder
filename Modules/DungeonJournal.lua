@@ -23,7 +23,8 @@ local KNOWN = {
 -- a stand-in for FDJ's "extremely rare" note when it has no number (Spellshock Leggings was 1/440, Bloodletter
 -- Scalpel 1/611 in its notes)
 DungeonJournal.RARE_DROP_CHANCE = 0.2
--- on the loot row itself, in case FDJ ever puts it there. since 2.0.11 it's in FDJ.DROP_RATES instead
+-- on the loot row itself, in case FDJ ever puts it there. 2.0.11 had FDJ.DROP_RATES instead, 2.0.12 took it out
+-- for now
 DungeonJournal.CHANCE_KEYS = {"chance", "dropChance", "dropRate", "rate", "pct"}
 local QUEST_REWARD_FIELDS = {"rewardItems", "additionalRewardItems", "noteRewardItems"}
 
@@ -82,7 +83,7 @@ end
 
 local function count(map, key) map[key] = (map[key] or 0) + 1 end
 
--- FDJ.DROP_RATES[dungeon][boss][itemID] = %, from Wowhead Forever's kill counts (Classic's for bosses with few kills)
+-- FDJ.DROP_RATES[dungeon][boss][itemID] = %, from Wowhead Forever's kill counts. only in FDJ 2.0.11, read if it's back
 local function chanceOf(entry, rates, base)
     for _, key in ipairs(DungeonJournal.CHANCE_KEYS) do
         local value = entry[key]

@@ -48,7 +48,7 @@ local wake -- restarts the OnUpdate, set by Items.Init
 -- tooltips are slow, so infos are built a slice per frame rather than inside a redraw
 local deferred = false
 local buildFirst, firstHead, buildLater, buildHead = {}, 1, {}, 1
-local hurry = {} -- the selected slot's items
+local hurry = {} -- what's on screen
 local buildScheduled = false
 
 Items.timing = {requests = 0, requestMs = 0, builds = 0, buildMs = 0, tooltipMs = 0, quick = 0, slices = 0, longestSlice = 0,
@@ -465,7 +465,7 @@ function Items.Request(records, isUrgent)
             end
             if requested[id] then
             elseif isUrgent then
-                -- each slot click asks again
+                -- each view asks again
                 if not inUrgent[id] then
                     inUrgent[id] = true
                     if hasData(record) then later[#later + 1] = id else urgent[#urgent + 1] = id end

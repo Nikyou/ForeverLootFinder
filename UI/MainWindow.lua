@@ -70,7 +70,7 @@ function MainWindow.Rows(records, slot, charKey, ctx)
     return MainWindow.PrepareRows(rows, ctx), ctx
 end
 
--- once per index, so the selected slot can load first
+-- every item of a slot, worked out once per index
 local slotMaps = setmetatable({}, {__mode = "k"})
 function MainWindow.RecordsOfSlot(slot)
     local index = ns.GetIndex()

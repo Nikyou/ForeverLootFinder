@@ -99,7 +99,6 @@ local function valueOf(item, scale)
     return result
 end
 
--- nil: Pawn needs the item cached first
 -- Pawn reads the item through a tooltip, which asks the server again for one the client doesn't have
 local function clientHas(id)
     if not C_Item.IsItemDataCachedByID then return true end
@@ -107,6 +106,7 @@ local function clientHas(id)
     return not ok or result == true
 end
 
+-- nil: not scored yet (the client lacks it, or Pawn got nothing). false: no stats to score
 function Pawn.Compute(id, scale)
     if not Pawn.Exists(scale) then return nil end
     if not clientHas(id) then return nil, "uncached" end

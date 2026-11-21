@@ -326,8 +326,6 @@ end
 
 local LIST_KINDS = {reputation = true, pvp = true, event = true, world = true}
 
--- AtlasLoot's world epics and QuestieDB's spread-out drops are the same thing: one line, AtlasLoot's section with
--- QuestieDB's creature levels
 -- SilverDragon's rare beside another addon's drop from the same creature
 local function dropRepeatedRares(record)
     local creatures
@@ -351,6 +349,8 @@ local function dropRepeatedRares(record)
     if #kept < #record.sources then record.sources = kept end
 end
 
+-- AtlasLoot's world epics and QuestieDB's spread-out drops are the same thing: one line, AtlasLoot's section with
+-- QuestieDB's creature levels
 local function mergeWorld(record)
     local first
     local kept = {}
