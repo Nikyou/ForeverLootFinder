@@ -224,6 +224,7 @@ if not L then return end
 -- L["price"] = true -- Translation missing
 -- L["drop chance or source"] = true -- Translation missing
 -- L["Your filters hide it elsewhere: %s."] = true -- Translation missing
+-- L["Above your level filter for now."] = true -- Translation missing
 
 -- UI/Menu.lua
 -- L["Remove from favourites"] = true -- Translation missing
