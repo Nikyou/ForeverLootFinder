@@ -410,8 +410,9 @@ function Dump.LoadLines()
         lines[#lines + 1] = "cache: not loaded"
     else
         local s = ns.Cache.stats
-        lines[#lines + 1] = format("cache: %d items, %d sets, about %.0f KB; client %s, %s; created %s, last saved %s; "
-                                   .. "started over at login: %s", cache.items, cache.sets, cache.bytes / 1024,
+        lines[#lines + 1] = format("cache: %d items, %d sets, %d the server didn't give last time, about %.0f KB; client %s, "
+                                   .. "%s; created %s, last saved %s; started over at login: %s", cache.items, cache.sets,
+                                   cache.unavailable or 0, cache.bytes / 1024,
                                    tostring(cache.build), tostring(cache.locale), ago(cache.createdAt), ago(cache.savedAt),
                                    s.reset or "no")
         lines[#lines + 1] = format("cache this session: %d hits, %d misses, %d new, %d changed, %d removed (not on the "

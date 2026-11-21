@@ -20,6 +20,8 @@ local TOOLTIP_RETRIES, TOOLTIP_RETRY_DELAY = 5, 1
 -- the server answers in well under a second, or never (an item it won't talk about). one that never answers holds a
 -- place among the requests in flight, so it's given up soon
 local ANSWER_TIMEOUT, ANSWER_TRIES, CHECK_EVERY = 5, 2, 1
+-- one the server didn't give last session either: once, briefly. it's likely still not there
+local UNAVAILABLE_TIMEOUT, UNAVAILABLE_TRIES = 2, 1
 local UNKNOWN_ICON = 134400
 
 local BIND = {[1] = "BOP", [2] = "BOE", [3] = "BOU", [4] = "QUEST"}
@@ -87,7 +89,11 @@ local function markDone(set, id)
     local was = isDone(id)
     set[id] = true
     if tracked[id] and not was then doneCount = doneCount + 1 end
+    -- remembered for the next session, forgotten once it loads
+    if ns.Cache then ns.Cache.SetUnavailable(id, set == failed and "failed" or set == gaveUp and "noanswer" or nil) end
 end
+
+local function unavailable(id) return ns.Cache ~= nil and ns.Cache.Unavailable(id) ~= nil end
 
 local patternSets, englishSet
 local function patterns()
@@ -435,7 +441,8 @@ local function hasData(record)
 end
 
 -- isUrgent: the category shown (a slot, a tab's cards, the favourites). items with nothing to show go first, then the
--- cached ones, which the answer brings up to date. each keeps the order it came in (card by card)
+-- cached ones, which the answer brings up to date, then the ones the server didn't give last time. each keeps the
+-- order it came in (card by card)
 function Items.Request(records, isUrgent)
     started = true
     timing.loadStarted = timing.loadStarted or GetTime()
@@ -448,7 +455,7 @@ function Items.Request(records, isUrgent)
         firstHead, urgentHead = 1, 1
         if ns.Pawn and ns.Pawn.ResetWaiting then ns.Pawn.ResetWaiting() end
     end
-    local later = {}
+    local later, last = {}, {}
     for _, record in ipairs(records) do
         local id = record.id
         if id and id > 0 then
@@ -468,7 +475,13 @@ function Items.Request(records, isUrgent)
                 -- each view asks again
                 if not inUrgent[id] then
                     inUrgent[id] = true
-                    if hasData(record) then later[#later + 1] = id else urgent[#urgent + 1] = id end
+                    if unavailable(id) then
+                        last[#last + 1] = id
+                    elseif hasData(record) then
+                        later[#later + 1] = id
+                    else
+                        urgent[#urgent + 1] = id
+                    end
                 end
             elseif not queued[id] then
                 queued[id] = true
@@ -477,6 +490,8 @@ function Items.Request(records, isUrgent)
         end
     end
     for _, id in ipairs(later) do urgent[#urgent + 1] = id end
+    -- the server didn't give these last time: after everything else, so they don't hold the others up
+    for _, id in ipairs(last) do urgent[#urgent + 1] = id end
     scheduleBuild()
     if wake then wake() end
 end
@@ -590,15 +605,16 @@ local function checkWaiting()
         inFlight = count
     end
     for id, at in pairs(askedAt) do
+        local known = unavailable(id)
         if failed[id] or gaveUp[id] then
             settle(id)
-        elseif now - at > ANSWER_TIMEOUT then
+        elseif now - at > (known and UNAVAILABLE_TIMEOUT or ANSWER_TIMEOUT) then
             if clientHas(id) then
                 markDone(seen, id)
                 settle(id)
                 built(id)
                 changed = true
-            elseif (asks[id] or 1) >= ANSWER_TRIES then
+            elseif (asks[id] or 1) >= (known and UNAVAILABLE_TRIES or ANSWER_TRIES) then
                 -- a refetch of an item seen before isn't given up: it just stays as it was
                 if not seen[id] then markDone(gaveUp, id) end
                 settle(id)

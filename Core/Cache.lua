@@ -38,7 +38,7 @@ function Cache.Load(saved)
         reason = "locale"
     end
     if reason then saved = {version = Cache.VERSION, build = build, locale = locale, createdAt = time()} end
-    for _, key in ipairs({"items", "sets", "pawn"}) do
+    for _, key in ipairs({"items", "sets", "pawn", "unavailable"}) do
         if type(saved[key]) ~= "table" then saved[key] = {} end
     end
     Cache.stats.reset = reason
@@ -165,6 +165,11 @@ end
 function Cache.ClearPawn() if db then wipe(db.pawn) end end
 
 -- called at logout
+-- items the server didn't give last time: "failed" or "noanswer". asked again, but briefly and last. a new build
+-- starts over with the rest of the cache
+function Cache.Unavailable(id) return db and db.unavailable[id] end
+function Cache.SetUnavailable(id, why) if db then db.unavailable[id] = why end end
+
 function Cache.Prune(listed, scaleExists)
     if not db then return end
     if listed then
@@ -189,7 +194,8 @@ end
 function Cache.Summary()
     if not db then return nil end
     local out = {build = db.build, locale = db.locale, createdAt = db.createdAt, savedAt = db.savedAt, items = 0, sets = 0,
-                 bytes = 0, scales = {}}
+                 unavailable = 0, bytes = 0, scales = {}}
+    for _ in pairs(db.unavailable) do out.unavailable = out.unavailable + 1 end
     -- ["key"] = "value", plus indentation
     for id, text in pairs(db.items) do
         out.items = out.items + 1
