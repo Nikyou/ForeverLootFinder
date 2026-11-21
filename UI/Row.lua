@@ -8,6 +8,7 @@ local FILTERED_OUT = {
     special = L["Use or proc"], set = L["sets only"], search = L["search"], owned = L["owned"],
     upgrade = L["not a Pawn upgrade"], price = L["price"], source = L["drop chance or source"],
 }
+local LEVEL_NOTE = L["Above your level filter for now."]
 
 local Row = {}
 ns.Row = Row
@@ -453,7 +454,9 @@ local function compareLines(tooltip, row, opts)
         tooltip:AddLine(info.loaded and L["Pawn hasn't scored it yet."] or L["Item data still loading."], 0.7, 0.7, 0.7, true)
     end
     -- the Sets tab keeps a set whole
-    if row.filteredOut then
+    if row.filteredOut == "level" then
+        tooltip:AddLine(LEVEL_NOTE, 1, 0.3, 0.3, true)
+    elseif row.filteredOut then
         local label = FILTERED_OUT[row.filteredOut] or row.filteredOut
         tooltip:AddLine(format(L["Your filters hide it elsewhere: %s."], label), 1, 0.5, 0.25, true)
     end
