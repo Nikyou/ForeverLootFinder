@@ -241,7 +241,7 @@ function addon:OnInitialize()
     self.db.RegisterCallback(self, "OnProfileReset", "OnProfileChanged")
     for scope in pairs(SCHEMA) do self:Migrate(scope) end
     pruneTradeSkills(self.db.global)
-    for _, command in ipairs({"flf", "lootfinder"}) do self:RegisterChatCommand(command, "OnSlashCommand") end
+    for _, command in ipairs({"flf", "foreverlootfinder"}) do self:RegisterChatCommand(command, "OnSlashCommand") end
     self:SetupMinimapButton()
 end
 
@@ -372,7 +372,7 @@ end
 
 local function printHelp()
     local function line(usage, text) print("  |cffffd100/flf " .. usage .. "|r - " .. text) end
-    addon:Print(L["Commands (also /lootfinder):"])
+    addon:Print(L["Commands (also /foreverlootfinder):"])
     print("  |cffffd100/flf|r - " .. L["open the window"])
     line("config", L["open the settings"])
     line("reset", L["move the windows back to the centre"])

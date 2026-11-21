@@ -25,7 +25,7 @@ Each one can be switched off under Settings > Addons.
 
 ## Usage
 
-* `/flf` (or `/lootfinder`) - open the window
+* `/flf` (or `/foreverlootfinder`) - open the window
 * `/flf config` - open the settings
 * `/flf reset` - move the windows back to the middle of the screen
 * `/flf fav <item>` - add an item to your favourites

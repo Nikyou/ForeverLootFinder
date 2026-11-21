@@ -5,7 +5,6 @@ if not L then return end
 -- Core.lua
 -- L["Error (shown once): %s"] = true -- Translation missing
 -- L["Copy your Dungeon Journal favourites: Favourites tab, \"Import FDJ favourites\"."] = true -- Translation missing
--- L["Commands (also /lootfinder):"] = true -- Translation missing
 -- L["open the window"] = true -- Translation missing
 -- L["open the settings"] = true -- Translation missing
 -- L["move the windows back to the centre"] = true -- Translation missing
@@ -27,6 +26,7 @@ if not L then return end
 -- L["That item can't be worn."] = true -- Translation missing
 -- L["No addon lists where it's from, so it shows only under Favourites."] = true -- Translation missing
 -- L["the selected slot's items with no Pawn value, and why"] = true -- Translation missing
+-- L["Commands (also /foreverlootfinder):"] = true -- Translation missing
 
 -- Features/Favourites.lua
 -- L["BiS"] = true -- Translation missing

@@ -5,7 +5,6 @@ if not L then return end
 -- Core.lua
 L["Error (shown once): %s"] = true
 L["Copy your Dungeon Journal favourites: Favourites tab, \"Import FDJ favourites\"."] = true
-L["Commands (also /lootfinder):"] = true
 L["open the window"] = true
 L["open the settings"] = true
 L["move the windows back to the centre"] = true
@@ -27,6 +26,7 @@ L["Can't read DungeonJournal's loot data. Forever Loot Finder may need an update
 L["That item can't be worn."] = true
 L["No addon lists where it's from, so it shows only under Favourites."] = true
 L["the selected slot's items with no Pawn value, and why"] = true
+L["Commands (also /foreverlootfinder):"] = true
 
 -- Features/Favourites.lua
 L["BiS"] = true

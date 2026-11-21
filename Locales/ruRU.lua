@@ -5,7 +5,6 @@ if not L then return end
 -- Core.lua
 L["Error (shown once): %s"] = "Ошибка (показана один раз): %s"
 L["Copy your Dungeon Journal favourites: Favourites tab, \"Import FDJ favourites\"."] = "Скопируйте избранное Dungeon Journal: вкладка «Избранное», кнопка «Импорт из FDJ»."
-L["Commands (also /lootfinder):"] = "Команды (также /lootfinder):"
 L["open the window"] = "открыть окно"
 L["open the settings"] = "открыть настройки"
 L["move the windows back to the centre"] = "вернуть окна в центр"
@@ -27,6 +26,7 @@ L["Can't read DungeonJournal's loot data. Forever Loot Finder may need an update
 L["That item can't be worn."] = "Этот предмет нельзя надеть."
 L["No addon lists where it's from, so it shows only under Favourites."] = "Ни один аддон не знает, откуда он, поэтому он виден только в «Избранном»."
 L["the selected slot's items with no Pawn value, and why"] = "предметы выбранной ячейки без оценки Pawn и почему"
+L["Commands (also /foreverlootfinder):"] = "Команды (также /foreverlootfinder):"
 
 -- Features/Favourites.lua
 L["BiS"] = "БиС"
