@@ -38,6 +38,7 @@ Each one can be switched off under Settings > Addons.
 * **By slot**: every slot on the left with how many items match. Click a column header to sort, right-click it to choose which columns to show.
 * **Dungeons** and **Raids**: a card per place with its items. Places for your level are highlighted.
 * **Quests**, **Professions**, **Reputation**, **PvP** and **World events**: the same cards for quest rewards, crafted gear and other rewards.
+* **Sets**: a card per item set your character can wear, its pieces by slot and where each one comes from.
 * **Favourites**: three tiers (BiS, Must have, Nice to have), grouped by where to farm them, for all your characters. Use **Add item** on the Favourites tab to add any wearable item by name, ID or Shift-click, even one with no known source.
 * Filters for armor and weapon type, stats, sources, drop chance, price, dungeons and raids, required level, quality, binding, weapon speed, set pieces and more.
 * Items another class or race can't use never show.

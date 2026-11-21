@@ -1,4 +1,5 @@
 #### 1.3
+* New Sets tab: a card per item set your character can wear, its pieces by slot and where each one comes from. It can be hidden under Settings > Addons.
 * Items with nothing saved from earlier sessions load first, before the ones already shown from the cache.
 * "Pawn upgrades only" with a two-hander equipped: off-hands no longer stay greyed as "still loading".
 * A greyed row's tooltip now says whether the item is still loading or Pawn just hasn't scored it yet.
