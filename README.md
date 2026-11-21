@@ -11,9 +11,9 @@
 
 Forever Loot Finder gets its item lists from other addons. It works without them, but then has little to show. The more of these you have, the more it lists:
 
-* **DungeonJournal**: Forever's dungeons with their bosses, loot, drop chances and quests.
+* **DungeonJournal**: Forever's dungeons with their bosses, loot and quests, and drop chances when it has them.
 * **Questie**: quest rewards, vendors, creature drops and world drops.
-* **AtlasLoot Classic Forever**: raids and world bosses, crafted gear, reputation, PvP and event rewards, world drops, drop chances, and BiS lists you can add to your favourites.
+* **AtlasLoot Classic Forever**: raids and world bosses, crafted gear, reputation, PvP and event rewards, world drops, drop chances, and BiS lists to add to your favourites when it has them.
 * **Attune**: quest rewards the others miss.
 * **SilverDragon**: rare creatures and what they drop.
 * **Pawn**: item scores, upgrade percent and the "Pawn upgrades only" filter.
@@ -45,11 +45,12 @@ Each one can be switched off under Settings > Addons.
 * Dungeon reminder: your favourites in the dungeon you enter.
 * Drop alert: a notice when a favourite drops.
 * Item tooltips show your favourite tier, and optionally which of your other characters want the item.
-* Export and import your favourites and settings, or add an AtlasLoot BiS list for your class.
+* Export and import your favourites and settings.
 
 ## Notes
 
-* Item data loads in the background the first time you open the window; rows still loading are greyed out. The next login is faster.
+* Only what you look at is loaded from the server: the open slot, tab or favourites. Everything else shows what was saved last time. Rows still loading are greyed out.
+* A "~" before a slot's count means some of its items haven't loaded yet, or Pawn hasn't scored them. Open the slot to load them.
 * Pawn doesn't count set bonuses.
 * Auction prices come from your own Auctionator scans.
 
