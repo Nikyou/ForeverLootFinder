@@ -7,6 +7,8 @@
 ## Category: Inventory
 ## SavedVariables: ForeverLootFinderDB, ForeverLootFinderCache
 ## IconTexture: 134344
+## X-Curse-Project-ID: 1814833
+## X-Wago-ID: qGZAneKd
 ## OptionalDeps: ForeverDungeonJournal, Pawn, Syndicator, QuestieDB, Questie, AtlasLootClassic, AtlasBIStooltips, Auctionator, Attune, SilverDragon
 
 embeds.xml
@@ -62,6 +64,7 @@ UI\Tabs\DungeonTab.lua
 UI\Tabs\QuestTab.lua
 UI\Tabs\CraftTab.lua
 UI\Tabs\SourceTabs.lua
+UI\Tabs\SetsTab.lua
 UI\Tabs\FavouritesTab.lua
 Options\GeneralTab.lua
 Options\AlertsTab.lua
