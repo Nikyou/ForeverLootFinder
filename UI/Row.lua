@@ -2,6 +2,13 @@ local _, ns = ...
 local L = ns.L
 local W, Style, Labels = ns.Widgets, ns.Style, ns.Labels
 
+-- Filter.Evaluate's reasons that a set piece can have
+local FILTERED_OUT = {
+    bind = L["binding"], quality = L["quality"], stats = L["stats"], speed = L["weapon speed"],
+    special = L["Use or proc"], set = L["sets only"], search = L["search"], owned = L["owned"],
+    upgrade = L["not a Pawn upgrade"], price = L["price"], source = L["drop chance or source"],
+}
+
 local Row = {}
 ns.Row = Row
 
@@ -333,7 +340,7 @@ function Row.Bind(button, data, opts)
         cells.pawn:SetText(data.pawn and (opts.scaleColor .. format("%.1f", data.pawn) .. "|r") or "")
         cells.upgrade:SetText(upgradeText(data))
     end
-    button:SetAlpha((data.status == "unknown" or data.status == "missing") and 0.55 or 1)
+    button:SetAlpha((data.status == "unknown" or data.status == "missing" or data.filteredOut) and 0.55 or 1)
     refreshTooltip(button)
 end
 
@@ -444,6 +451,11 @@ local function compareLines(tooltip, row, opts)
     if set then tooltip:AddLine(format(L["Set: %s (%s)"], ns.Sets.Name(set), ns.Sets.Summary(set, L)), 1, 0.82, 0, true) end
     if row.status == "unknown" then
         tooltip:AddLine(info.loaded and L["Pawn hasn't scored it yet."] or L["Item data still loading."], 0.7, 0.7, 0.7, true)
+    end
+    -- the Sets tab keeps a set whole
+    if row.filteredOut then
+        local label = FILTERED_OUT[row.filteredOut] or row.filteredOut
+        tooltip:AddLine(format(L["Your filters hide it elsewhere: %s."], label), 1, 0.5, 0.25, true)
     end
     if info.missing == "failed" then
         tooltip:AddLine(L["Not on this server: it says the item doesn't exist."], 1, 0.25, 0.25, true)

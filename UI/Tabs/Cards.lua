@@ -151,7 +151,7 @@ function Cards.Create(parent, top)
                     if tier then W.SetStar(b.star, tier) end
                     local chance = profile.cardChance ~= false and group.chances and group.chances[n]
                     b.chance:SetText(chance and ns.Labels.Chance(chance) or "")
-                    b:SetAlpha((row.status == "unknown" or row.status == "missing") and 0.5 or 1)
+                    b:SetAlpha((row.status == "unknown" or row.status == "missing" or row.filteredOut) and 0.5 or 1)
                     b:SetFrameLevel(c:GetFrameLevel() + 5)
                     b:Show()
                     ns.Row.RefreshTooltip(b)
@@ -182,17 +182,17 @@ local function collect(spec, rows, ctx, grouped)
     for _, row in ipairs(rows) do
         local seen = {}
         for _, source in ipairs(row.sources) do
-            if spec.accept(source, ctx) then
-                local cardKey, title, cardOrder = spec.card(source, ctx)
+            if spec.accept(source, ctx, row) then
+                local cardKey, title, cardOrder = spec.card(source, ctx, row)
                 local card = cards[cardKey]
                 if not card then
                     card = {key = cardKey, title = title, order = cardOrder or 0, groups = {}, list = {}, items = 0, has = {}}
                     cards[cardKey] = card
                     order[#order + 1] = card
                 end
-                if spec.onSource then spec.onSource(card, source, ctx) end
+                if spec.onSource then spec.onSource(card, source, ctx, row) end
                 local groupKey, groupLabel, groupOrder = "", "", 0
-                if grouped then groupKey, groupLabel, groupOrder = spec.group(source, ctx) end
+                if grouped then groupKey, groupLabel, groupOrder = spec.group(source, ctx, row) end
                 local seenKey = tostring(cardKey) .. "\001" .. tostring(groupKey)
                 if not seen[seenKey] then
                     seen[seenKey] = true
@@ -237,7 +237,9 @@ local function plainEntries(_, order, _, _)
     return list
 end
 
--- spec: key, label, accept, card, group?, grouping?, onSource?, entries?, emptyHint?. see DungeonTab for a full one.
+-- spec: key, label, accept, card, group?, grouping?, onSource?, entries?, emptyHint?, rows?. see DungeonTab for a full
+-- one. rows(slot, ctx) -> rows, ctx replaces the filtered list
+-- each gets (source, ctx, row): a tab can go by the item itself, not its sources (SetsTab)
 -- without spec.grouping a tab with group() always groups
 function Cards.Tab(spec)
     local ui = {}
@@ -267,7 +269,11 @@ function Cards.Tab(spec)
             ui.group:SetChecked(grouped)
         end
         local rows
-        rows, ctx = ns.MainWindow.Rows(nil, Cards.Slot(), nil, ctx)
+        if spec.rows then
+            rows, ctx = spec.rows(Cards.Slot(), ctx)
+        else
+            rows, ctx = ns.MainWindow.Rows(nil, Cards.Slot(), nil, ctx)
+        end
         local cards, order, shown = collect(spec, rows, ctx, grouped)
         local list = (spec.entries or plainEntries)(cards, order, ctx, index)
         ui.view:Render(list, ns.MainWindow.RowOptions(nil, nil, ctx))

@@ -213,6 +213,17 @@ L["Not seen at auction for 21+ days."] = "Не было на аукционе б
 L["Not on this server: it says the item doesn't exist."] = "Нет на этом сервере: он сообщает, что такого предмета нет."
 L["Maybe not on this server: it never sent the item."] = "Возможно, нет на сервере: он так и не прислал данные."
 L["Pawn hasn't scored it yet."] = "Pawn ещё не оценил предмет."
+L["binding"] = "привязка"
+L["quality"] = "качество"
+L["stats"] = "характеристики"
+L["weapon speed"] = "скорость оружия"
+L["sets only"] = "только комплекты"
+L["search"] = "поиск"
+L["owned"] = "уже есть"
+L["not a Pawn upgrade"] = "не улучшение по Pawn"
+L["price"] = "цена"
+L["drop chance or source"] = "шанс добычи или источник"
+L["Your filters hide it elsewhere: %s."] = "В других списках его скрывают ваши фильтры: %s."
 
 -- UI/Menu.lua
 L["Remove from favourites"] = "Убрать из избранного"
@@ -631,3 +642,8 @@ L["You can still add it."] = "Его всё равно можно добавит
 
 -- Modules/Attune.lua
 L["Quest %d"] = "Задание %d"
+
+-- UI/Tabs/SetsTab.lua
+L["%d of %d pieces"] = "%d из %d предметов"
+L["Sets"] = "Комплекты"
+L["No set pieces match the filters."] = "Нет предметов комплектов под эти фильтры."

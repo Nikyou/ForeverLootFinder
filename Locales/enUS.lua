@@ -213,6 +213,17 @@ L["Not seen at auction for 21+ days."] = true
 L["Not on this server: it says the item doesn't exist."] = true
 L["Maybe not on this server: it never sent the item."] = true
 L["Pawn hasn't scored it yet."] = true
+L["binding"] = true
+L["quality"] = true
+L["stats"] = true
+L["weapon speed"] = true
+L["sets only"] = true
+L["search"] = true
+L["owned"] = true
+L["not a Pawn upgrade"] = true
+L["price"] = true
+L["drop chance or source"] = true
+L["Your filters hide it elsewhere: %s."] = true
 
 -- UI/Menu.lua
 L["Remove from favourites"] = true
@@ -631,3 +642,8 @@ L["You can still add it."] = true
 
 -- Modules/Attune.lua
 L["Quest %d"] = true
+
+-- UI/Tabs/SetsTab.lua
+L["%d of %d pieces"] = true
+L["Sets"] = true
+L["No set pieces match the filters."] = true

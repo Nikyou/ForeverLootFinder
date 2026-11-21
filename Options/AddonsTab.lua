@@ -151,7 +151,7 @@ local function create(parent)
         {key = "dungeon", label = L["Dungeons"]}, {key = "raids", label = L["Raids"]}, {key = "quests", label = L["Quests"]},
         {key = "crafts", label = L["Professions"]},
         {key = "reputation", label = L["Reputation"]}, {key = "pvp", label = L["PvP"]},
-        {key = "events", label = L["World events"]},
+        {key = "events", label = L["World events"]}, {key = "sets", label = L["Sets"]},
     }) do
         controls.tabs[tab.key] = right.check(format(L["Show the %s tab"], tab.label), function(value)
             profile().tabs[tab.key] = value

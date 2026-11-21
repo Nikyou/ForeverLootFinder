@@ -213,6 +213,17 @@ if not L then return end
 -- L["Not on this server: it says the item doesn't exist."] = true -- Translation missing
 -- L["Maybe not on this server: it never sent the item."] = true -- Translation missing
 -- L["Pawn hasn't scored it yet."] = true -- Translation missing
+-- L["binding"] = true -- Translation missing
+-- L["quality"] = true -- Translation missing
+-- L["stats"] = true -- Translation missing
+-- L["weapon speed"] = true -- Translation missing
+-- L["sets only"] = true -- Translation missing
+-- L["search"] = true -- Translation missing
+-- L["owned"] = true -- Translation missing
+-- L["not a Pawn upgrade"] = true -- Translation missing
+-- L["price"] = true -- Translation missing
+-- L["drop chance or source"] = true -- Translation missing
+-- L["Your filters hide it elsewhere: %s."] = true -- Translation missing
 
 -- UI/Menu.lua
 -- L["Remove from favourites"] = true -- Translation missing
@@ -631,3 +642,8 @@ if not L then return end
 
 -- Modules/Attune.lua
 -- L["Quest %d"] = true -- Translation missing
+
+-- UI/Tabs/SetsTab.lua
+-- L["%d of %d pieces"] = true -- Translation missing
+-- L["Sets"] = true -- Translation missing
+-- L["No set pieces match the filters."] = true -- Translation missing
