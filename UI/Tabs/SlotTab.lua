@@ -99,6 +99,29 @@ local function refresh(ctx, kinds)
     local filters = ns.Filters()
     ctx = ctx or ns.FilterContext()
     local rows, counts, approximate = ns.Filter.RunWithCounts(index.records, ns.Items.Info, filters, ctx, filters.slot)
+    -- what you wear always shows, even unsourced, filtered or not an upgrade. not when no addon lists anything: the empty
+    -- list says what to install then
+    if ctx.ownCharacter ~= false and #index.records > 0 then
+        local listed = {}
+        for _, row in ipairs(rows) do listed[row.record.id] = true end
+        local upgradesOnly = filters.pawnUpgradesOnly and ctx.pawnUpgrade ~= nil
+        for _, id in ipairs(ns.Owned.EquippedIDs()) do
+            local record = index.byKey[id] or {key = id, id = id, sources = {}, orphan = true}
+            local info = ns.Items.Info(record)
+            local slot = info.slot
+            if slot then
+                -- the upgrade check would ask Pawn ahead of the shown slot, and a worn item is never its own upgrade
+                local status = ns.Filter.Evaluate(record, info, filters, ctx, true, true)
+                if upgradesOnly or not ns.Filter.Shows(status, ctx) then
+                    counts[slot] = (counts[slot] or 0) + 1
+                    if slot == filters.slot and not listed[id] then
+                        rows[#rows + 1] = {record = record, info = info, status = info.loaded and "pass" or "unknown",
+                                           sources = record.sources, worn = true}
+                    end
+                end
+            end
+        end
+    end
     -- only the rows shown are asked for, not the slot's items the filters hide. again when the filters change, or
     -- QuestieDB and AtlasLoot add items after the slot was opened
     if (kinds and (kinds.tab or kinds.data or kinds.filters)) or ui.requestedSlot ~= filters.slot then

@@ -159,6 +159,14 @@ local function scanned(id)
     return nil
 end
 
+-- what the logged-in character wears
+function Owned.EquippedIDs()
+    local list = {}
+    for id in pairs(equipped) do list[#list + 1] = id end
+    table.sort(list)
+    return list
+end
+
 function Owned.Where(id)
     if not id then return nil end
     return fromSyndicator[id] or scanned(id)
