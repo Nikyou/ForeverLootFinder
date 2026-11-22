@@ -22,21 +22,22 @@ local PROVIDER_NAMES = {
     fdj = "DungeonJournal",
     questie = "Questie",
     atlasloot = "AtlasLoot",
+    att = "ATT",
+    foreverdb = "forever-db",
     tradeskill = L["Profession window"],
 }
 
-local function orders(list)
-    if #list <= 1 then return {list} end
+-- each addon first, the rest in the default order. every order of five would be 120 lines
+local function orders(list, current)
     local out = {}
     for i, first in ipairs(list) do
-        local rest = {}
-        for j, name in ipairs(list) do if j ~= i then rest[#rest + 1] = name end end
-        for _, tail in ipairs(orders(rest)) do
-            local order = {first}
-            for _, name in ipairs(tail) do order[#order + 1] = name end
-            out[#out + 1] = order
-        end
+        local order = {first}
+        for j, name in ipairs(list) do if j ~= i then order[#order + 1] = name end end
+        out[#out + 1] = order
     end
+    local currentText = table.concat(current, ">")
+    for _, order in ipairs(out) do if table.concat(order, ">") == currentText then return out end end
+    out[#out + 1] = current
     return out
 end
 
@@ -56,7 +57,7 @@ local function priorityDropdown(col, parent, group)
     col.label(group.label)
     local dropdown = W.Dropdown(parent, Options.COLUMN - 20, function()
         local items = {}
-        for _, order in ipairs(orders(ns.Index.DEFAULT_PRIORITY[group.key])) do
+        for _, order in ipairs(orders(ns.Index.DEFAULT_PRIORITY[group.key], ns.Priority()[group.key])) do
             local value = table.concat(order, ">")
             local text = orderText(order)
             if value == table.concat(ns.Index.DEFAULT_PRIORITY[group.key], ">") then text = format(L["%s (default)"], text) end
@@ -101,6 +102,13 @@ local function create(parent)
     controls.atlasloot = section(left, "AtlasLoot", L["Use for crafts, raids and other lists"],
                                  L["Crafts, raid and world boss loot, reputation, PvP and event rewards."],
                                  function(value) ns.AtlasLoot.SetEnabled(value) end)
+
+    controls.att = section(left, "ALL THE THINGS", L["Use for its Forever database"],
+                           L["Dungeon loot, quests, vendors, crafts, reputation, PvP and event rewards. Fills what the others miss, and gives recipes their skill level on Forever."],
+                           function(value) ns.ATT.SetEnabled(value) end)
+    controls.foreverdb = section(left, "forever-db", L["Use for crafts, quests, vendors and drop chances"],
+                                 L["Links every recipe to what it makes, Forever's own included. Creature drops get their chance, mostly Classic's."],
+                                 function(value) ns.ForeverDB.SetEnabled(value) end)
 
     controls.attune = section(left, "Attune", L["Use for quests the others miss"],
                               L["Quest rewards from Wowhead's Forever pages. QuestieDB and DungeonJournal come first."],
@@ -212,6 +220,16 @@ local function refresh()
         atlasText = STATE_TEXT[lootState] or STATE_TEXT[craftState] or ""
     end
     setStatus(controls.atlasloot, ns.Crafts.Installed(), p.atlasloot ~= false, atlasText)
+    local att = ns.ATT.Stats()
+    setStatus(controls.att, ns.ATT.Installed(), p.att ~= false,
+              ns.ATT.State() == "done" and good(format(L["%d sources, %d places."], att.items, att.places))
+                or STATE_TEXT[ns.ATT.State()] or "")
+    local fdb = ns.ForeverDB.Stats()
+    setStatus(controls.foreverdb, ns.ForeverDB.Installed(), p.foreverdb ~= false,
+              ns.ForeverDB.State() == "done"
+                and good(format(L["%d crafts, %d quest rewards, %d vendor and %d creature sources."], fdb.crafts, fdb.quests,
+                                fdb.vendors, fdb.drops))
+                or STATE_TEXT[ns.ForeverDB.State()] or "")
     local attune = ns.Attune.Stats()
     setStatus(controls.attune, ns.Attune.Installed(), p.attune ~= false,
               ns.Attune.State() == "done" and good(format(L["%d quests, %d rewards."], attune.quests, attune.rewards))
