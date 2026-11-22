@@ -230,7 +230,7 @@ function ForeverDB.Read(D, opt)
                         recipes[effect[1]] = recipes[effect[1]] or id
                     end
                 end
-            elseif opt.equippable(id) then
+            elseif opt.equippable(id) and not (opt.testItem and opt.testItem(row[1])) then
                 counts.items = counts.items + 1
                 if type(row[1]) == "string" then
                     local key = row[1]:lower()
@@ -397,6 +397,7 @@ local function read()
             localNames = localNames(loc),
             lower = Util.Lower,
             professions = professions,
+            testItem = ns.Index.TestItem,
             implausible = ns.Questie.ImplausibleDrop,
             checkpoint = checkpoint,
         })

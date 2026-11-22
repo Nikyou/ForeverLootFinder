@@ -748,7 +748,7 @@ local function scan()
         while i <= #list do
             local id = list[i]
             i = i + 1
-            if equippable(id) then
+            if equippable(id) and not ns.Index.TestItem(get("Item", id, "name")) then
                 stats.equippable = stats.equippable + 1
                 local itemName = get("Item", id, "name")
                 if type(itemName) == "string" then itemNames[id] = itemName end

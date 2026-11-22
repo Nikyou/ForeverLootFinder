@@ -147,6 +147,16 @@ function Index.FromSlotText(text)
     return slot, itemType
 end
 
+-- the developers' own items, still in the game's data: "Ring of Uber Resists (TEST)", "Monster - Spear, Rusty",
+-- "OLDThug Belt". English on every client. "Testament of Hope" is a real one
+local TEST_NAMES = {"%f[%a][Tt][Ee][Ss][Tt]%f[%A]", "^Monster %- ", "^OLD%u", "%[PH%]", "^Deprecated ", "^Unused ", "^[Zz][Zz]",
+                    "^Placeholder$"}
+function Index.TestItem(name)
+    if type(name) ~= "string" then return false end
+    for _, pattern in ipairs(TEST_NAMES) do if name:find(pattern) then return true end end
+    return false
+end
+
 -- ID 0: FDJ hasn't learned it yet, merge by name
 function Index.KeyOf(entry)
     if entry.id and entry.id > 0 then return entry.id end
@@ -337,6 +347,7 @@ local function tieCreature(source, placeByArea, dungeonByKey)
 end
 
 local function addSource(index, entry, provider)
+    if Index.TestItem(entry.name) then return end
     local record = newRecord(index, entry)
     local source = {}
     for _, field in ipairs(SOURCE_FIELDS) do source[field] = entry[field] end
