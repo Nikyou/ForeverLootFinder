@@ -13,6 +13,10 @@ externals:
   Libs/LibDeflate: https://github.com/SafeteeWoW/LibDeflate
   Libs/LibSerialize: https://github.com/rossnichols/LibSerialize
 
+# installed with this addon by the CurseForge app. it's loaded only when switched on
+required-dependencies:
+  - forever-db
+
 manual-changelog:
   filename: CHANGELOG.md
   markup-type: markdown
