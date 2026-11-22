@@ -1,4 +1,4 @@
--- AtlasLoot's Reputation, PvP and World events tabs
+-- the Reputation, PvP and World events tabs, from AtlasLoot's and ATT's lists
 local _, ns = ...
 local L = ns.L
 
@@ -7,8 +7,8 @@ local function standingLabel(standing)
 end
 
 local function emptyHint()
-    if ns.AtlasLootLists.Installed() then return nil end
-    return L["Needs AtlasLoot."]
+    if ns.AtlasLootLists.Installed() or ns.ATT.Installed() then return nil end
+    return L["Needs AtlasLoot or ALL THE THINGS."]
 end
 
 local function ofKind(kind) return function(source) return source.kind == kind end end

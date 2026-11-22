@@ -71,7 +71,7 @@ ns.Cards.Tab({
     },
     entries = entries,
     emptyHint = function()
-        if ns.Crafts.Installed() then return nil end
-        return L["Install AtlasLoot for all crafted items, or open your professions once."]
+        if ns.Crafts.Installed() or ns.ForeverDB.Installed() or ns.ATT.Installed() then return nil end
+        return L["Install forever-db for all crafted items, or open your professions once."]
     end,
 })
