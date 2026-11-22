@@ -174,25 +174,48 @@ local SOURCE_FIELDS = {
     "parts", "rareDrop", "chanceGuess", "sourceTip",
 }
 
--- FDJ knows Forever's dungeons best, Questie has quest IDs and levels, AtlasLoot has craft skill levels
+-- FDJ and ATT know Forever's dungeons, Questie has quest IDs and levels, ForeverDB links recipes to their items. the rest
+-- fill gaps
 Index.DEFAULT_PRIORITY = {
-    drops = {"fdj", "atlasloot", "questie"},
-    quests = {"questie", "fdj", "atlasloot"},
-    crafts = {"atlasloot", "tradeskill"},
+    drops = {"fdj", "att", "atlasloot", "questie", "foreverdb"},
+    quests = {"questie", "fdj", "att", "foreverdb", "atlasloot"},
+    crafts = {"foreverdb", "atlasloot", "att", "tradeskill"},
+    vendors = {"questie", "foreverdb", "att"},
+    creatures = {"questie", "foreverdb", "att"},
+    lists = {"atlasloot", "att"},
 }
 
+local LIST_GROUP = {reputation = true, pvp = true, event = true}
 local function groupOf(kind)
     if Index.DROP_KINDS[kind] then return "drops" end
     if kind == "quest" or kind == "zoneQuest" then return "quests" end
     if kind == "craft" then return "crafts" end
+    if kind == "vendor" then return "vendors" end
+    if kind == "npcDrop" then return "creatures" end
+    if LIST_GROUP[kind] then return "lists" end
     return nil
 end
 
 local function lower(text) return type(text) == "string" and text:lower() or nil end
 
+local function sameCreature(a, b)
+    if a.many and b.many then return true end
+    local ids = {}
+    for _, id in ipairs(a.npcs or {}) do ids[id] = true end
+    if a.npcID then ids[a.npcID] = true end
+    if b.npcID and ids[b.npcID] then return true end
+    for _, id in ipairs(b.npcs or {}) do if ids[id] then return true end end
+    return false
+end
+
 local function overlap(group, a, b)
     if group == "drops" then return a.dungeon ~= nil and a.dungeon == b.dungeon end
     if group == "crafts" then return a.profession == b.profession end
+    if group == "vendors" or group == "creatures" then return sameCreature(a, b) end
+    if group == "lists" then
+        if a.kind ~= b.kind then return false end
+        return a.kind ~= "reputation" or not (a.factionID and b.factionID) or a.factionID == b.factionID
+    end
     if a.questID and b.questID then return a.questID == b.questID end
     local na, nb = lower(a.questName), lower(b.questName)
     if na and nb then return na == nb end
@@ -203,6 +226,13 @@ end
 local QUEST_MERGE_FIELDS = {
     "dungeon", "questID", "questName", "questLevel", "reqLevel", "zoneKey", "zoneName", "raceMask", "classMask", "faction",
     "classOnly", "areas",
+}
+-- what the entry that stays takes from the one that goes, where it has none
+local MERGE_FIELDS = {
+    crafts = {"skill", "spell", "recipe"},
+    creatures = {"chance", "zone", "zoneKey", "zoneName", "levelMin", "levelMax"},
+    vendors = {"faction", "zone", "zoneKey", "zoneName"},
+    lists = {"standing", "factionID", "factionName", "section", "eventName"},
 }
 
 local function rankOf(priority, group, provider)
@@ -248,6 +278,12 @@ local function resolveOverlaps(record, priority, dungeonByKey)
                 local winner, loser = a, b
                 if rankOf(priority, group, b.provider) < rankOf(priority, group, a.provider) then winner, loser = b, a end
                 removed[loser] = true
+                for _, field in ipairs(MERGE_FIELDS[group] or {}) do
+                    if winner[field] == nil and loser[field] ~= nil then
+                        winner[field] = loser[field]
+                        if field == "chance" then winner.chanceFrom = loser.provider end
+                    end
+                end
                 if group == "quests" then
                     for _, field in ipairs(QUEST_MERGE_FIELDS) do
                         if winner[field] == nil then winner[field] = loser[field] end
