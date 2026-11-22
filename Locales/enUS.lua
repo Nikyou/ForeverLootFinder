@@ -225,6 +225,7 @@ L["price"] = true
 L["drop chance or source"] = true
 L["Your filters hide it elsewhere: %s."] = true
 L["Above your level filter for now."] = true
+L["better"] = true
 
 -- UI/Menu.lua
 L["Remove from favourites"] = true

@@ -225,6 +225,7 @@ L["price"] = "цена"
 L["drop chance or source"] = "шанс добычи или источник"
 L["Your filters hide it elsewhere: %s."] = "В других списках его скрывают ваши фильтры: %s."
 L["Above your level filter for now."] = "Пока выше вашего фильтра по уровню."
+L["better"] = "лучше"
 
 -- UI/Menu.lua
 L["Remove from favourites"] = "Убрать из избранного"
