@@ -541,6 +541,13 @@ function Dump.StatusText()
     add(format("fdj: state %s%s, read %d times, last read in %.0f ms%s", ns.DungeonJournal.Status(),
                ns.DungeonJournal.Enabled() and "" or " (off)", index.fdjReads, index.fdjMs, fdjError))
     for _, provider in ipairs({ns.Questie, ns.Crafts, ns.AtlasLootLists}) do add(statusLine(provider.Status())) end
+    for _, provider in ipairs({ns.ATT, ns.ForeverDB, ns.Attune, ns.SilverDragon}) do
+        local counts = {}
+        for _, key in ipairs(sortedKeys(provider.Stats())) do
+            if key ~= "ms" then counts[#counts + 1] = key .. "=" .. tostring(provider.Stats()[key]) end
+        end
+        add(statusLine(provider.Status()) .. (#counts > 0 and ("; " .. table.concat(counts, ", ")) or ""))
+    end
     add(format("index: built %d times, last in %.0f ms, %.0f ms in total", index.builds, index.lastMs, index.ms))
     for _, line in ipairs(Dump.AuctionatorLines()) do add(line) end
     for _, line in ipairs(ns.Waypoints.DumpLines()) do add(line) end
