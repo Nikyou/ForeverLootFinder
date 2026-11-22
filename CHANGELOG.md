@@ -1,3 +1,7 @@
+#### 1.4.1
+* Trinkets and rings no longer stay greyed as "Pawn hasn't scored it yet" while you wear one with nothing Pawn can score, like a "Use:" trinket or a plain ring. Anything Pawn scores now shows as "better" than it.
+* The developers' test items, like "Ring of Uber Resists (TEST)", no longer show.
+
 #### 1.4
 * What you're wearing always shows in its slot, even with no known source, filtered out, or with "Pawn upgrades only" ticked.
 * ALL THE THINGS and forever-db support: Forever's own crafted gear, more quest rewards and vendors, and drop chances for creatures. Each one only fills what the other addons miss.
