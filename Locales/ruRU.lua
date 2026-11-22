@@ -545,9 +545,9 @@ L["Skill unknown"] = "Навык неизвестен"
 L["your skill %d"] = "ваш навык %d"
 L["Learned (skill %d)."] = "Изучена (навык %d)."
 L["Not learned: the filter hides its BoP items."] = "Не изучена: фильтр скрывает её БоП-предметы."
-L["Install AtlasLoot for all crafted items, or open your professions once."] = "Установите AtlasLoot для всех предметов ремесла или откройте свои профессии."
 L["Professions"] = "Профессии"
 L["Group by skill"] = "Группировать по навыку"
+L["Install forever-db for all crafted items, or open your professions once."] = "Установите forever-db для всех предметов ремесла или откройте свои профессии."
 
 -- Options/AddonsTab.lua
 L["Waiting to load..."] = "Ожидание загрузки..."
@@ -595,9 +595,15 @@ L["Use for rare creatures"] = "Использовать для редких су
 L["Rares and their loot. DungeonJournal and QuestieDB come first."] = "Редкие существа и их добыча. DungeonJournal и QuestieDB важнее."
 L["%d quests, %d rewards."] = "Заданий: %d, наград: %d."
 L["%d rares, %d items."] = "Редких: %d, предметов: %d."
+L["Use for its Forever database"] = "Использовать его базу Forever"
+L["Dungeon loot, quests, vendors, crafts, reputation, PvP and event rewards. Fills what the others miss, and gives recipes their skill level on Forever."] = "Добыча подземелий, задания, торговцы, ремесло, награды за репутацию, PvP и события. Дополняет то, чего нет у других, и даёт рецептам их уровень навыка в Forever."
+L["Use for crafts, quests, vendors and drop chances"] = "Использовать для ремесла, заданий, торговцев и шансов добычи"
+L["Links every recipe to what it makes, Forever's own included. Creature drops get their chance, mostly Classic's."] = "Связывает каждый рецепт с тем, что он создаёт, включая рецепты Forever. Добыча с существ получает шанс, в основном из Classic."
+L["%d sources, %d places."] = "Источников: %d, мест: %d."
+L["%d crafts, %d quest rewards, %d vendor and %d creature sources."] = "Ремесло: %d, награды заданий: %d, торговцы: %d, существа: %d."
 
 -- UI/Tabs/SourceTabs.lua
-L["Needs AtlasLoot."] = "Нужен AtlasLoot."
+L["Needs AtlasLoot or ALL THE THINGS."] = "Нужен AtlasLoot или ALL THE THINGS."
 
 -- Modules/Questie.lua
 L["%s (entrance)"] = "%s (вход)"

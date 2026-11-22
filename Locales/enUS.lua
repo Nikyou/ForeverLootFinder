@@ -545,9 +545,9 @@ L["Skill unknown"] = true
 L["your skill %d"] = true
 L["Learned (skill %d)."] = true
 L["Not learned: the filter hides its BoP items."] = true
-L["Install AtlasLoot for all crafted items, or open your professions once."] = true
 L["Professions"] = true
 L["Group by skill"] = true
+L["Install forever-db for all crafted items, or open your professions once."] = true
 
 -- Options/AddonsTab.lua
 L["Waiting to load..."] = true
@@ -595,9 +595,15 @@ L["Use for rare creatures"] = true
 L["Rares and their loot. DungeonJournal and QuestieDB come first."] = true
 L["%d quests, %d rewards."] = true
 L["%d rares, %d items."] = true
+L["Use for its Forever database"] = true
+L["Dungeon loot, quests, vendors, crafts, reputation, PvP and event rewards. Fills what the others miss, and gives recipes their skill level on Forever."] = true
+L["Use for crafts, quests, vendors and drop chances"] = true
+L["Links every recipe to what it makes, Forever's own included. Creature drops get their chance, mostly Classic's."] = true
+L["%d sources, %d places."] = true
+L["%d crafts, %d quest rewards, %d vendor and %d creature sources."] = true
 
 -- UI/Tabs/SourceTabs.lua
-L["Needs AtlasLoot."] = true
+L["Needs AtlasLoot or ALL THE THINGS."] = true
 
 -- Modules/Questie.lua
 L["%s (entrance)"] = true

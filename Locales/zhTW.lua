@@ -545,9 +545,9 @@ if not L then return end
 -- L["your skill %d"] = true -- Translation missing
 -- L["Learned (skill %d)."] = true -- Translation missing
 -- L["Not learned: the filter hides its BoP items."] = true -- Translation missing
--- L["Install AtlasLoot for all crafted items, or open your professions once."] = true -- Translation missing
 -- L["Professions"] = true -- Translation missing
 -- L["Group by skill"] = true -- Translation missing
+-- L["Install forever-db for all crafted items, or open your professions once."] = true -- Translation missing
 
 -- Options/AddonsTab.lua
 -- L["Waiting to load..."] = true -- Translation missing
@@ -595,9 +595,15 @@ if not L then return end
 -- L["Rares and their loot. DungeonJournal and QuestieDB come first."] = true -- Translation missing
 -- L["%d quests, %d rewards."] = true -- Translation missing
 -- L["%d rares, %d items."] = true -- Translation missing
+-- L["Use for its Forever database"] = true -- Translation missing
+-- L["Dungeon loot, quests, vendors, crafts, reputation, PvP and event rewards. Fills what the others miss, and gives recipes their skill level on Forever."] = true -- Translation missing
+-- L["Use for crafts, quests, vendors and drop chances"] = true -- Translation missing
+-- L["Links every recipe to what it makes, Forever's own included. Creature drops get their chance, mostly Classic's."] = true -- Translation missing
+-- L["%d sources, %d places."] = true -- Translation missing
+-- L["%d crafts, %d quest rewards, %d vendor and %d creature sources."] = true -- Translation missing
 
 -- UI/Tabs/SourceTabs.lua
--- L["Needs AtlasLoot."] = true -- Translation missing
+-- L["Needs AtlasLoot or ALL THE THINGS."] = true -- Translation missing
 
 -- Modules/Questie.lua
 -- L["%s (entrance)"] = true -- Translation missing
