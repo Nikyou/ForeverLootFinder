@@ -266,18 +266,21 @@ function Owned.CompareWith(env, record, info)
         result.upgradeKnown = newValue == false
         return result
     end
-    local base = 0
+    local base, worn = 0, false
     for _, slot in ipairs(chosen) do
         if env.equipped(slot) then
             local value = env.slotValue(slot)
             if value == nil then return result end
             base = base + (value or 0)
+            worn = true
         end
     end
     result.upgradeKnown = true
     if base <= 0 then
-        result.upgrade = 1
-        result.emptySlot = true
+        -- an empty slot, or what's there has nothing Pawn scores
+        result.upgrade = (not worn or newValue > 0) and 1 or 0
+        result.emptySlot = not worn
+        result.overNothing = worn and newValue > 0 or nil
     else
         result.upgrade = (newValue - base) / base
     end

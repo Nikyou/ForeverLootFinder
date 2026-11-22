@@ -259,9 +259,15 @@ function Pawn.SlotValue(invSlot, scale)
         return false
     end
     local ok, item = call("PawnGetItemDataForInventorySlot", invSlot, true)
-    if not ok or type(item) ~= "table" then return nil end
-    local value = valueOf(item, scale)
-    if value then slotValues[scale][invSlot] = value end
+    if not ok then return nil end
+    -- nothing Pawn can score (a trinket with only a "Use:") is worth 0, not "not scored yet": every trinket
+    -- would wait on it for good
+    if type(item) ~= "table" then
+        if C_Item.GetItemInfo(link) then return 0 end
+        return nil
+    end
+    local value = valueOf(item, scale) or 0
+    slotValues[scale][invSlot] = value
     return value
 end
 

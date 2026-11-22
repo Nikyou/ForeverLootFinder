@@ -265,6 +265,7 @@ local function upgradeText(row)
     local upgrade = row.upgrade
     if upgrade == nil then return "" end
     if compare and compare.emptySlot then return "|cff40ff40" .. L["new"] .. "|r" end
+    if compare and compare.overNothing then return "|cff40ff40" .. L["better"] .. "|r" end
     local percent = upgrade * 100
     if percent > 0.5 then return format("|cff40ff40+%.0f%%|r", percent) end
     if percent < -0.5 then return format("|cffff5050%.0f%%|r", percent) end
