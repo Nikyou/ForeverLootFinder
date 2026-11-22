@@ -48,6 +48,8 @@ local defaults = {
         questieKinds = {quests = true, vendors = true, drops = true},
         waypoints = "auto", -- auto (TomTom, else the map pin), tomtom or pin
         atlasloot = true,
+        att = true,
+        foreverdb = true,
         auctionator = true,
         -- a column with no data hides whatever the choice
         columns = {upgrade = true, pawn = true, weapon = true, chance = true, source = true, price = false},
@@ -220,7 +222,8 @@ function addon:OnProfileChanged()
     self:Migrate("profile")
     LibStub("LibDBIcon-1.0"):Refresh(ADDON_NAME, self.db.profile.minimap)
     if started then
-        for _, provider in ipairs({ns.Questie, ns.Crafts, ns.AtlasLootLists, ns.Attune, ns.SilverDragon}) do
+        for _, provider in ipairs({ns.Questie, ns.Crafts, ns.AtlasLootLists, ns.ATT, ns.ForeverDB, ns.Attune,
+                                   ns.SilverDragon}) do
             if provider.Enabled() and provider.State() == "off" then provider.Init() end
         end
         ns.Owned.ScanSyndicator()
@@ -322,7 +325,8 @@ local HANDLERS = {
     -- an index still missing an addon's items would prune them
     PLAYER_LOGOUT = function()
         local settled = ns.IndexSettled()
-        for _, provider in ipairs({ns.Questie, ns.Crafts, ns.AtlasLootLists, ns.Attune, ns.SilverDragon}) do
+        for _, provider in ipairs({ns.Questie, ns.Crafts, ns.AtlasLootLists, ns.ATT, ns.ForeverDB, ns.Attune,
+                                   ns.SilverDragon}) do
             local state = provider.State()
             if state == "waiting" or state == "scanning" then settled = false end
         end
@@ -351,6 +355,8 @@ function addon:OnEnable()
     ns.SilverDragon.Init()
     ns.Crafts.Init()
     ns.AtlasLootLists.Init()
+    ns.ATT.Init()
+    ns.ForeverDB.Init()
     ns.Auctionator.Init()
     ns.Tooltip.Enable()
     local frame = CreateFrame("Frame")

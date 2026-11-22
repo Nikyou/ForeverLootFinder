@@ -9,7 +9,7 @@
 ## IconTexture: 134344
 ## X-Curse-Project-ID: 1814833
 ## X-Wago-ID: qGZAneKd
-## OptionalDeps: ForeverDungeonJournal, Pawn, Syndicator, QuestieDB, Questie, AtlasLootClassic, AtlasBIStooltips, Auctionator, Attune, SilverDragon
+## OptionalDeps: ForeverDungeonJournal, Pawn, Syndicator, QuestieDB, Questie, AtlasLootClassic, AtlasBIStooltips, Auctionator, Attune, SilverDragon, AllTheThings
 
 embeds.xml
 Core\Util.lua
@@ -38,6 +38,8 @@ Modules\AtlasLoot\Loader.lua
 Modules\AtlasLoot\Crafts.lua
 Modules\AtlasLoot\Lists.lua
 Modules\AtlasLoot\BiS.lua
+Modules\ATT.lua
+Modules\ForeverDB.lua
 Modules\Waypoints.lua
 Features\Favourites.lua
 Features\Sets.lua
