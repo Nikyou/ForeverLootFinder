@@ -111,7 +111,9 @@ local function refresh(ctx, kinds)
             if source.kind == "vendor" then return "many:vendor", L["Sold by many vendors"], 3500 end
             return "many:npcDrop", L["Dropped by many creatures"], 3600
         end
-        return "q:" .. tostring(source.zoneKey), source.zoneName or L["Other quests"],
+        -- by name: QuestieDB keys zones by area, ATT and ForeverDB by map
+        return "q:" .. (source.zoneName and ns.Util.Lower(source.zoneName) or tostring(source.zoneKey)),
+               source.zoneName or L["Other quests"],
                2000 + (source.reqLevel or source.levelMin or source.npcLevel or 0)
     end
     local byTier = {}

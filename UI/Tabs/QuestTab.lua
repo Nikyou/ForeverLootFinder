@@ -16,8 +16,11 @@ local function questKey(source)
     return name and ("name:" .. name) or tostring(source.questID or source.section)
 end
 
+-- by name: QuestieDB keys zones by area, ATT and ForeverDB by map
 local function zoneOf(source, ctx)
-    if source.zoneKey and source.zoneKey ~= "zone:other" and source.zoneName then return source.zoneKey, source.zoneName end
+    if source.zoneKey and source.zoneKey ~= "zone:other" and source.zoneName then
+        return "zone:" .. ns.Util.Lower(source.zoneName), source.zoneName
+    end
     if source.dungeon then return "dungeon:" .. source.dungeon, ns.Tooltip.DungeonLabel(source.dungeon, ctx.dungeonByKey) end
     return "zone:other", L["Other quests"]
 end
