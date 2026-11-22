@@ -14,6 +14,8 @@ Forever Loot Finder gets its item lists from other addons. It works without them
 * **DungeonJournal**: Forever's dungeons with their bosses, loot and quests, and drop chances when it has them.
 * **Questie**: quest rewards, vendors, creature drops and world drops.
 * **AtlasLoot Classic Forever**: raids and world bosses, crafted gear, reputation, PvP and event rewards, world drops, drop chances, and BiS lists to add to your favourites when it has them.
+* **ALL THE THINGS**: Forever's dungeons, quest rewards, vendors, crafted gear, reputation, PvP and event rewards, and the skill each recipe is learned at on Forever.
+* **forever-db**: every recipe with the item it makes, Forever's own included, and drop chances for creatures (mostly Classic's). The CurseForge app installs it with Forever Loot Finder.
 * **Attune**: quest rewards the others miss.
 * **SilverDragon**: rare creatures and what they drop.
 * **Pawn**: item scores, upgrade percent and the "Pawn upgrades only" filter.
@@ -77,3 +79,5 @@ Forever Loot Finder reads its data from these addons. Thanks to their authors.
 * [Auctionator](https://www.curseforge.com/wow/addons/auctionator) by plusmouse and Borjamacare
 * [Attune](https://www.curseforge.com/wow/addons/attune) by CixiDelmont
 * [Silver Dragon](https://www.curseforge.com/wow/addons/silver-dragon) by Kemayo
+* [ALL THE THINGS](https://www.curseforge.com/wow/addons/all-the-things) by Crieve and the ATT team
+* [forever-db](https://www.curseforge.com/wow/addons/forever-db) by fatedfr
