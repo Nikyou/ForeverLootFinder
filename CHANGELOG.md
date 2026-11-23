@@ -1,5 +1,5 @@
 #### 1.4.2
-* Uses much less memory after logging in: the item list is built once all addons have been read, not again after each one.
+* Uses much less memory: the item list is built once all addons have been read, not again after each one. The item list no longer copies what the other addons give it, and each item's data is smaller.
 * forever-db's copy of Questie's data is dropped where Questie already has it.
 
 #### 1.4.1
