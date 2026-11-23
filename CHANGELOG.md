@@ -1,3 +1,7 @@
+#### 1.4.2
+* Uses much less memory after logging in: the item list is built once all addons have been read, not again after each one.
+* forever-db's copy of Questie's data is dropped where Questie already has it.
+
 #### 1.4.1
 * Trinkets and rings no longer stay greyed as "Pawn hasn't scored it yet" while you wear one with nothing Pawn can score, like a "Use:" trinket or a plain ring. Anything Pawn scores now shows as "better" than it.
 * The developers' test items, like "Ring of Uber Resists (TEST)", no longer show.
