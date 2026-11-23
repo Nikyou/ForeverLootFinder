@@ -27,6 +27,7 @@ L["That item can't be worn."] = "Этот предмет нельзя надет
 L["No addon lists where it's from, so it shows only under Favourites."] = "Ни один аддон не знает, откуда он, поэтому он виден только в «Избранном»."
 L["the selected slot's items with no Pawn value, and why"] = "предметы выбранной ячейки без оценки Pawn и почему"
 L["Commands (also /foreverlootfinder):"] = "Команды (также /foreverlootfinder):"
+L["each addon's state and memory"] = "состояние и память каждого аддона"
 
 -- Features/Favourites.lua
 L["BiS"] = "БиС"
@@ -98,7 +99,8 @@ L["Item data dump"] = "Выгрузка данных предметов"
 L["Full dump"] = "Полная выгрузка"
 L["DungeonJournal isn't installed."] = "DungeonJournal не установлен."
 L["Pawn dump"] = "Дамп Pawn"
-L["Usage: /flf dump stats, fdj, questie, crafts, items, pawn or all"] = "Использование: /flf dump stats, fdj, questie, crafts, items, pawn или all"
+L["Status dump"] = "Дамп состояния"
+L["Usage: /flf dump stats, fdj, questie, crafts, items, pawn, status or all"] = "Использование: /flf dump stats, fdj, questie, crafts, items, pawn, status или all"
 
 -- Features/ImportExport.lua
 L["Not a Forever Loot Finder profile string."] = "Это не строка профиля Forever Loot Finder."

@@ -564,6 +564,26 @@ function Dump.StatusText()
         add(format("memory: %s; all addons %.0f MB, %.0f MB of it garbage", table.concat(parts, ", "),
                    collectgarbage("count") / 1024, (before - collectgarbage("count")) / 1024))
     end
+    -- what holds it, roughly. shared tables count once, for the part listed first
+    local seen, sizes = {}, {}
+    local function measure(label, value)
+        local bytes = ns.Util.SizeOf(value, seen)
+        if bytes >= 51200 then sizes[#sizes + 1] = format("%s %.1f", label, bytes / 1048576) end
+    end
+    measure("index", ns.GetIndex())
+    measure("questie", ns.Questie.Tables())
+    measure("foreverdb", ns.ForeverDB.Entries())
+    measure("att", ns.ATT.Entries())
+    measure("atlasloot", ns.AtlasLootLists.Entries())
+    measure("crafts", ns.Crafts.Entries())
+    measure("attune", ns.Attune.Entries())
+    measure("silverdragon", ns.SilverDragon.Entries())
+    measure("fdj", ns.SourceData())
+    measure("item data", ns.Items.Tables())
+    measure("pawn", ns.Pawn.Tables())
+    measure("cache file", rawget(_G, "ForeverLootFinderCache"))
+    measure("settings file", rawget(_G, "ForeverLootFinderDB"))
+    add("memory held, estimated MB: " .. table.concat(sizes, ", "))
     for _, line in ipairs(Dump.AuctionatorLines()) do add(line) end
     for _, line in ipairs(ns.Waypoints.DumpLines()) do add(line) end
     local errors = ns.Errors()
@@ -646,6 +666,8 @@ function Dump.Start(arg)
         show(L["Crafted items dump"], Dump.CraftsText())
     elseif arg == "pawn" then
         show(L["Pawn dump"], Dump.PawnText())
+    elseif arg == "status" then
+        show(L["Status dump"], Dump.StatusText())
     elseif arg == "items" or arg == "all" then
         local index = ns.GetIndex()
         if arg == "items" then
@@ -654,6 +676,6 @@ function Dump.Start(arg)
             show(L["Full dump"], Dump.AllText(index))
         end
     else
-        ns.Print(L["Usage: /flf dump stats, fdj, questie, crafts, items, pawn or all"])
+        ns.Print(L["Usage: /flf dump stats, fdj, questie, crafts, items, pawn, status or all"])
     end
 end

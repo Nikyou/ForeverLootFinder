@@ -27,6 +27,7 @@ L["That item can't be worn."] = true
 L["No addon lists where it's from, so it shows only under Favourites."] = true
 L["the selected slot's items with no Pawn value, and why"] = true
 L["Commands (also /foreverlootfinder):"] = true
+L["each addon's state and memory"] = true
 
 -- Features/Favourites.lua
 L["BiS"] = true
@@ -98,7 +99,8 @@ L["Item data dump"] = true
 L["Full dump"] = true
 L["DungeonJournal isn't installed."] = true
 L["Pawn dump"] = true
-L["Usage: /flf dump stats, fdj, questie, crafts, items, pawn or all"] = true
+L["Status dump"] = true
+L["Usage: /flf dump stats, fdj, questie, crafts, items, pawn, status or all"] = true
 
 -- Features/ImportExport.lua
 L["Not a Forever Loot Finder profile string."] = true

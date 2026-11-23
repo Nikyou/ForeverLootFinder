@@ -27,6 +27,7 @@ if not L then return end
 -- L["No addon lists where it's from, so it shows only under Favourites."] = true -- Translation missing
 -- L["the selected slot's items with no Pawn value, and why"] = true -- Translation missing
 -- L["Commands (also /foreverlootfinder):"] = true -- Translation missing
+-- L["each addon's state and memory"] = true -- Translation missing
 
 -- Features/Favourites.lua
 -- L["BiS"] = true -- Translation missing
@@ -98,7 +99,8 @@ if not L then return end
 -- L["Full dump"] = true -- Translation missing
 -- L["DungeonJournal isn't installed."] = true -- Translation missing
 -- L["Pawn dump"] = true -- Translation missing
--- L["Usage: /flf dump stats, fdj, questie, crafts, items, pawn or all"] = true -- Translation missing
+-- L["Status dump"] = true -- Translation missing
+-- L["Usage: /flf dump stats, fdj, questie, crafts, items, pawn, status or all"] = true -- Translation missing
 
 -- Features/ImportExport.lua
 -- L["Not a Forever Loot Finder profile string."] = true -- Translation missing
