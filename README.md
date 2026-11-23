@@ -1,11 +1,12 @@
+## Download link
+
+https://www.curseforge.com/wow/addons/forever-lootfinder
+
 ## Introduction
 
 **Forever Loot Finder** lists the gear you can get in Forever **by equipment slot**: dungeon and raid drops, quest rewards, crafted items, vendor goods, reputation, PvP and event rewards. Filter and sort it to plan what to farm next.
 
-* Pick a slot and see every item for it, with where it comes from and its level.
-* Only what your class can use: armor for your level, every weapon type your class can learn.
-* Sort by item level, a stat, required level, dungeon level, weapon speed or DPS. With Pawn, by your scale and upgrade percent.
-* Mark favourites, get a reminder when you enter their dungeon and a notice when one drops.
+Pick a slot and see every item for it, with where it comes from and its level. Only what your class can use is listed: armor for your level and every weapon type your class can learn. Sort by item level, a stat, required level, dungeon level, weapon speed or DPS, or with Pawn, by your scale and upgrade percent. Mark favourites to get a reminder when you enter their dungeon and a notice when one drops.
 
 ## Requirements
 
@@ -32,30 +33,20 @@ Each one can be switched off under Settings > Addons.
 * `/flf reset` - move the windows back to the middle of the screen
 * `/flf fav <item>` - add an item to your favourites
 * `/flf help` - list all commands
-* Minimap button: click for the window, right-click for the settings
-* A key binding under Key Bindings > AddOns
+
+You can also click the minimap button for the window (right-click for the settings) or set a key binding under Key Bindings > AddOns.
 
 ## Features
 
-* **By slot**: every slot on the left with how many items match. Click a column header to sort, right-click it to choose which columns to show.
-* **Dungeons** and **Raids**: a card per place with its items. Places for your level are highlighted.
-* **Quests**, **Professions**, **Reputation**, **PvP** and **World events**: the same cards for quest rewards, crafted gear and other rewards.
-* **Sets**: a card per item set your character can wear, its pieces by slot and where each one comes from.
-* **Favourites**: three tiers (BiS, Must have, Nice to have), grouped by where to farm them, for all your characters. Use **Add item** on the Favourites tab to add any wearable item by name, ID or Shift-click, even one with no known source.
-* Filters for armor and weapon type, stats, sources, drop chance, price, dungeons and raids, required level, quality, binding, weapon speed, set pieces and more.
-* Items another class or race can't use never show.
-* Right-click an item to favourite it, open it in DungeonJournal, AtlasLoot or Questie, set a waypoint, search it in Auctionator, see its set or link it in chat.
-* Dungeon reminder: your favourites in the dungeon you enter.
-* Drop alert: a notice when a favourite drops.
-* Item tooltips show your favourite tier, and optionally which of your other characters want the item.
-* Export and import your favourites and settings.
+The **By slot** tab shows every slot on the left with how many items match. Click a column header to sort, right-click it to choose which columns to show. **Dungeons** and **Raids** show a card per place with its items, and places for your level are highlighted. **Quests**, **Professions**, **Reputation**, **PvP** and **World events** use the same cards for quest rewards, crafted gear and other rewards. **Sets** shows a card per item set your character can wear, its pieces by slot and where each one comes from.
+
+You can filter by armor and weapon type, stats, sources, drop chance, price, dungeons and raids, required level, quality, binding, weapon speed, set pieces and more. Items another class or race can't use never show. Right-click an item to favourite it, open it in DungeonJournal, AtlasLoot or Questie, set a waypoint, search it in Auctionator, see its set or link it in chat.
+
+**Favourites** come in three tiers (BiS, Must have, Nice to have), grouped by where to farm them, for all your characters. Use **Add item** on the Favourites tab to add any wearable item by name, ID or Shift-click, even one with no known source. When you enter a dungeon, a reminder lists your favourites there, and a notice pops up when one drops. Item tooltips show your favourite tier, and optionally which of your other characters want the item. You can export and import your favourites and settings.
 
 ## Notes
 
-* Only what you look at is loaded from the server: the open slot, tab or favourites. Everything else shows what was saved last time. Rows still loading are greyed out.
-* A "~" before a slot's count means some of its items haven't loaded yet, or Pawn hasn't scored them. Open the slot to load them.
-* Pawn doesn't count set bonuses.
-* Auction prices come from your own Auctionator scans.
+Only what you look at is loaded from the server: the open slot, tab or favourites. Everything else shows what was saved last time, and rows still loading are greyed out. A "~" before a slot's count means some of its items haven't loaded yet, or Pawn hasn't scored them; open the slot to load them. Pawn doesn't count set bonuses, and auction prices come from your own Auctionator scans.
 
 ## Localisation
 
