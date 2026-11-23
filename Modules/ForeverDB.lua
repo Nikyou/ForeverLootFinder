@@ -25,11 +25,12 @@ local FACTIONS = {A = "Alliance", H = "Horde"}
 local ENGLISH = {enUS = true, enGB = true}
 
 local status = Util.NewStatus("foreverdb", {items = 0, quests = 0, vendors = 0, drops = 0, chances = 0, world = 0,
-                                           crafts = 0, trainer = 0, implausible = 0, sod = 0, ms = 0})
+                                           crafts = 0, trainer = 0, implausible = 0, sod = 0, pruned = 0, ms = 0})
 local stats = status.counts
 local EMPTY = {provider = "foreverdb", entries = {}, areas = {}}
 local extra = EMPTY
 local learnedFor -- ATT's state the skill levels came from
+local prunedFor -- QuestieDB's list the copies were dropped for, false when there was none
 
 local function data()
     local db = rawget(_G, "ForeverDB")
@@ -409,6 +410,7 @@ local function read()
         stats.ms, status.ms = ms, ms
         if found then
             for key, value in pairs(counts) do stats[key] = value end
+            stats.pruned, prunedFor = 0, nil
             for _, entry in ipairs(found) do
                 if entry.profession then entry.professionName = ns.Crafts.Name(entry.profession) end
             end
@@ -418,6 +420,43 @@ local function read()
         status.state = found and #found > 0 and "done" or "nodata"
         ns.RebuildIndex()
     end)
+end
+
+-- its copy of QuestieDB would lose every overlap to QuestieDB itself, so those entries go once QuestieDB's are in. a
+-- creature drop with a chance stays: QuestieDB's entry takes the chance from it
+local load
+local function key(entry)
+    if entry.kind == "zoneQuest" then return entry.questID and (entry.id .. "q" .. entry.questID) end
+    if entry.kind == "vendor" or entry.kind == "npcDrop" then
+        if entry.many then return entry.id .. entry.kind .. "many" end
+        return entry.npcID and (entry.id .. entry.kind .. entry.npcID)
+    end
+    if entry.kind == "world" then return entry.id .. "world" end
+    return nil
+end
+
+function ForeverDB.Prune()
+    if status.state ~= "done" then return end
+    local questie = ns.Questie.Enabled() and ns.Questie.State() == "done" and ns.Questie.Entries() or false
+    if prunedFor == questie then return end
+    -- pruned for another list: QuestieDB was switched off or its kinds changed, read again
+    if prunedFor then
+        prunedFor = nil
+        return load()
+    end
+    prunedFor = questie
+    if not questie then return end
+    local have = {}
+    for _, entry in ipairs(questie) do
+        local k = key(entry)
+        if k then have[k] = true end
+    end
+    local kept = {}
+    for _, entry in ipairs(extra.entries) do
+        local k = not entry.chance and key(entry)
+        if k and have[k] then stats.pruned = stats.pruned + 1 else kept[#kept + 1] = entry end
+    end
+    extra = {provider = "foreverdb", entries = kept, areas = extra.areas}
 end
 
 -- ATT knows the skill each recipe is learned at on Forever, ForeverDB only when it turns yellow
@@ -433,7 +472,7 @@ function ForeverDB.ApplySkills()
     end
 end
 
-local function load()
+function load()
     if ns.inCombat then return C_Timer.After(2, load) end
     if not data() then Util.SafeCall(C_AddOns.LoadAddOn, ADDON) end
     if not ENGLISH[GetLocale()] and ns.addon.db.profile.foreverdbLocales ~= false and exists(LOCALES)
