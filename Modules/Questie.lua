@@ -600,6 +600,10 @@ end
 
 -- a spawn inside a dungeon becomes the dungeon's entrance
 local spawnCache = {}
+function Questie.Tables()
+    return {entries = entries, names = itemNames, skipReasons = skipReasons, spawns = spawnCache, sod = sodSkipped}
+end
+
 function Questie.Locations(kind, id)
     local cacheKey = kind .. ":" .. tostring(id)
     if spawnCache[cacheKey] then return spawnCache[cacheKey] end

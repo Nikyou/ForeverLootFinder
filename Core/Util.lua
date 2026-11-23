@@ -57,6 +57,38 @@ end
 
 function Util.Clock() return debugprofilestop and debugprofilestop() or 0 end
 
+-- rough bytes a value keeps alive, for /flf dump status: Lua 5.1 on 64-bit, tables, keys and strings. seen is shared so
+-- two parts don't count the same table twice. metatables and functions aren't followed
+local function slots(n)
+    local size = 1
+    while size < n do size = size * 2 end
+    return n > 0 and size or 0
+end
+function Util.SizeOf(root, seen)
+    local total, stack = 0, {root}
+    while #stack > 0 do
+        local value = table.remove(stack)
+        local kind = type(value)
+        if (kind == "table" or kind == "string") and not seen[value] then
+            seen[value] = true
+            if kind == "string" then
+                total = total + 25 + #value
+            else
+                local array, hash = #value, 0
+                for key, item in pairs(value) do
+                    if not (type(key) == "number" and key >= 1 and key <= array and key % 1 == 0) then
+                        hash = hash + 1
+                        stack[#stack + 1] = key
+                    end
+                    stack[#stack + 1] = item
+                end
+                total = total + 56 + 16 * slots(array) + 40 * slots(hash)
+            end
+        end
+    end
+    return total
+end
+
 local COINS = {
     gold = "|TInterface\\MoneyFrame\\UI-GoldIcon:0:0:2:0|t",
     silver = "|TInterface\\MoneyFrame\\UI-SilverIcon:0:0:2:0|t",

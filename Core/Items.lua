@@ -430,6 +430,8 @@ function Items.Track(index)
 end
 
 function Items.Tracked() return trackedCount > 0 and tracked or nil end
+-- for the memory line of /flf dump status
+function Items.Tables() return {info = cache, tracked = tracked, records = recordOf, queue = queue} end
 
 local urgent, inUrgent, urgentHead = {}, {}, 1 -- what's on screen jumps the queue, in its order
 

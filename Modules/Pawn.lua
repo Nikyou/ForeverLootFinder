@@ -243,6 +243,8 @@ end
 local function pending() return live > 0 or laterHead <= #later end
 
 
+function Pawn.Tables() return {values = values} end
+
 function Pawn.Forget(id)
     for _, byScale in pairs(values) do byScale[id] = nil end
     if ns.Cache then ns.Cache.ForgetPawn(id) end
