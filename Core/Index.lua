@@ -163,27 +163,6 @@ function Index.KeyOf(entry)
     return "name:" .. (entry.name or ""):lower()
 end
 
-local SOURCE_FIELDS = {
-    "dungeon", "bossIndex", "bossName", "kind", "faction", "mobs", "allTrash", "chance", "questName", "questID", "questLevel",
-    "classOnly",
-    -- fdj, questie, atlasloot or tradeskill
-    "provider",
-    "zoneKey", "zoneName", "reqLevel", "raceMask", "classMask",
-    -- every area a quest touches, to tie it to a raid
-    "areas",
-    "profession", "professionName", "skill", "spell", "recipe", "recipeSource",
-    "factionID", "factionName", "standing", "pvpRank", "eventName", "section",
-    -- to open AtlasLoot's window there
-    "alModule", "alContent", "alBoss",
-    -- set when the chance was borrowed from another addon
-    "chanceFrom",
-    -- count, ids and zones only on a "many" source
-    "npcID", "npcName", "npcLevel", "npcs", "zone", "zones", "moreZones", "levelMin", "levelMax", "rare", "many", "count",
-    "creature", "worldDrop",
-    -- FDJ: the halves of a combined item, an extremely rare drop, which trash drops it
-    "parts", "rareDrop", "chanceGuess", "sourceTip",
-}
-
 -- FDJ and ATT know Forever's dungeons, Questie has quest IDs and levels, ForeverDB links recipes to their items. the rest
 -- fill gaps
 Index.DEFAULT_PRIORITY = {
@@ -317,7 +296,7 @@ local function newRecord(index, entry)
     local key = Index.KeyOf(entry)
     local record = index.byKey[key]
     if not record then
-        record = {key = key, id = entry.id or 0, name = entry.name, sources = {}, randomBonus = false}
+        record = {key = key, id = entry.id or 0, name = entry.name, sources = {}}
         index.byKey[key] = record
         index.records[#index.records + 1] = record
     end
@@ -346,12 +325,24 @@ local function tieCreature(source, placeByArea, dungeonByKey)
     end
 end
 
+-- a source keeps its addon's entry in [1] and reads through to it, holding only what the index sets on it: a build
+-- copies nothing and the entries stay as their addon made them. a field on the entry itself would often double its size
+local SOURCE = {__index = function(source, key) return rawget(source, 1)[key] end}
+
+-- a plain copy of a source, its entry's fields too
+function Index.Flat(source)
+    local out = {}
+    local entry = rawget(source, 1)
+    for key, value in pairs(entry or {}) do out[key] = value end
+    for key, value in pairs(source) do if key ~= 1 then out[key] = value end end
+    return out
+end
+
 local function addSource(index, entry, provider)
     if Index.TestItem(entry.name) then return end
     local record = newRecord(index, entry)
-    local source = {}
-    for _, field in ipairs(SOURCE_FIELDS) do source[field] = entry[field] end
-    source.provider = source.provider or provider
+    local source = setmetatable({entry}, SOURCE)
+    if not entry.provider then source.provider = provider end
     tieCreature(source, index.placeByArea, index.dungeonByKey)
     local dungeon = source.dungeon and index.dungeonByKey[source.dungeon]
     source.order = dungeon and dungeon.order or KIND_ORDER[entry.kind] or 999
@@ -483,9 +474,6 @@ function Index.Build(data, extras, priority)
         for _, source in ipairs(record.sources) do tieToPlace(source, index.placeByArea, index.dungeonByKey) end
         crossCheckQuests(record)
         if #record.sources > 1 then table.sort(record.sources, sourceOrder) end
-        local dungeons = {}
-        for _, source in ipairs(record.sources) do if source.dungeon then dungeons[source.dungeon] = true end end
-        record.dungeons = dungeons
         record.order = record.sources[1] and record.sources[1].order or 999
     end
     return index

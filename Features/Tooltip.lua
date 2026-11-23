@@ -154,8 +154,7 @@ function Tooltip.MergeQuests(sources)
             copies = copies or {}
             local merged = copies[first]
             if not merged then
-                merged = {}
-                for key, value in pairs(out[first]) do merged[key] = value end
+                merged = ns.Index.Flat(out[first])
                 merged.questIDs, merged.merged = {out[first].questID}, 1
                 copies[first] = merged
                 out[first] = merged
