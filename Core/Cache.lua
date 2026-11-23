@@ -100,9 +100,9 @@ function Cache.Decode(text, info)
     info.setID = tonumber(f[6] or "")
     local flags = f[7] or ""
     info.cosmetic = flags:find("c", 1, true) and true or nil
-    info.hasUse, info.hasProc = flags:find("u", 1, true) ~= nil, flags:find("p", 1, true) ~= nil
+    info.hasUse, info.hasProc = flags:find("u", 1, true) and true or nil, flags:find("p", 1, true) and true or nil
     info.unique = flags:find("e", 1, true) and "equipped" or flags:find("q", 1, true) and "unique" or nil
-    info.stats, info.otherStats = {}, {}
+    info.stats = {}
     for key, value in (f[8] or ""):gmatch("([^,=]+)=([^,]+)") do info.stats[key] = tonumber(value) end
     info.speed, info.dps = tonumber(f[9] or ""), tonumber(f[10] or "")
     info.classes, info.races = names(f[11] or ""), names(f[12] or "")
@@ -111,7 +111,7 @@ function Cache.Decode(text, info)
     info.setName = f[14] ~= "" and f[14] or nil
     info.setTotal = tonumber(f[15] or "")
     local bonuses = info.setName and db and db.sets[info.setName]
-    info.setBonuses = bonuses and split(bonuses, "\n") or {}
+    info.setBonuses = bonuses and split(bonuses, "\n") or nil
     info.loaded, info.tooltipLoaded = true, true
     return info
 end

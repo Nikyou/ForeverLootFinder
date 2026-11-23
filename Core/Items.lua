@@ -210,9 +210,10 @@ local function applyParsed(info, parsed)
     info.reqSkill = profession and {id = profession, name = skill.name, rank = skill.rank} or nil
     info.unique = parsed.unique
     info.speed, info.dps = parsed.speed, info.dps or parsed.dps
-    info.hasUse, info.hasProc = parsed.hasUse or false, parsed.hasProc or false
+    info.hasUse, info.hasProc = parsed.hasUse or nil, parsed.hasProc or nil
     info.cosmetic = info.cosmetic or parsed.cosmetic or nil
-    info.setName, info.setTotal, info.setBonuses = parsed.setName, parsed.setTotal, parsed.setBonuses
+    info.setName, info.setTotal = parsed.setName, parsed.setTotal
+    info.setBonuses = parsed.setBonuses and #parsed.setBonuses > 0 and parsed.setBonuses or nil
 end
 
 local function buildFromFDJ(record, info)
@@ -233,7 +234,7 @@ end
 local function instant(record, info)
     local ok, itemID, _, _, equipLoc, icon, classID, subclassID = pcall(C_Item.GetItemInfoInstant, record.id)
     if ok and itemID then
-        info.equipLoc, info.icon, info.classID, info.subclassID = equipLoc, icon, classID, subclassID
+        info.icon = icon
         info.slot = Index.SlotFromEquipLoc(equipLoc)
         info.itemType = Index.TypeFromClass(classID, subclassID, equipLoc)
     else
@@ -244,7 +245,7 @@ end
 
 -- quick: no tooltip, the builder reads it later
 local function build(record, quick)
-    local info = {key = record.key, id = record.id}
+    local info = {id = record.id}
     local id = record.id
     if not id or id <= 0 then
         buildFromFDJ(record, info)
@@ -280,6 +281,8 @@ local function build(record, quick)
         end
         local statsOk, raw = pcall(C_Item.GetItemStats, link or ("item:" .. id))
         info.stats, info.otherStats = StatMap.Convert(statsOk and raw or nil)
+        -- ~12k items: a field less often halves the table
+        if next(info.otherStats) == nil then info.otherStats = nil end
         if info.stats.DPS then info.dps = info.stats.DPS end
         if quick and info.slot then
             info.partial = true
@@ -317,7 +320,7 @@ end
 local function fromCache(record)
     local text = ns.Cache and ns.Cache.Get(record.id)
     if not text then return nil end
-    local info = {key = record.key, id = record.id}
+    local info = {id = record.id}
     instant(record, info)
     if not info.slot then return nil end
     ns.Cache.Decode(text, info)

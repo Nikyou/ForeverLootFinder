@@ -48,8 +48,9 @@ function Dump.StatsText(index)
     local unmapped = {}
     for _, record in ipairs(records) do
         local info = ns.Items.Info(record)
-        lines[#lines + 1] = format("%d;%s;%s;%s;%s;%s", record.id, tostring(info.equipLoc or ""), tostring(info.classID or ""),
-                                   tostring(info.subclassID or ""), info.loaded and "1" or "0", statsText(record.id))
+        local _, _, _, equipLoc, _, classID, subclassID = ns.Util.SafeCall(C_Item.GetItemInfoInstant, record.id)
+        lines[#lines + 1] = format("%d;%s;%s;%s;%s;%s", record.id, tostring(equipLoc or ""), tostring(classID or ""),
+                                   tostring(subclassID or ""), info.loaded and "1" or "0", statsText(record.id))
         for key in pairs(info.otherStats or {}) do unmapped[key] = (unmapped[key] or 0) + 1 end
     end
     lines[#lines + 1] = "# client keys with no FLF stat (shown under Other):"
@@ -121,10 +122,10 @@ function Dump.FDJText(index, data)
             local textSlot = ns.Index.FromSlotText(record.slotText)
             if textSlot and info.slot and textSlot ~= info.slot then
                 disagree[#disagree + 1] = format("%d %s: FDJ \"%s\", client %s", record.id, record.name or "?", record.slotText,
-                                                 tostring(info.equipLoc))
+                                                 tostring(select(4, ns.Util.SafeCall(C_Item.GetItemInfoInstant, record.id))))
             elseif textSlot and not info.slot then
                 notEquip[#notEquip + 1] = format("%d %s: FDJ \"%s\", client %s", record.id, record.name or "?", record.slotText,
-                                                 tostring(info.equipLoc))
+                                                 tostring(select(4, ns.Util.SafeCall(C_Item.GetItemInfoInstant, record.id))))
             end
             if info.failed then failed[#failed + 1] = format("%d %s", record.id, record.name or "?") end
         end
@@ -570,7 +571,6 @@ function Dump.StatusText()
         local bytes = ns.Util.SizeOf(value, seen)
         if bytes >= 51200 then sizes[#sizes + 1] = format("%s %.1f", label, bytes / 1048576) end
     end
-    measure("index", ns.GetIndex())
     measure("questie", ns.Questie.Tables())
     measure("foreverdb", ns.ForeverDB.Entries())
     measure("att", ns.ATT.Entries())
@@ -579,6 +579,8 @@ function Dump.StatusText()
     measure("attune", ns.Attune.Entries())
     measure("silverdragon", ns.SilverDragon.Entries())
     measure("fdj", ns.SourceData())
+    -- after the addons': its sources point at their entries
+    measure("index", ns.GetIndex())
     measure("item data", ns.Items.Tables())
     measure("pawn", ns.Pawn.Tables())
     measure("cache file", rawget(_G, "ForeverLootFinderCache"))
