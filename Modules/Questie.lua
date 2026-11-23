@@ -667,6 +667,13 @@ end
 local function finish(found, token)
     if token ~= scanToken then return end
     entries = found
+    -- only the scan needs these
+    wipe(questCache)
+    wipe(npcCache)
+    wipe(npcZones)
+    wipe(originals)
+    wipe(refQuests)
+    wipe(keptSodQuests)
     status.state = (stats.rewards + stats.vendors + stats.drops) > 0 and "done" or "nodata"
     ns.RebuildIndex()
 end
