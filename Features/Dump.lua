@@ -549,6 +549,21 @@ function Dump.StatusText()
         add(statusLine(provider.Status()) .. (#counts > 0 and ("; " .. table.concat(counts, ", ")) or ""))
     end
     add(format("index: built %d times, last in %.0f ms, %.0f ms in total", index.builds, index.lastMs, index.ms))
+    -- after a full collection: what's kept, not garbage waiting for it
+    local update, usage = rawget(_G, "UpdateAddOnMemoryUsage"), rawget(_G, "GetAddOnMemoryUsage")
+    if update and usage then
+        local before = collectgarbage("count")
+        collectgarbage("collect")
+        ns.Util.SafeCall(update)
+        local parts = {}
+        for _, name in ipairs({"ForeverLootFinder", "ForeverDB", "ForeverDB_Locales", "AllTheThings", "QuestieDB", "Questie",
+                               "AtlasLootClassic"}) do
+            local kb = ns.Util.SafeCall(usage, name)
+            if type(kb) == "number" and kb > 0 then parts[#parts + 1] = format("%s %.1f MB", name, kb / 1024) end
+        end
+        add(format("memory: %s; all addons %.0f MB, %.0f MB of it garbage", table.concat(parts, ", "),
+                   collectgarbage("count") / 1024, (before - collectgarbage("count")) / 1024))
+    end
     for _, line in ipairs(Dump.AuctionatorLines()) do add(line) end
     for _, line in ipairs(ns.Waypoints.DumpLines()) do add(line) end
     local errors = ns.Errors()
