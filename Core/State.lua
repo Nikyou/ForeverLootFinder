@@ -32,6 +32,7 @@ end
 local function build()
     local data = ns.SourceData()
     local started = Util.Clock()
+    ns.ForeverDB.Prune()
     ns.ForeverDB.ApplySkills()
     index = ns.Index.Build(data, {
         {provider = "questie", entries = ns.Questie.Entries(), areas = ns.Questie.Areas()},
@@ -57,11 +58,21 @@ function ns.GetIndex()
     return build()
 end
 
+-- Attune and SilverDragon read while the index is built, so they never count as busy
+function ns.ProvidersBusy()
+    for _, provider in ipairs({ns.Questie, ns.Crafts, ns.AtlasLootLists, ns.ATT, ns.ForeverDB}) do
+        local state = provider.State()
+        if state == "waiting" or state == "scanning" then return true end
+    end
+    return false
+end
+
+-- each build leaves ~30 MB of garbage. while addons are still reading, only what's on screen asks for one
 local function flush()
     scheduled = false
     if ns.inCombat or not pending then return end
     pending = false
-    if dirty or not index then ns.Guard(build) end
+    if (dirty or not index) and not ns.ProvidersBusy() then ns.Guard(build) end
     ns.FireChange("data")
 end
 

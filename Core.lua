@@ -324,12 +324,7 @@ local HANDLERS = {
     SKILL_LINES_CHANGED = function() if updateCharacter() then ns.FireChange("professions") end end,
     -- an index still missing an addon's items would prune them
     PLAYER_LOGOUT = function()
-        local settled = ns.IndexSettled()
-        for _, provider in ipairs({ns.Questie, ns.Crafts, ns.AtlasLootLists, ns.ATT, ns.ForeverDB, ns.Attune,
-                                   ns.SilverDragon}) do
-            local state = provider.State()
-            if state == "waiting" or state == "scanning" then settled = false end
-        end
+        local settled = ns.IndexSettled() and not ns.ProvidersBusy()
         ns.Cache.Prune(settled and ns.Items.Tracked() or nil, ns.Pawn.IsReady() and ns.Pawn.Exists or nil)
     end,
 }
