@@ -325,6 +325,92 @@ local function tieCreature(source, placeByArea, dungeonByKey)
     end
 end
 
+-- how: counted in index.merged for the status dump
+local function tieTo(source, key, index, boss, how)
+    index.merged[how] = (index.merged[how] or 0) + 1
+    source.dungeon, source.creature = key, true
+    if boss then
+        source.kind, source.bossName = boss.kind or "boss", boss.bossName
+    elseif source.many then
+        source.kind = "trash"
+    else
+        source.kind = source.rare and "rare" or "boss"
+        source.bossName = source.npcName
+    end
+    local dungeon = index.dungeonByKey[key]
+    source.order = dungeon and dungeon.order or source.order
+end
+
+-- the item's own boss or trash line naming the creature: Forever's dungeons have no creature IDs in FDJ
+local function namedBy(record, name)
+    name = lower(name)
+    if not name then return nil end
+    for _, source in ipairs(record.sources) do
+        if source.dungeon and Index.DROP_KINDS[source.kind] and not source.creature then
+            if lower(source.bossName) == name then return source end
+            local mobs = lower(source.mobs)
+            if mobs then
+                for mob in mobs:gmatch("[^/,]+") do
+                    if mob:match("^%s*(.-)%s*$") == name then return source end
+                end
+            end
+        end
+    end
+    return nil
+end
+
+-- creature drops tieCreature couldn't place: a boss's own creature, a creature the item's boss or trash line names, a
+-- spawn in a dungeon's instance (the place the item drops in when the wings share one), a few zones with a place the
+-- item drops in among them, or creatures with no spawn at all: only instances' creatures lack one
+local function tieByCreature(record, index)
+    local places
+    -- the places the item drops in, in its sources' order
+    local function droppedIn()
+        if not places then
+            places = {}
+            for _, source in ipairs(record.sources) do
+                local key = source.dungeon
+                if key and Index.DROP_KINDS[source.kind] and not places[key] then
+                    places[key] = true
+                    places[#places + 1] = key
+                end
+            end
+        end
+        return places
+    end
+    local function firstIn(keys)
+        local set = droppedIn()
+        for _, key in ipairs(keys) do if set[key] then return key end end
+        return nil
+    end
+    for _, source in ipairs(record.sources) do
+        if source.kind == "npcDrop" and not source.dungeon then
+            local boss = not source.many and source.npcID and index.bossByNpc[source.npcID]
+            local named = not source.many and not boss and namedBy(record, source.npcName)
+            local key, how
+            if boss and index.dungeonByKey[boss.dungeon] then
+                tieTo(source, boss.dungeon, index, boss, "boss creature")
+            elseif named then
+                tieTo(source, named.dungeon, index,
+                      {kind = named.kind, bossName = named.kind ~= "trash" and named.bossName or nil}, "name")
+            elseif source.instance and index.placesByInstance[source.instance] then
+                how = "instance"
+                -- with creatures outside too, only where the item drops anyway
+                local keys = index.placesByInstance[source.instance]
+                local outside = source.zone or (source.zones and source.zones[1])
+                key = firstIn(keys) or (#keys == 1 and not outside and keys[1]) or nil
+            elseif source.zoneSet then
+                local keys = {}
+                for _, zone in ipairs(source.zoneSet) do keys[#keys + 1] = index.placeByArea[zone] end
+                key, how = firstIn(keys), "zones"
+            elseif not source.zone and not (source.zones and source.zones[1]) then
+                key, how = droppedIn()[1], "no spawn"
+            end
+            if key and index.dungeonByKey[key] then tieTo(source, key, index, nil, how) end
+        end
+    end
+end
+
 -- a source keeps its addon's entry in [1] and reads through to it, holding only what the index sets on it: a build
 -- copies nothing and the entries stay as their addon made them. a field on the entry itself would often double its size
 local SOURCE = {__index = function(source, key) return rawget(source, 1)[key] end}
@@ -410,25 +496,33 @@ local function mergeWorld(record)
     if #kept < #record.sources then record.sources = kept end
 end
 
--- the creatures named for a world drop are a few of the many that drop it. one line, or the item would still show
--- through "Creature drops" with "World drops" off. their levels widen the line's range but never start one
-local function foldIntoWorld(record)
-    local world
+-- what another addon lists beside a reward list is how you get it there: the PvP or faction vendor, the event's
+-- creatures, the quest the list already names (viaQuests). and a world drop's creatures are a few of the many that
+-- drop it. one line, so the list's own switch decides. creature levels widen a world line's range but never start one
+local REWARD_LISTS = {pvp = true, reputation = true, event = true}
+local function foldIntoLists(record, merged)
+    local list, world
     for _, source in ipairs(record.sources) do
-        if source.kind == "world" then
-            world = source
-            break
+        if REWARD_LISTS[source.kind] then
+            list = list or source
+        elseif source.kind == "world" then
+            world = world or source
         end
     end
-    if not world then return end
+    if not list and not world then return end
     local kept = {}
     for _, source in ipairs(record.sources) do
-        if source.kind ~= "npcDrop" then
-            kept[#kept + 1] = source
-        else
+        local kind = source.kind
+        if list and (kind == "vendor" or kind == "npcDrop" or Index.IsQuest(source)) then
+            merged[list.kind] = (merged[list.kind] or 0) + 1
+            if list.faction == nil and source.faction and kind == "vendor" then list.faction = source.faction end
+        elseif world and (kind == "npcDrop" or (source.creature and Index.DROP_KINDS[kind])) then
+            merged.world = (merged.world or 0) + 1
             local low, high = source.levelMin, source.levelMax
             if world.levelMin and low and low < world.levelMin then world.levelMin = low end
             if world.levelMax and high and high > world.levelMax then world.levelMax = high end
+        else
+            kept[#kept + 1] = source
         end
     end
     if #kept < #record.sources then record.sources = kept end
@@ -467,14 +561,31 @@ end
 
 -- extras: entry lists or {entries, dungeons, provider}, their dungeons go after FDJ's
 function Index.Build(data, extras, priority)
-    local index = {records = {}, byKey = {}, dungeons = {}, dungeonByKey = {}, hasChance = false, placeByArea = {}}
+    local index = {records = {}, byKey = {}, dungeons = {}, dungeonByKey = {}, hasChance = false, placeByArea = {},
+                   placesByInstance = {}, bossByNpc = {}, merged = {}}
     for _, dungeon in ipairs(data.dungeons or {}) do
         index.dungeons[#index.dungeons + 1] = dungeon
         index.dungeonByKey[dungeon.key] = dungeon
+        for _, boss in ipairs(dungeon.bosses or {}) do
+            if boss.npcID and not index.bossByNpc[boss.npcID] then
+                index.bossByNpc[boss.npcID] = {dungeon = dungeon.key, bossName = boss.name, kind = boss.kind}
+            end
+        end
     end
     for key, dungeon in pairs(data.dungeonByKey or {}) do index.dungeonByKey[key] = index.dungeonByKey[key] or dungeon end
     for _, extra in ipairs(extras or {}) do
         for area, key in pairs(extra.areas or {}) do index.placeByArea[area] = index.placeByArea[area] or key end
+        -- AtlasLoot's raids, FDJ's dungeons through ForeverDB: one may know a wing the other doesn't
+        for instance, keys in pairs(extra.instances or {}) do
+            local list = index.placesByInstance[instance] or {}
+            index.placesByInstance[instance] = list
+            for _, key in ipairs(keys) do
+                local known = false
+                for _, k in ipairs(list) do if k == key then known = true end end
+                if not known then list[#list + 1] = key end
+            end
+        end
+        for npc, boss in pairs(extra.npcs or {}) do index.bossByNpc[npc] = index.bossByNpc[npc] or boss end
         for _, dungeon in ipairs(extra.dungeons or {}) do
             if not index.dungeonByKey[dungeon.key] then
                 dungeon.order = #index.dungeons + 1
@@ -491,13 +602,14 @@ function Index.Build(data, extras, priority)
     end
     priority = priority or Index.DEFAULT_PRIORITY
     for _, record in ipairs(index.records) do
+        tieByCreature(record, index)
         shareChances(record)
         resolveOverlaps(record, priority, index.dungeonByKey)
         mergeWorld(record)
         dropRepeatedRares(record)
-        foldIntoWorld(record)
         for _, source in ipairs(record.sources) do tieToPlace(source, index.placeByArea, index.dungeonByKey) end
         crossCheckQuests(record)
+        foldIntoLists(record, index.merged)
         if #record.sources > 1 then table.sort(record.sources, sourceOrder) end
         record.order = record.sources[1] and record.sources[1].order or 999
     end
