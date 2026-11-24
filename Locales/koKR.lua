@@ -373,6 +373,8 @@ if not L then return end
 -- L["Only items with a price"] = true -- Translation missing
 -- L["with an auction price"] = true -- Translation missing
 -- L["Auctionator's prices from your scans. BoP and unpriced items: hidden by the first box, kept by the max price."] = true -- Translation missing
+-- L["Only up to my skill"] = true -- Translation missing
+-- L["Hide items above my skill"] = true -- Translation missing
 
 -- UI/MainWindow.lua
 -- L["Pawn value"] = true -- Translation missing

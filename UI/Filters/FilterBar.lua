@@ -34,6 +34,8 @@ local LABELS = {
     quest = L["Dungeon quests"],
     zoneQuest = L["Other quests (Questie)"],
     craft = L["Crafted items"],
+    craftOwnBoP = L["BoP only from my professions"],
+    ownSkill = L["Hide items for other professions"],
     chanceOn = L["Hide drops rarer than this"],
     priceMaxOn = L["Max auction price (gold)"],
 }
@@ -132,11 +134,22 @@ local CHECKS = {
     craftOwnBoP = {
         field = "craftOwnBoP",
         default = true,
-        label = L["BoP only from my professions"],
+        label = LABELS.craftOwnBoP,
         indent = 20,
         usable = function(f, env)
             if not env.crafts then return false, env.atlasWhy end
             return f.sources.craft ~= false, parentReason(LABELS.craft)
+        end,
+    },
+    craftOwnSkill = {
+        field = "craftOwnSkill",
+        default = true,
+        label = L["Only up to my skill"],
+        indent = 40,
+        usable = function(f, env)
+            if not env.crafts then return false, env.atlasWhy end
+            if f.sources.craft == false then return false, parentReason(LABELS.craft) end
+            return f.craftOwnBoP ~= false, parentReason(LABELS.craftOwnBoP)
         end,
     },
     reputation = atlasSource("reputation", L["Reputation rewards"], L["no reputation"]),
@@ -194,8 +207,15 @@ local CHECKS = {
     levelOn = {field = "on", group = "maxLevel", default = false, label = L["Hide items above this level"]},
     speedOn = {field = "on", group = "speed", default = false, label = L["Weapons in this speed range (sec)"]},
     setsOnly = {field = "setsOnly", default = false, label = L["Only set pieces"], summary = {[true] = L["set pieces"]}},
-    ownSkill = {field = "ownSkill", default = true, label = L["Hide items for other professions"],
+    ownSkill = {field = "ownSkill", default = true, label = LABELS.ownSkill,
                 summary = {[false] = L["with other professions' items"]}},
+    ownSkillRank = {
+        field = "ownSkillRank",
+        default = true,
+        label = L["Hide items above my skill"],
+        indent = 20,
+        usable = function(f) return f.ownSkill ~= false, parentReason(LABELS.ownSkill) end,
+    },
     hideCosmetic = {field = "hideCosmetic", default = true, label = L["Hide cosmetic items"],
                     summary = {[false] = L["with cosmetic items"]}},
     upgradesOnly = {
@@ -213,9 +233,9 @@ local CHECKS = {
 }
 FilterBar.CHECK_ORDER = {
     "special", "dungeon", "raid", "rare", "trash", "shared", "probable", "quest", "zoneQuest", "hideCompleted", "vendor",
-    "npcDrop", "craft", "craftOwnBoP", "reputation", "pvp", "event", "world", "faction", "chanceOn", "chanceUnknown",
-    "priceOnly", "priceMaxOn", "dungeonLevelOn", "levelOn", "speedOn", "setsOnly", "ownSkill", "hideCosmetic", "upgradesOnly",
-    "hideOwned",
+    "npcDrop", "craft", "craftOwnBoP", "craftOwnSkill", "reputation", "pvp", "event", "world", "faction", "chanceOn",
+    "chanceUnknown", "priceOnly", "priceMaxOn", "dungeonLevelOn", "levelOn", "speedOn", "setsOnly", "ownSkill",
+    "ownSkillRank", "hideCosmetic", "upgradesOnly", "hideOwned",
 }
 FilterBar.CHECKS = CHECKS
 
@@ -496,6 +516,7 @@ function FilterBar.Create(parent, width)
     check("npcDrop")
     check("craft")
     check("craftOwnBoP")
+    check("craftOwnSkill")
     for _, key in ipairs({"reputation", "pvp", "event", "world", "faction"}) do check(key) end
 
     section("chance", L["Drop chance"])
@@ -605,6 +626,7 @@ function FilterBar.Create(parent, width)
 
     section("more", L["More"])
     check("ownSkill")
+    check("ownSkillRank")
     col.help(L["Like engineering goggles: wearable only with the profession."], 28)
     check("hideCosmetic")
     check("upgradesOnly")

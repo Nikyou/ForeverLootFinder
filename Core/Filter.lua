@@ -36,7 +36,9 @@ function Filter.Defaults()
         },
         hideCompleted = true, -- unless the item is owned
         craftOwnBoP = true, -- BoP crafts only from this character's professions
+        craftOwnSkill = true, -- and only up to its skill in them
         ownSkill = true, -- "Requires Engineering" only when the character has it
+        ownSkillRank = true, -- and "Requires Engineering (225)" only at 225
         hideCosmetic = true,
         faction = true,
         maxLevel = {on = true, mode = "relative", fixed = 60, plus = 5},
@@ -219,6 +221,12 @@ local function dungeonFits(dungeon, range)
     return dungeon.levelMin <= range.max and (dungeon.levelMax or dungeon.levelMin) >= range.min
 end
 
+-- rank: the character's, nil when not learned. needed: nil or false when any rank will do
+function Filter.SkillEnough(rank, needed)
+    if not rank then return false end
+    return not (type(needed) == "number" and type(rank) == "number" and rank < needed)
+end
+
 -- raids have their own switch instead of "dungeon drops", the parts (rares, trash, shared) count for both
 local function kindOn(kind, kinds, raid)
     -- a combined item follows its dungeon's drops
@@ -283,8 +291,9 @@ function Filter.Sources(record, state, ctx, info)
             for _, questID in ipairs(source.viaQuests) do if not ctx.completed(questID) then allDone = false end end
             if allDone then ok = false end
         end
+        local needed = state.craftOwnSkill ~= false and source.skill
         if ok and source.kind == "craft" and state.craftOwnBoP ~= false and ctx.professions
-          and not ctx.professions[source.profession] then
+          and not Filter.SkillEnough(ctx.professions[source.profession], needed) then
             if info and info.bind == "BOP" then
                 ok = false
             elseif info and not info.loaded then
@@ -376,8 +385,11 @@ function Filter.Evaluate(record, info, state, ctx, ignoreSlot, skipUpgrade)
     if state.hideCosmetic ~= false and info.cosmetic then return "fail", nil, "cosmetic" end
 
     -- engineering goggles and such, whatever the binding
-    if state.ownSkill ~= false and info.reqSkill and ctx.professions and not ctx.professions[info.reqSkill.id] then
-        return "fail", nil, "profession"
+    local skill = info.reqSkill
+    if state.ownSkill ~= false and skill and ctx.professions then
+        local rank = ctx.professions[skill.id]
+        if not rank then return "fail", nil, "profession" end
+        if state.ownSkillRank ~= false and not Filter.SkillEnough(rank, skill.rank) then return "fail", nil, "skill" end
     end
 
     if state.setsOnly then

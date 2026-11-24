@@ -373,6 +373,8 @@ L["Max auction price (gold)"] = true
 L["Only items with a price"] = true
 L["with an auction price"] = true
 L["Auctionator's prices from your scans. BoP and unpriced items: hidden by the first box, kept by the max price."] = true
+L["Only up to my skill"] = true
+L["Hide items above my skill"] = true
 
 -- UI/MainWindow.lua
 L["Pawn value"] = true

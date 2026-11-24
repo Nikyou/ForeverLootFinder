@@ -373,6 +373,8 @@ L["Max auction price (gold)"] = "Макс. цена на аукционе (зо�
 L["Only items with a price"] = "Только с ценой на аукционе"
 L["with an auction price"] = "с ценой на аукционе"
 L["Auctionator's prices from your scans. BoP and unpriced items: hidden by the first box, kept by the max price."] = "Цены Auctionator по вашим сканированиям. БоП и предметы без цены: первый флажок скрывает, макс. цена оставляет."
+L["Only up to my skill"] = "Только до моего навыка"
+L["Hide items above my skill"] = "Скрывать предметы выше моего навыка"
 
 -- UI/MainWindow.lua
 L["Pawn value"] = "Оценка Pawn"
