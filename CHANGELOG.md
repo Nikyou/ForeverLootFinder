@@ -1,3 +1,9 @@
+#### 1.4.3
+* Fixed the profession filters doing nothing on a character with no professions: other professions' BoP crafts and items like engineering goggles now hide for them too.
+* New filter "Only up to my skill", under "BoP only from my professions": hides BoP crafts whose recipe needs more skill than you have.
+* New filter "Hide items above my skill", under "Hide items for other professions": goggles that need 225 Engineering no longer show at 100.
+* World drops show as one "World drop" line instead of also listing a few creatures, so unticking "World drops" now hides them.
+
 #### 1.4.2
 * Uses much less memory: the item list is built once all addons have been read, not again after each one. The item list no longer copies what the other addons give it, and each item's data is smaller.
 * forever-db's copy of Questie's data is dropped where Questie already has it.
