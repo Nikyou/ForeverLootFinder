@@ -437,6 +437,16 @@ function Dump.ItemsText(index)
     add(format("item data loaded: %d / %d; loading started %s, paused %s, queued %d, urgent %d", done, total,
                tostring(queue.started), tostring(queue.paused), queue.queued, queue.urgent))
     for _, line in ipairs(Dump.LoadLines()) do add(line) end
+    local ranked, reputation = {}, {}
+    for _, info in pairs(Items.Tables().info) do
+        if info.pvpRank then ranked[#ranked + 1] = info.name or "?" end
+        if info.reqReputation then reputation[#reputation + 1] = info.name or "?" end
+    end
+    table.sort(ranked)
+    table.sort(reputation)
+    add(format("from tooltips: needs a PvP rank %d (%s); needs a reputation %d (%s)", #ranked,
+               table.concat(ranked, ", ", 1, math.min(#ranked, 5)), #reputation,
+               table.concat(reputation, ", ", 1, math.min(#reputation, 5))))
     add("states: loaded; failed = the server said it doesn't exist; noanswer = asked 3 times, no answer; "
         .. "waiting = asked, still in time; queued = not asked yet")
     local byState, byProvider, list, seenIDs = {}, {}, {}, {}
@@ -550,6 +560,10 @@ function Dump.StatusText()
         add(statusLine(provider.Status()) .. (#counts > 0 and ("; " .. table.concat(counts, ", ")) or ""))
     end
     add(format("index: built %d times, last in %.0f ms, %.0f ms in total", index.builds, index.lastMs, index.ms))
+    -- creature drops tied to a place (by boss creature, name, instance, zones, no spawn), lines merged into a list's
+    local merged = {}
+    for _, key in ipairs(sortedKeys(index.merged or {})) do merged[#merged + 1] = key .. " " .. index.merged[key] end
+    add("merged: " .. (#merged > 0 and table.concat(merged, ", ") or "none"))
     -- after a full collection: what's kept, not garbage waiting for it
     local update, usage = rawget(_G, "UpdateAddOnMemoryUsage"), rawget(_G, "GetAddOnMemoryUsage")
     if update and usage then
