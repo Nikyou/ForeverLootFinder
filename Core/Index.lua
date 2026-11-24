@@ -410,6 +410,30 @@ local function mergeWorld(record)
     if #kept < #record.sources then record.sources = kept end
 end
 
+-- the creatures named for a world drop are a few of the many that drop it. one line, or the item would still show
+-- through "Creature drops" with "World drops" off. their levels widen the line's range but never start one
+local function foldIntoWorld(record)
+    local world
+    for _, source in ipairs(record.sources) do
+        if source.kind == "world" then
+            world = source
+            break
+        end
+    end
+    if not world then return end
+    local kept = {}
+    for _, source in ipairs(record.sources) do
+        if source.kind ~= "npcDrop" then
+            kept[#kept + 1] = source
+        else
+            local low, high = source.levelMin, source.levelMax
+            if world.levelMin and low and low < world.levelMin then world.levelMin = low end
+            if world.levelMax and high and high > world.levelMax then world.levelMax = high end
+        end
+    end
+    if #kept < #record.sources then record.sources = kept end
+end
+
 -- reputation pages also list quest rewards: take the quest's level so a done quest hides it too
 -- (Earthpower Vest on Cenarion Circle's page)
 local function crossCheckQuests(record)
@@ -471,6 +495,7 @@ function Index.Build(data, extras, priority)
         resolveOverlaps(record, priority, index.dungeonByKey)
         mergeWorld(record)
         dropRepeatedRares(record)
+        foldIntoWorld(record)
         for _, source in ipairs(record.sources) do tieToPlace(source, index.placeByArea, index.dungeonByKey) end
         crossCheckQuests(record)
         if #record.sources > 1 then table.sort(record.sources, sourceOrder) end
