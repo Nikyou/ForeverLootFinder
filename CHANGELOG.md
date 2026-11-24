@@ -1,8 +1,12 @@
 #### 1.4.3
-* Fixed the profession filters doing nothing on a character with no professions: other professions' BoP crafts and items like engineering goggles now hide for them too.
-* New filter "Only up to my skill", under "BoP only from my professions": hides BoP crafts whose recipe needs more skill than you have.
+* Items the addons list more than once are now merged, so unticking a source really hides them. Dungeon and raid loot no longer also shows as a creature drop outside dungeons, and a world drop is one "World drop" line instead of also a few creatures.
+* PvP, reputation and world event rewards show as one line, with the vendor that sells them, the creatures that drop them and the quest that gives them. Unticking "PvP rewards" now hides Grand Marshal's gear, and unticking "Raids and world bosses" hides Ouro's Larvae of the Great Worm.
+* "PvP rewards" and "Reputation rewards" work without AtlasLoot: an item that needs a PvP rank or a reputation counts as one, whoever sells or gives it.
+* New filters "Only ranks I have" and "Only standings I have", under PvP and reputation rewards: hide what your rank or reputation doesn't let you buy yet. Off by default.
 * New filter "Hide items above my skill", under "Hide items for other professions": goggles that need 225 Engineering no longer show at 100.
-* World drops show as one "World drop" line instead of also listing a few creatures, so unticking "World drops" now hides them.
+* New filter "Only up to my skill", under "BoP only from my professions": hides BoP crafts whose recipe needs more skill than you have.
+* Fixed the profession filters doing nothing on a character with no professions.
+* Fixed world epics showing as world events, and AtlasLoot's world events (Darkmoon Faire, Lunar Festival and the rest) missing.
 
 #### 1.4.2
 * Uses much less memory: the item list is built once all addons have been read, not again after each one. The item list no longer copies what the other addons give it, and each item's data is smaller.
