@@ -96,12 +96,32 @@ end
 local function unavailable(id) return ns.Cache ~= nil and ns.Cache.Unavailable(id) ~= nil end
 
 local patternSets, englishSet
+-- the client's rank and standing names to their numbers: 5 Private/Scout .. 18 Grand Marshal/High Warlord, 1 Hated ..
+-- 8 Exalted, so the filter can weigh them against the character's
+local rankOf, standingOf = {}, {}
 local function patterns()
     if not patternSets then
         local G = {}
         for _, key in ipairs(Restrictions.GLOBALS) do
             local value = _G[key]
             if type(value) == "string" and not isSecret(value) then G[key] = value end
+        end
+        -- PVP_RANK_5_0 to PVP_RANK_19_1, both sides' names. AtlasLoot reads them the same way
+        G.PVP_RANKS = {}
+        for rank = 1, 30 do
+            for side = 0, 1 do
+                local value = rawget(_G, "PVP_RANK_" .. rank .. "_" .. side)
+                if type(value) == "string" and not isSecret(value) and value ~= "" then
+                    G.PVP_RANKS[#G.PVP_RANKS + 1] = value
+                    rankOf[value] = rank
+                end
+            end
+        end
+        for standing = 1, 8 do
+            for _, suffix in ipairs({"", "_FEMALE"}) do
+                local value = rawget(_G, "FACTION_STANDING_LABEL" .. standing .. suffix)
+                if type(value) == "string" and not isSecret(value) then standingOf[value] = standing end
+            end
         end
         local lineTypes = Enum and Enum.TooltipDataLineType
         local client = Restrictions.BuildPatterns(G, lineTypes)
@@ -209,6 +229,9 @@ local function applyParsed(info, parsed)
     local profession = skill and ns.Crafts and ns.Crafts.ProfessionByName(skill.name)
     info.reqSkill = profession and {id = profession, name = skill.name, rank = skill.rank} or nil
     info.unique = parsed.unique
+    info.pvpRank = parsed.pvpRank and rankOf[parsed.pvpRank] or nil
+    info.reqReputation = parsed.reqReputation
+    info.reqStanding = parsed.reqStanding and standingOf[parsed.reqStanding] or nil
     info.speed, info.dps = parsed.speed, info.dps or parsed.dps
     info.hasUse, info.hasProc = parsed.hasUse or nil, parsed.hasProc or nil
     info.cosmetic = info.cosmetic or parsed.cosmetic or nil

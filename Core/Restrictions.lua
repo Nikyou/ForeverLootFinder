@@ -95,6 +95,9 @@ function Restrictions.BuildPatterns(G, lineTypes)
     -- after the level and reputation lines, they start the same way
     p.reqSkill = Restrictions.FormatToPattern(G.ITEM_REQ_SKILL)
     p.reqReputation = Restrictions.FormatToPattern(G.ITEM_REQ_REPUTATION)
+    -- "Requires Knight-Captain" reads like a skill line: the game's own rank names tell them apart
+    p.pvpRanks = {}
+    for _, name in ipairs(G.PVP_RANKS or {}) do p.pvpRanks[name] = true end
     p.uniqueExact = {}
     for _, key in ipairs({"ITEM_UNIQUE", "ITEM_UNIQUE_EQUIPPABLE"}) do
         if type(G[key]) == "string" then p.uniqueExact[G[key]] = key end
@@ -155,10 +158,14 @@ function Restrictions.ParseLines(lines, patternSets)
             end
             local levelLine = p.minLevel and left:match(p.minLevel)
             if not out.minLevel and levelLine then out.minLevel = number(levelLine) end
-            if not out.reqSkill and p.reqSkill and not levelLine
-              and not (p.reqReputation and left:match(p.reqReputation)) then
+            local faction, standing
+            if p.reqReputation then faction, standing = left:match(p.reqReputation) end
+            if faction and not out.reqReputation then out.reqReputation, out.reqStanding = faction, standing end
+            if not out.reqSkill and p.reqSkill and not levelLine and not faction then
                 local text = left:match(p.reqSkill)
-                if text then
+                if text and p.pvpRanks[text] then
+                    out.pvpRank = out.pvpRank or text
+                elseif text then
                     local name, rank = text:match("^(.-)%s*%((%d+)%)$")
                     out.reqSkill = {name = name or text, rank = tonumber(rank)}
                 end

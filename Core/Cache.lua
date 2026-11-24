@@ -5,7 +5,7 @@ local _, ns = ...
 local Cache = {}
 ns.Cache = Cache
 
-Cache.VERSION = 1
+Cache.VERSION = 2
 local SEP = "^"
 
 -- reset: why the cache was dropped at login
@@ -79,7 +79,7 @@ function Cache.Encode(info)
         info.name or "", num(info.quality), num(info.ilvl), num(info.minLevel), BIND[info.bind] or "", num(info.setID), flags,
         table.concat(stats, ","), num(info.speed), num(info.dps), list(info.classes), list(info.races),
         skill and (skill.id .. "," .. num(skill.rank) .. "," .. (skill.name or "")) or "", info.setName or "",
-        num(info.setTotal),
+        num(info.setTotal), num(info.pvpRank), num(info.reqStanding), info.reqReputation or "",
     }
     for _, field in ipairs(fields) do if field:find(SEP, 1, true) then return nil end end
     return (table.concat(fields, SEP):gsub("%^+$", ""))
@@ -110,6 +110,8 @@ function Cache.Decode(text, info)
     info.reqSkill = id and {id = tonumber(id), rank = tonumber(rank), name = skillName} or nil
     info.setName = f[14] ~= "" and f[14] or nil
     info.setTotal = tonumber(f[15] or "")
+    info.pvpRank, info.reqStanding = tonumber(f[16] or ""), tonumber(f[17] or "")
+    info.reqReputation = (f[18] or "") ~= "" and f[18] or nil
     local bonuses = info.setName and db and db.sets[info.setName]
     info.setBonuses = bonuses and split(bonuses, "\n") or nil
     info.loaded, info.tooltipLoaded = true, true
