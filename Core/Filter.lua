@@ -39,6 +39,8 @@ function Filter.Defaults()
         craftOwnSkill = true, -- and only up to its skill in them
         ownSkill = true, -- "Requires Engineering" only when the character has it
         ownSkillRank = true, -- and "Requires Engineering (225)" only at 225
+        pvpOwnRank = false, -- PvP rewards only up to the character's rank
+        repOwnStanding = false, -- reputation rewards only up to its standing
         hideCosmetic = true,
         faction = true,
         maxLevel = {on = true, mode = "relative", fixed = 60, plus = 5},
@@ -170,6 +172,8 @@ function Filter.Context(state, character, opts)
         auctionPrice = opts.auctionPrice,
         completed = opts.completed,
         professions = character.professions,
+        pvpRank = character.pvpRank,
+        standings = character.standings,
     }) do ctx[key] = value end
     ctx.armor = state.armor or Classes.ArmorPreselect(ctx.class, ctx.level)
     ctx.weapons = state.weapons or Classes.WeaponPreselect(ctx.class)
@@ -227,6 +231,14 @@ function Filter.SkillEnough(rank, needed)
     return not (type(needed) == "number" and type(rank) == "number" and rank < needed)
 end
 
+-- standings: the character's, see readStandings. a faction it has never met is below any standing
+function Filter.HasStanding(standings, factionID, name, needed)
+    if not (standings and needed) then return true end
+    local have = (factionID and standings.byID[factionID]) or (name and standings.byName[name])
+    if have then return have >= needed end
+    return not standings.complete
+end
+
 -- raids have their own switch instead of "dungeon drops", the parts (rares, trash, shared) count for both
 local function kindOn(kind, kinds, raid)
     -- a combined item follows its dungeon's drops
@@ -242,6 +254,18 @@ local function kindOn(kind, kinds, raid)
     return kinds[kind] ~= false
 end
 
+-- an item that needs a PvP rank or a reputation is a PvP or reputation reward, whoever sells or gives it: without
+-- AtlasLoot's lists the item's own tooltip says so
+local BY_ITEM = {vendor = true, npcDrop = true, quest = true, zoneQuest = true}
+function Filter.KindOf(source, info)
+    local kind = source.kind
+    if info and BY_ITEM[kind] then
+        if info.pvpRank then return "pvp" end
+        if info.reqReputation then return "reputation" end
+    end
+    return kind
+end
+
 -- second result: a crafted item's binding hasn't loaded yet, so craftOwnBoP can't decide.
 -- returns record.sources itself when all pass, callers only read it
 function Filter.Sources(record, state, ctx, info)
@@ -252,7 +276,7 @@ function Filter.Sources(record, state, ctx, info)
     for i, source in ipairs(all) do
         local placeKey = source.dungeon or source.tiedTo
         local place = placeKey and ctx.dungeonByKey[placeKey]
-        local ok = kindOn(source.kind, kinds, place and place.raid)
+        local ok = kindOn(Filter.KindOf(source, info), kinds, place and place.raid)
         local block = ok and Filter.SourceBlock(source, ctx)
         if block and (block ~= "faction" or state.faction) then ok = false end
         if ok and placeKey then
@@ -290,6 +314,12 @@ function Filter.Sources(record, state, ctx, info)
             local allDone = true
             for _, questID in ipairs(source.viaQuests) do if not ctx.completed(questID) then allDone = false end end
             if allDone then ok = false end
+        end
+        -- AtlasLoot's standing on a reputation or Battleground list: what the quartermaster sells at
+        local standing = ok and state.repOwnStanding and kinds.reputation ~= false and source.standing
+        if standing and (source.factionID or source.factionName)
+          and not Filter.HasStanding(ctx.standings, source.factionID, source.factionName, standing) then
+            ok = false
         end
         local needed = state.craftOwnSkill ~= false and source.skill
         if ok and source.kind == "craft" and state.craftOwnBoP ~= false and ctx.professions
@@ -390,6 +420,15 @@ function Filter.Evaluate(record, info, state, ctx, ignoreSlot, skipUpgrade)
         local rank = ctx.professions[skill.id]
         if not rank then return "fail", nil, "profession" end
         if state.ownSkillRank ~= false and not Filter.SkillEnough(rank, skill.rank) then return "fail", nil, "skill" end
+    end
+
+    local kinds = state.sources or {}
+    if state.pvpOwnRank and kinds.pvp ~= false and info.pvpRank and ctx.pvpRank and ctx.pvpRank < info.pvpRank then
+        return "fail", nil, "pvp rank"
+    end
+    if state.repOwnStanding and kinds.reputation ~= false and info.reqReputation
+      and not Filter.HasStanding(ctx.standings, nil, info.reqReputation, info.reqStanding) then
+        return "fail", nil, "standing"
     end
 
     if state.setsOnly then

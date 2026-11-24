@@ -228,6 +228,8 @@ if not L then return end
 -- L["Your filters hide it elsewhere: %s."] = true -- Translation missing
 -- L["Above your level filter for now."] = true -- Translation missing
 -- L["better"] = true -- Translation missing
+-- L["PvP rank"] = true -- Translation missing
+-- L["reputation"] = true -- Translation missing
 
 -- UI/Menu.lua
 -- L["Remove from favourites"] = true -- Translation missing
@@ -375,6 +377,10 @@ if not L then return end
 -- L["Auctionator's prices from your scans. BoP and unpriced items: hidden by the first box, kept by the max price."] = true -- Translation missing
 -- L["Only up to my skill"] = true -- Translation missing
 -- L["Hide items above my skill"] = true -- Translation missing
+-- L["Only standings I have"] = true -- Translation missing
+-- L["my standings"] = true -- Translation missing
+-- L["Only ranks I have"] = true -- Translation missing
+-- L["my PvP rank"] = true -- Translation missing
 
 -- UI/MainWindow.lua
 -- L["Pawn value"] = true -- Translation missing

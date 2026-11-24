@@ -36,6 +36,8 @@ local LABELS = {
     craft = L["Crafted items"],
     craftOwnBoP = L["BoP only from my professions"],
     ownSkill = L["Hide items for other professions"],
+    reputation = L["Reputation rewards"],
+    pvp = L["PvP rewards"],
     chanceOn = L["Hide drops rarer than this"],
     priceMaxOn = L["Max auction price (gold)"],
 }
@@ -152,8 +154,26 @@ local CHECKS = {
             return f.craftOwnBoP ~= false, parentReason(LABELS.craftOwnBoP)
         end,
     },
-    reputation = atlasSource("reputation", L["Reputation rewards"], L["no reputation"]),
-    pvp = atlasSource("pvp", L["PvP rewards"], L["no PvP"]),
+    -- without AtlasLoot the item's "Requires" line still makes it one
+    reputation = {field = "reputation", group = "sources", default = true, label = LABELS.reputation,
+                  summary = {[false] = L["no reputation"]}},
+    repOwnStanding = {
+        field = "repOwnStanding",
+        default = false,
+        label = L["Only standings I have"],
+        indent = 20,
+        usable = function(f) return f.sources.reputation ~= false, parentReason(LABELS.reputation) end,
+        summary = {[true] = L["my standings"]},
+    },
+    pvp = {field = "pvp", group = "sources", default = true, label = LABELS.pvp, summary = {[false] = L["no PvP"]}},
+    pvpOwnRank = {
+        field = "pvpOwnRank",
+        default = false,
+        label = L["Only ranks I have"],
+        indent = 20,
+        usable = function(f) return f.sources.pvp ~= false, parentReason(LABELS.pvp) end,
+        summary = {[true] = L["my PvP rank"]},
+    },
     event = atlasSource("event", L["World events"], L["no world events"]),
     world = {
         field = "world",
@@ -233,9 +253,9 @@ local CHECKS = {
 }
 FilterBar.CHECK_ORDER = {
     "special", "dungeon", "raid", "rare", "trash", "shared", "probable", "quest", "zoneQuest", "hideCompleted", "vendor",
-    "npcDrop", "craft", "craftOwnBoP", "craftOwnSkill", "reputation", "pvp", "event", "world", "faction", "chanceOn",
-    "chanceUnknown", "priceOnly", "priceMaxOn", "dungeonLevelOn", "levelOn", "speedOn", "setsOnly", "ownSkill",
-    "ownSkillRank", "hideCosmetic", "upgradesOnly", "hideOwned",
+    "npcDrop", "craft", "craftOwnBoP", "craftOwnSkill", "reputation", "repOwnStanding", "pvp", "pvpOwnRank",
+    "event", "world", "faction", "chanceOn", "chanceUnknown", "priceOnly", "priceMaxOn", "dungeonLevelOn", "levelOn",
+    "speedOn", "setsOnly", "ownSkill", "ownSkillRank", "hideCosmetic", "upgradesOnly", "hideOwned",
 }
 FilterBar.CHECKS = CHECKS
 
@@ -517,7 +537,9 @@ function FilterBar.Create(parent, width)
     check("craft")
     check("craftOwnBoP")
     check("craftOwnSkill")
-    for _, key in ipairs({"reputation", "pvp", "event", "world", "faction"}) do check(key) end
+    for _, key in ipairs({"reputation", "repOwnStanding", "pvp", "pvpOwnRank", "event", "world", "faction"}) do
+        check(key)
+    end
 
     section("chance", L["Drop chance"])
     local function chanceState() return groupOf(filters(), "chance") end

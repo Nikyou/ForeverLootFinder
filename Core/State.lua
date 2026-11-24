@@ -47,6 +47,7 @@ local function build()
     ns.Sets.Invalidate()
     ns.Items.Track(index)
     local stats = ns.indexStats
+    stats.merged = index.merged
     stats.lastMs = Util.Clock() - started
     stats.builds, stats.ms = stats.builds + 1, stats.ms + stats.lastMs
     return index
@@ -139,6 +140,7 @@ function ns.Character(charKey)
     character.raceBit = ns.Questie.RaceBit(data.raceID)
     character.factionRaces = data.faction and ns.Questie.FactionRaces(data.faction)
     character.professions = data.professions
+    character.pvpRank, character.standings = data.pvpRank, data.standings
     -- alts saved before classID was kept
     local classID = data.classID
     character.classNames = {className(data.class, false), className(data.class, true)}

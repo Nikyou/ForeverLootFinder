@@ -7,6 +7,7 @@ local FILTERED_OUT = {
     bind = L["binding"], quality = L["quality"], stats = L["stats"], speed = L["weapon speed"],
     special = L["Use or proc"], set = L["sets only"], search = L["search"], owned = L["owned"],
     upgrade = L["not a Pawn upgrade"], price = L["price"], source = L["drop chance or source"],
+    ["pvp rank"] = L["PvP rank"], standing = L["reputation"],
 }
 local LEVEL_NOTE = L["Above your level filter for now."]
 

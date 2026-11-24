@@ -228,6 +228,8 @@ L["drop chance or source"] = true
 L["Your filters hide it elsewhere: %s."] = true
 L["Above your level filter for now."] = true
 L["better"] = true
+L["PvP rank"] = true
+L["reputation"] = true
 
 -- UI/Menu.lua
 L["Remove from favourites"] = true
@@ -375,6 +377,10 @@ L["with an auction price"] = true
 L["Auctionator's prices from your scans. BoP and unpriced items: hidden by the first box, kept by the max price."] = true
 L["Only up to my skill"] = true
 L["Hide items above my skill"] = true
+L["Only standings I have"] = true
+L["my standings"] = true
+L["Only ranks I have"] = true
+L["my PvP rank"] = true
 
 -- UI/MainWindow.lua
 L["Pawn value"] = true

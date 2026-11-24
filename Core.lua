@@ -68,7 +68,8 @@ local defaults = {
         fdjHint = false,
     },
     global = {
-        characters = {}, -- ["Name-Realm"] = {name, realm, class, classID, race, raceID, level, faction, professions}
+        -- ["Name-Realm"] = {name, realm, class, classID, race, raceID, level, faction, professions, pvpRank, standings}
+        characters = {},
         favourites = {}, -- ["Name-Realm"] = {[itemID] = tier}
         tradeSkills = {}, -- [skill line] = {[itemID] = spell or true}, from profession windows
     },
@@ -176,10 +177,65 @@ local function sameRanks(a, b)
     return true
 end
 
--- true when the professions changed
+-- standing 1 Hated .. 8 Exalted, by faction ID and by name (a tooltip names it). complete: no collapsed header hid a
+-- faction, so one missing was never met. nil when the client can't say
+local function readStandings()
+    local get = ns.Util.SafeCall
+    local rep = rawget(_G, "C_Reputation")
+    local count, at
+    if type(rep) == "table" and rep.GetNumFactions and rep.GetFactionDataByIndex then
+        count = get(rep.GetNumFactions)
+        at = function(i)
+            local d = get(rep.GetFactionDataByIndex, i)
+            if type(d) ~= "table" then return nil end
+            return d.name, d.reaction, d.isHeader, d.isCollapsed, d.factionID, d.isHeaderWithRep
+        end
+    else
+        local num, info = rawget(_G, "GetNumFactions"), rawget(_G, "GetFactionInfo")
+        if type(num) ~= "function" or type(info) ~= "function" then return nil end
+        count = get(num)
+        at = function(i)
+            local name, _, standing, _, _, _, _, _, isHeader, isCollapsed, hasRep, _, _, factionID = get(info, i)
+            return name, standing, isHeader, isCollapsed, factionID, hasRep
+        end
+    end
+    if type(count) ~= "number" or isSecret(count) or count == 0 then return nil end
+    local out = {byID = {}, byName = {}, complete = true}
+    for i = 1, count do
+        local name, standing, isHeader, isCollapsed, factionID, hasRep = at(i)
+        if isHeader and isCollapsed then out.complete = false end
+        if type(standing) == "number" and not isSecret(standing) and (not isHeader or hasRep) then
+            if type(factionID) == "number" and not isSecret(factionID) then out.byID[factionID] = standing end
+            if type(name) == "string" and not isSecret(name) then out.byName[name] = standing end
+        end
+    end
+    return out
+end
+
+-- vendors sell by the current rank (patch 1.7), but Forever has no UnitPVPRank: the highest ever reached is the
+-- closest. its GetPVPLifetimeStats gives kills and that rank, older clients kills, dishonorable kills and the rank
+local function readPvpRank()
+    local current = rawget(_G, "UnitPVPRank")
+    local rank = type(current) == "function" and ns.Util.SafeCall(current, "player")
+    if type(rank) ~= "number" or isSecret(rank) then
+        local lifetime = rawget(_G, "GetPVPLifetimeStats")
+        if type(lifetime) == "function" then
+            local _, second, third = ns.Util.SafeCall(lifetime)
+            rank = third or second
+        end
+    end
+    return type(rank) == "number" and not isSecret(rank) and rank or nil
+end
+
+local function sameStandings(a, b)
+    if a == nil or b == nil then return a == b end
+    return a.complete == b.complete and sameRanks(a.byID, b.byID) and sameRanks(a.byName, b.byName)
+end
+
+-- true when the professions changed; second: the PvP rank or a standing did
 local function updateCharacter()
     local key = ns.Favourites.CharKey()
-    if not key then return false end
+    if not key then return false, false end
     ns.charKey = key
     local _, class, classID = UnitClass("player")
     local _, raceFile, raceID = UnitRace("player")
@@ -187,7 +243,7 @@ local function updateCharacter()
     local faction = UnitFactionGroup("player")
     local name, realm = UnitName("player"), GetRealmName()
     local data = addon.db.global.characters[key] or {}
-    local before = data.professions
+    local before, standingsBefore, rankBefore = data.professions, data.standings, data.pvpRank
     data.name = not isSecret(name) and name or data.name
     data.realm = not isSecret(realm) and realm or data.realm
     if not isSecret(class) and class then data.class = class end
@@ -199,9 +255,12 @@ local function updateCharacter()
     if not isSecret(raceID) and raceID then data.raceID = raceID end
     if not isSecret(level) and type(level) == "number" and level > 0 then data.level = level end
     if not isSecret(faction) and faction then data.faction = faction end
+    data.standings = readStandings() or data.standings
+    data.pvpRank = readPvpRank() or data.pvpRank
     addon.db.global.characters[key] = data
     ns.InvalidateCharacters()
-    return not sameRanks(before, data.professions)
+    return not sameRanks(before, data.professions),
+           rankBefore ~= data.pvpRank or not sameStandings(standingsBefore, data.standings)
 end
 ns.UpdateCharacter = updateCharacter
 
@@ -322,6 +381,8 @@ local HANDLERS = {
     AUCTION_HOUSE_CLOSED = function() ns.Auctionator.Invalidate() end,
     -- fires on every weapon skill-up too
     SKILL_LINES_CHANGED = function() if updateCharacter() then ns.FireChange("professions") end end,
+    UPDATE_FACTION = function() if select(2, updateCharacter()) then ns.FireChange("standing") end end,
+    PLAYER_PVP_RANK_CHANGED = function() if select(2, updateCharacter()) then ns.FireChange("standing") end end,
     -- an index still missing an addon's items would prune them
     PLAYER_LOGOUT = function()
         local settled = ns.IndexSettled() and not ns.ProvidersBusy()

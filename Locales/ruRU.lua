@@ -228,6 +228,8 @@ L["drop chance or source"] = "шанс добычи или источник"
 L["Your filters hide it elsewhere: %s."] = "В других списках его скрывают ваши фильтры: %s."
 L["Above your level filter for now."] = "Пока выше вашего фильтра по уровню."
 L["better"] = "лучше"
+L["PvP rank"] = "PvP-ранг"
+L["reputation"] = "репутация"
 
 -- UI/Menu.lua
 L["Remove from favourites"] = "Убрать из избранного"
@@ -375,6 +377,10 @@ L["with an auction price"] = "с ценой на аукционе"
 L["Auctionator's prices from your scans. BoP and unpriced items: hidden by the first box, kept by the max price."] = "Цены Auctionator по вашим сканированиям. БоП и предметы без цены: первый флажок скрывает, макс. цена оставляет."
 L["Only up to my skill"] = "Только до моего навыка"
 L["Hide items above my skill"] = "Скрывать предметы выше моего навыка"
+L["Only standings I have"] = "Только моё отношение"
+L["my standings"] = "моё отношение"
+L["Only ranks I have"] = "Только мой ранг"
+L["my PvP rank"] = "мой PvP-ранг"
 
 -- UI/MainWindow.lua
 L["Pawn value"] = "Оценка Pawn"
