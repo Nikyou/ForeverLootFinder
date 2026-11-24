@@ -20,6 +20,7 @@ local SOD_NPC_FIRST, SOD_NPC_LAST = 200000, 244999
 local SOD_QUEST_FIRST, FOREVER_QUEST_FIRST = 70000, 90000
 local SOD_ITEM_FIRST, SOD_ITEM_LAST = 190000, 244999
 local DUNGEON_MAP = 4
+local CONTINENTS = {[0] = true, [1] = true} -- Eastern Kingdoms and Kalimdor, every other spawn map is an instance
 local RARE_RANKS = {[2] = true, [4] = true}
 local FACTIONS = {A = "Alliance", H = "Horde"}
 local ENGLISH = {enUS = true, enGB = true}
@@ -27,7 +28,7 @@ local ENGLISH = {enUS = true, enGB = true}
 local status = Util.NewStatus("foreverdb", {items = 0, quests = 0, vendors = 0, drops = 0, chances = 0, world = 0,
                                            crafts = 0, trainer = 0, implausible = 0, sod = 0, pruned = 0, ms = 0})
 local stats = status.counts
-local EMPTY = {provider = "foreverdb", entries = {}, areas = {}}
+local EMPTY = {provider = "foreverdb", entries = {}, areas = {}, instances = {}}
 local extra = EMPTY
 local learnedFor -- ATT's state the skill levels came from
 local prunedFor -- QuestieDB's list the copies were dropped for, false when there was none
@@ -64,7 +65,7 @@ local function npcEntries(out, id, kind, npcIDs, chances, npcOf, zoneName)
         for _, npcID in ipairs(npcIDs) do
             local info = npcOf(npcID)
             local entry = {id = id, kind = kind, npcID = npcID, npcName = info.name, npcs = {npcID}, zone = info.zone,
-                           zoneKey = info.zone, zoneName = info.zone and zoneName(info.zone)}
+                           zoneKey = info.zone, zoneName = info.zone and zoneName(info.zone), instance = info.instance}
             if kind == "vendor" then
                 entry.faction, entry.npcLevel = info.faction, info.maxLevel
             else
@@ -77,8 +78,15 @@ local function npcEntries(out, id, kind, npcIDs, chances, npcOf, zoneName)
     end
     local entry = {id = id, kind = kind, many = true, count = #npcIDs, npcs = {}, zones = {}}
     local zoneSet, zoneCount, names = {}, 0, {}
+    local instance
     for i = 1, math.min(#npcIDs, MANY_SAMPLE) do
         local info = npcOf(npcIDs[i])
+        -- the one instance those with one spawn in, Index weighs the rest by their zones
+        if info.instance and instance == nil then
+            instance = info.instance
+        elseif info.instance and info.instance ~= instance then
+            instance = false
+        end
         if #entry.npcs < MANY_NPCS then entry.npcs[#entry.npcs + 1] = npcIDs[i] end
         if #names < 3 then names[#names + 1] = info.name end
         if info.minLevel and (not entry.levelMin or info.minLevel < entry.levelMin) then entry.levelMin = info.minLevel end
@@ -99,6 +107,7 @@ local function npcEntries(out, id, kind, npcIDs, chances, npcOf, zoneName)
         local zone = next(zoneSet)
         entry.zone, entry.zoneKey, entry.zoneName = zone, zone, zoneName(zone)
     end
+    if instance then entry.instance = instance end
     entry.mobs = table.concat(names, ", ") .. (#npcIDs > #names and ", ..." or "")
     out[#out + 1] = entry
     return 1
@@ -130,7 +139,7 @@ function ForeverDB.Read(D, opt)
     local out, counts = {}, {items = 0, quests = 0, vendors = 0, drops = 0, chances = 0, world = 0, crafts = 0, trainer = 0,
                             implausible = 0, sod = 0}
     local checkpoint = opt.checkpoint or function() end
-    local areas = {}
+    local areas, instances = {}, {}
     local mapDungeon = {}
     local function zoneOfMap(map)
         if mapDungeon[map] == nil then
@@ -153,6 +162,21 @@ function ForeverDB.Read(D, opt)
         return opt.zoneName(tonumber(zone:match("^zone:(%d+)$")))
     end
 
+    -- spw has the instance map of a dungeon creature's spawn. spm often has none for it, or the zone outside
+    local function instanceOf(id)
+        for _, spawn in ipairs(list(D.spw and D.spw["c" .. id])) do
+            local map = type(spawn) == "table" and tonumber(spawn[1])
+            if map and not CONTINENTS[map] then
+                if instances[map] == nil then
+                    local keys = opt.instancePlaces and opt.instancePlaces(map)
+                    instances[map] = type(keys) == "table" and keys[1] and keys or false
+                end
+                return map
+            end
+        end
+        return nil
+    end
+
     local npcCache = {}
     local function npcOf(id)
         local info = npcCache[id]
@@ -172,6 +196,7 @@ function ForeverDB.Read(D, opt)
             rare = RARE_RANKS[row[5]] == true,
             faction = FACTIONS[side],
             zone = map and zoneOfMap(map) or nil,
+            instance = instanceOf(id),
         }
         npcCache[id] = info
         return info
@@ -319,7 +344,8 @@ function ForeverDB.Read(D, opt)
             checkpoint()
         end
     end
-    return out, counts, areas
+    for map, keys in pairs(instances) do if not keys then instances[map] = nil end end
+    return out, counts, areas, instances
 end
 
 -- the client's language, from ForeverDB_Locales when it's loaded
@@ -359,6 +385,15 @@ local function mapName(map)
     return type(name) == "string" and not Util.IsSecret(name) and name ~= "" and name or nil
 end
 
+-- FDJ knows its dungeons' instance IDs and the wings that share one. the client's name ("Deadmines") for the rest
+local function instancePlaces(map)
+    local get = rawget(_G, "GetRealZoneText")
+    local name = type(get) == "function" and Util.SafeCall(get, map)
+    if type(name) ~= "string" or Util.IsSecret(name) or name == "" then name = nil end
+    local keys = Util.SafeCall(ns.DungeonJournal.MatchInstance, map, name)
+    return type(keys) == "table" and keys or nil
+end
+
 local function dungeonOf(name)
     local found = name and ns.DungeonJournal.MatchInstance(nil, name)
     return found and found[1] or nil
@@ -385,14 +420,15 @@ local function read()
     end
     status.state, status.error = "scanning", nil
     local loc = localeTable()
-    local found, counts, areas
+    local found, counts, areas, instances
     Util.RunSliced(function(checkpoint)
-        found, counts, areas = ForeverDB.Read(db, {
+        found, counts, areas, instances = ForeverDB.Read(db, {
             equippable = Util.Equippable,
             npcName = function(id) return loc and type(loc.npc) == "table" and loc.npc[id] or nil end,
             questName = function(id) return loc and type(loc.quest) == "table" and loc.quest[id] or nil end,
             zoneName = zoneName,
             mapName = mapName,
+            instancePlaces = instancePlaces,
             dungeonOf = dungeonOf,
             spellName = (ENGLISH[GetLocale()] or loc) and spellName or nil,
             localNames = localNames(loc),
@@ -414,7 +450,7 @@ local function read()
             for _, entry in ipairs(found) do
                 if entry.profession then entry.professionName = ns.Crafts.Name(entry.profession) end
             end
-            extra = {provider = "foreverdb", entries = found, areas = areas}
+            extra = {provider = "foreverdb", entries = found, areas = areas, instances = instances}
             learnedFor = nil
         end
         status.state = found and #found > 0 and "done" or "nodata"
@@ -456,7 +492,7 @@ function ForeverDB.Prune()
         local k = not entry.chance and key(entry)
         if k and have[k] then stats.pruned = stats.pruned + 1 else kept[#kept + 1] = entry end
     end
-    extra = {provider = "foreverdb", entries = kept, areas = extra.areas}
+    extra = {provider = "foreverdb", entries = kept, areas = extra.areas, instances = extra.instances}
 end
 
 -- ATT knows the skill each recipe is learned at on Forever, ForeverDB only when it turns yellow

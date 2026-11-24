@@ -469,6 +469,11 @@ local function npcEntries(found, item, itemName, kind, list, sodItem)
     entry.moreZones = zoneCount > #entry.zones or nil
     -- all in one zone, Index may tie it to a dungeon
     if zoneCount == 1 then zoneFields(entry, next(zoneSet)) end
+    -- a dungeon's trash often comes with a few creatures outside: Index ties it where the item drops in the dungeon
+    if zoneCount > 1 and kind == "npcDrop" then
+        entry.zoneSet = {}
+        for zone in pairs(zoneSet) do entry.zoneSet[#entry.zoneSet + 1] = zone end
+    end
     entry.mobs = table.concat(names, ", ") .. (#npcIDs > #names and ", ..." or "")
     if kind == "vendor" and oneFaction and faction then entry.faction = faction end
     found[#found + 1] = entry
@@ -575,13 +580,16 @@ function Questie.DungeonEntrances(area)
 end
 
 -- by name, so creature drops and quests find FDJ's dungeons without AtlasLoot
-local placeAreas, placeAreasFor
+local placeAreas, placeAreasFor, placeAreasAtlas
+-- FDJ's dungeons, then AtlasLoot's own places: without FDJ they're all it has
 function Questie.Areas()
     local data = ns.SourceData and ns.SourceData()
     local squash = ns.AtlasLootLists and ns.AtlasLootLists.Squash
     if not data or not squash or not Questie.Enabled() then return {} end
+    local atlas = ns.AtlasLootLists.Entries()
     local list = dungeons()
-    if placeAreasFor == data and placeAreas and next(list) ~= nil then return placeAreas end
+    local same = placeAreasFor == data and placeAreasAtlas == atlas
+    if same and placeAreas and next(list) ~= nil then return placeAreas end
     local byName = {}
     for _, dungeon in ipairs(data.dungeons or {}) do
         for _, text in ipairs({dungeon.key, ns.DungeonJournal.DungeonName(dungeon.key)}) do
@@ -589,12 +597,16 @@ function Questie.Areas()
             if key and not byName[key] then byName[key] = dungeon.key end
         end
     end
+    for _, dungeon in ipairs(atlas.dungeons or {}) do
+        local key = squash(dungeon.name)
+        if key and not byName[key] then byName[key] = dungeon.key end
+    end
     local out = {}
     for area, info in pairs(list) do
         local key = byName[squash(info.name) or ""] or byName[squash(zoneName(area)) or ""]
         if key then out[area] = key end
     end
-    if next(list) ~= nil then placeAreas, placeAreasFor = out, data end
+    if next(list) ~= nil then placeAreas, placeAreasFor, placeAreasAtlas = out, data, atlas end
     return out
 end
 

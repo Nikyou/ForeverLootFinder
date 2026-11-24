@@ -12,7 +12,6 @@ local LOAD_DELAY, LOAD_GAP = 4, 1 -- AtlasLoot collects garbage after each modul
 
 -- numbered per module in the order its data.lua adds them
 local DR_RAID_TYPES = {[3] = true, [4] = true, [5] = true} -- Forever Raids, 20 Raids, 40 Raids
-local COLLECTION_EVENT_TYPE, COLLECTION_MISC_TYPE = 4, 3 -- World Events; Collections (world epics)
 local SKIP_CONTENT = {Mounts = true, Companions = true, Tabards = true, Legendarys = true}
 
 local ALIAS = {
@@ -21,9 +20,12 @@ local ALIAS = {
     Stratholme = {"Stratholme: Living", "Stratholme: Undead"},
 }
 
-local function newExtra() return {provider = "atlasloot", entries = {}, dungeons = {}, areas = {}, names = {}} end
+local function newExtra()
+    return {provider = "atlasloot", entries = {}, dungeons = {}, areas = {}, names = {}, instances = {}, npcs = {}}
+end
 
--- areas: [area ID] = place key, so a raid's quests can go with it
+-- areas: [area ID] = place key, so a raid's quests can go with it. instances: [instance map ID] = place keys, the
+-- wings share one. npcs: [creature ID] = its boss. both tie other addons' creature drops to the place
 local extra = newExtra()
 local EMPTY = newExtra()
 local status = Util.NewStatus("atlasloot lists", {modules = 0, items = 0, matched = 0, places = 0, skippedSets = 0, chances = 0})
@@ -205,6 +207,16 @@ local function readModule(module, storage, classify, out, byName, checkpoint)
                 local area = tonumber(content.MapID)
                 local placeKey = ownKey or (matched and matched[1].key)
                 if area and placeKey and not out.areas[area] then out.areas[area] = placeKey end
+                local instance = tonumber(content.InstanceID)
+                if instance and placeKey then
+                    local keys = out.instances[instance] or {}
+                    out.instances[instance] = keys
+                    for _, place in ipairs(matched or {{key = ownKey}}) do
+                        local known = false
+                        for _, k in ipairs(keys) do if k == place.key then known = true end end
+                        if not known then keys[#keys + 1] = place.key end
+                    end
+                end
                 for index, section in ipairs(content.items) do
                     if type(section) == "table" and not section.IgnoreAsSource then
                         if isSetTable(content, section) then
@@ -216,6 +228,16 @@ local function readModule(module, storage, classify, out, byName, checkpoint)
                             if base then
                                 local dungeonKey = ownKey
                                 if matched then dungeonKey = pickDungeon(matched, sectionName).key end
+                                local npcs = section.npcID
+                                if type(npcs) == "number" then npcs = {npcs} end
+                                if dungeonKey and base.bossName and type(npcs) == "table" then
+                                    for _, npc in ipairs(npcs) do
+                                        if type(npc) == "number" and not out.npcs[npc] then
+                                            out.npcs[npc] = {dungeon = dungeonKey, bossName = base.bossName,
+                                                             kind = base.kind}
+                                        end
+                                    end
+                                end
                                 local standing, standingFaction
                                 for _, item in ipairs(sectionRows(section, factionOf)) do
                                     local marker = type(item.row) == "table" and item.row[2]
@@ -267,6 +289,14 @@ local function questWord()
     return type(locales) == "table" and rawget(locales, "Quest") or nil
 end
 
+-- an English locale may hold true for its own key
+local function localeText(text)
+    local al = ns.AtlasLoot.Get()
+    local locales = al and al.Locales
+    local value = type(locales) == "table" and rawget(locales, text)
+    return type(value) == "string" and not isSecret(value) and value or text
+end
+
 local function dungeonSection(sectionName, section)
     local text = sectionName or "?"
     if section.ExtraList then
@@ -298,11 +328,13 @@ local CLASSIFY = {
             return {kind = "pvp", section = typeIndex == 1 and name or sectionName}
         end}
     end,
-    AtlasLootClassic_Collections = function(content, typeIndex)
-        if typeIndex == COLLECTION_EVENT_TYPE then
+    -- by the type's name: AtlasLoot Forever added types in front, shifting the numbers
+    AtlasLootClassic_Collections = function(_, _, _, typeName)
+        if typeName == nil then return nil end
+        if typeName == localeText("World Events") then
             return {base = function(_, _, name) return {kind = "event", eventName = name} end}
         end
-        if typeIndex == COLLECTION_MISC_TYPE then
+        if typeName == localeText("Collections") then
             return {base = function(sectionName) return {kind = "world", section = sectionName} end}
         end
         return nil
@@ -315,6 +347,13 @@ local function dropEmptyPlaces(out)
     for _, entry in ipairs(out.entries) do if entry.dungeon then used[entry.dungeon] = true end end
     for _, dungeon in ipairs(out.dungeons) do if used[dungeon.key] then kept[#kept + 1] = dungeon end end
     for area, key in pairs(out.areas) do if key:sub(1, 3) == "al:" and not used[key] then out.areas[area] = nil end end
+    local function gone(key) return key:sub(1, 3) == "al:" and not used[key] end
+    for npc, boss in pairs(out.npcs) do if gone(boss.dungeon) then out.npcs[npc] = nil end end
+    for instance, keys in pairs(out.instances) do
+        local kept = {}
+        for _, key in ipairs(keys) do if not gone(key) then kept[#kept + 1] = key end end
+        out.instances[instance] = #kept > 0 and kept or nil
+    end
     out.dungeons = kept
 end
 
