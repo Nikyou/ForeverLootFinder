@@ -269,6 +269,12 @@ function Crafts.LearnedProfessions()
                 if type(rank) == "number" and not isSecret(rank) and rank > 0 then learned[profession.id] = rank end
             end
         end
+        -- it answers nil for a profession not learned. Forever has no GetNumSkillLines global, so with none learned
+        -- only its own count tells "none" from "skills not loaded yet"
+        if not known and C_SkillInfo.GetNumSkillLines then
+            local lines = Util.SafeCall(C_SkillInfo.GetNumSkillLines)
+            if type(lines) == "number" and not isSecret(lines) and lines > 0 then known = true end
+        end
     end
     local count, getLine = rawget(_G, "GetNumSkillLines"), rawget(_G, "GetSkillLineInfo")
     if not known and type(count) == "function" and type(getLine) == "function" then
