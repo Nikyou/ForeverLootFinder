@@ -10,16 +10,18 @@ Pick a slot and see every item for it, with where it comes from and its level. O
 
 ## Requirements
 
-Forever Loot Finder gets its item lists from other addons. It works without them, but then has little to show. The more of these you have, the more it lists:
+Forever Loot Finder gets its item lists from other addons. It works without them, but then has little to show. The more of these you have, the more it lists.
 
+Main:
+* **Pawn**: item scores, upgrade percent and the "Pawn upgrades only" filter.
 * **DungeonJournal**: Forever's dungeons with their bosses, loot and quests, and drop chances when it has them.
 * **Questie**: quest rewards, vendors, creature drops and world drops.
+* * **forever-db**: every recipe with the item it makes, Forever's own included, and drop chances for creatures (mostly Classic's). The CurseForge app installs it with Forever Loot Finder.
+Extra:
 * **AtlasLoot Classic Forever**: raids and world bosses, crafted gear, reputation, PvP and event rewards, world drops, drop chances, and BiS lists to add to your favourites when it has them.
 * **ALL THE THINGS**: Forever's dungeons, quest rewards, vendors, crafted gear, reputation, PvP and event rewards, and the skill each recipe is learned at on Forever.
-* **forever-db**: every recipe with the item it makes, Forever's own included, and drop chances for creatures (mostly Classic's). The CurseForge app installs it with Forever Loot Finder.
 * **Attune**: quest rewards the others miss.
 * **SilverDragon**: rare creatures and what they drop.
-* **Pawn**: item scores, upgrade percent and the "Pawn upgrades only" filter.
 * **Baganator**: what you own in your bags, bank and mail on all your characters.
 * **Auctionator**: auction prices and its shopping list.
 * **TomTom**: waypoints. Without it, the game's own map pin is used.
