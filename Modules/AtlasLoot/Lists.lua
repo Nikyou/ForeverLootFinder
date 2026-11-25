@@ -330,6 +330,13 @@ local function dungeonSection(sectionName, section)
 end
 Lists.DungeonSection = dungeonSection
 
+-- a holiday by the name AtlasLoot's own list for it has. nil without AtlasLoot
+function Lists.HolidayName(englishName, factionID)
+    if not (Lists.Installed() and Lists.Enabled()) then return nil end
+    if factionID then return factionName(factionID) end
+    return englishName and localeText(englishName) or nil
+end
+
 local CLASSIFY = {
     AtlasLootClassic_DungeonsAndRaids = function(content, typeIndex, key)
         local raid = key == "WorldBosses" or DR_RAID_TYPES[typeIndex] == true
