@@ -180,6 +180,13 @@ local function isSetTable(storage, content, section)
     return setType(section.TableType) or setType(content.TableType)
 end
 
+-- AtlasLoot's holiday lists, to ns.Holidays' keys
+local HOLIDAYS = {
+    Darkmoon = "darkmoon", LunarFestival = "lunar", Valentineday = "love", Noblegarden = "noblegarden",
+    ChildrensWeek = "children", MidsummerFestival = "midsummer", FishingExtravaganza = "fishing",
+    HarvestFestival = "harvest", Halloween = "hallows", WinterVeil = "winterVeil",
+}
+
 -- classify returns nil to skip a content
 local function readModule(module, storage, classify, out, byName, checkpoint)
     local factionOf = {}
@@ -330,13 +337,6 @@ local function dungeonSection(sectionName, section)
 end
 Lists.DungeonSection = dungeonSection
 
--- a holiday by the name AtlasLoot's own list for it has. nil without AtlasLoot
-function Lists.HolidayName(englishName, factionID)
-    if not (Lists.Installed() and Lists.Enabled()) then return nil end
-    if factionID then return factionName(factionID) end
-    return englishName and localeText(englishName) or nil
-end
-
 local CLASSIFY = {
     AtlasLootClassic_DungeonsAndRaids = function(content, typeIndex, key)
         local raid = key == "WorldBosses" or DR_RAID_TYPES[typeIndex] == true
@@ -354,10 +354,10 @@ local CLASSIFY = {
         end}
     end,
     -- by the type's name: AtlasLoot Forever added types in front, shifting the numbers
-    AtlasLootClassic_Collections = function(_, _, _, typeName)
+    AtlasLootClassic_Collections = function(_, _, key, typeName)
         if typeName == nil then return nil end
         if typeName == localeText("World Events") then
-            return {base = function(_, _, name) return {kind = "event", eventName = name} end}
+            return {base = function(_, _, name) return {kind = "event", eventName = name, holiday = HOLIDAYS[key]} end}
         end
         if typeName == localeText("Collections") then
             return {base = function(sectionName) return {kind = "world", section = sectionName} end}
