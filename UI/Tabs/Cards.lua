@@ -280,12 +280,16 @@ local function plainEntries(_, order, _, _)
     return list
 end
 
--- spec: key, label, accept, card, group?, grouping?, onSource?, entries?, emptyHint?, rows?. see DungeonTab for a full
--- one. rows(slot, ctx) -> rows, ctx replaces the filtered list. alsoLoad() -> records asked for after the shown ones
+-- the source switches a tab ignores, it lists those anyway: [tab key] = {"pvp"}
+Cards.OWN = {}
+
+-- spec: key, label, accept, card, group?, grouping?, onSource?, entries?, emptyHint?, rows?, own?. see DungeonTab for a
+-- full one. rows(slot, ctx) -> rows, ctx replaces the filtered list. alsoLoad() -> records asked for after the shown ones
 -- each gets (source, ctx, row): a tab can go by the item itself, not its sources (SetsTab)
 -- without spec.grouping a tab with group() always groups
 function Cards.Tab(spec)
     local ui = {}
+    Cards.OWN[spec.key] = spec.own
 
     local function create(parent)
         ui.slot = Cards.SlotDropdown(parent)
@@ -315,7 +319,7 @@ function Cards.Tab(spec)
         if spec.rows then
             rows, ctx = spec.rows(Cards.Slot(), ctx)
         else
-            rows, ctx = ns.MainWindow.Rows(nil, Cards.Slot(), nil, ctx)
+            rows, ctx = ns.MainWindow.Rows(nil, Cards.Slot(), nil, ctx, ns.MainWindow.Filters(spec.key))
         end
         local cards, order, shown = collect(spec, rows, ctx, grouped)
         local list = (spec.entries or plainEntries)(cards, order, ctx, index)

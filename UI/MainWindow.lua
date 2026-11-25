@@ -61,12 +61,27 @@ function MainWindow.PrepareRows(rows, ctx)
     return rows
 end
 
-function MainWindow.Rows(records, slot, charKey, ctx)
+-- a card tab always shows its own sources: "PvP rewards" off still leaves the PvP tab its items
+function MainWindow.Filters(tab)
+    local filters = ns.Filters()
+    local own = ns.Cards.OWN[tab or activeTab]
+    if not own then return filters end
+    local copy = {}
+    for key, value in pairs(filters) do copy[key] = value end
+    copy.sources = {}
+    for key, value in pairs(filters.sources or {}) do copy.sources[key] = value end
+    for _, kind in ipairs(own) do copy.sources[kind] = true end
+    return copy
+end
+
+function MainWindow.ActiveTab() return activeTab end
+
+function MainWindow.Rows(records, slot, charKey, ctx, state)
     local index = ns.GetIndex()
     if not index then return {}, ctx end
     ctx = ctx or ns.FilterContext(charKey)
     ctx.slot = slot
-    local rows = ns.Filter.Run(records or index.records, ns.Items.Info, ns.Filters(), ctx)
+    local rows = ns.Filter.Run(records or index.records, ns.Items.Info, state or ns.Filters(), ctx)
     return MainWindow.PrepareRows(rows, ctx), ctx
 end
 
@@ -548,7 +563,7 @@ function MainWindow.Refresh(kinds)
     local charKey = tab and tab.CharKey and tab.CharKey() or ns.charKey
     local ctx = ns.FilterContext(charKey)
     if wants(kinds, PANEL_KINDS) then
-        frame.summary:SetText(ns.FilterBar.Summary(ns.Filters(), ctx))
+        frame.summary:SetText(ns.FilterBar.Summary(MainWindow.Filters(), ctx))
         if frame.panel:IsShown() then ns.FilterBar.Refresh(ctx) end
     end
     if tab and tab.Refresh then tab.Refresh(ctx, kinds) end

@@ -18,6 +18,7 @@ ns.Cards.Tab({
     key = "reputation",
     label = L["Reputation"],
     accept = ofKind("reputation"),
+    own = {"reputation"},
     card = function(source, _, row)
         local name = source.factionName or infoOf(row).reqReputation
         return name or source.factionID or "reputation", name or L["Reputation"]
@@ -34,6 +35,7 @@ ns.Cards.Tab({
     key = "pvp",
     label = L["PvP"],
     accept = ofKind("pvp"),
+    own = {"pvp"},
     card = function(source, _, row)
         local info = infoOf(row)
         local key = source.pvpKey or info.pvpFaction
@@ -66,6 +68,7 @@ ns.Cards.Tab({
     key = "events",
     label = L["World events"],
     accept = ofKind("event"),
+    own = {"event"},
     -- one card per holiday, whichever addon lists it and whatever it calls it
     card = function(source)
         local name = ns.Holidays.EventName(source) or "?"

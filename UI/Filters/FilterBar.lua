@@ -729,12 +729,18 @@ end
 function FilterBar.Refresh(ctx)
     lastCtx = ctx
     local f = filters()
-    local env = environment(f)
+    -- the tab's own sources count as on: their sub-switches still work there
+    local shown = ns.MainWindow.Filters()
+    local env = environment(shown)
+    local own = {}
+    for _, kind in ipairs(ns.Cards.OWN[ns.MainWindow.ActiveTab()] or {}) do own[kind] = true end
     for key, box in pairs(controls.checks) do
         local spec = CHECKS[key]
         box:SetChecked(FilterBar.CheckValue(f, spec))
-        if spec.usable then
-            setUsable(box, spec.usable(f, env))
+        if spec.group == "sources" and own[spec.field] then
+            setUsable(box, false, {reason = L["Always shown in this tab."]})
+        elseif spec.usable then
+            setUsable(box, spec.usable(shown, env))
         else
             setUsable(box, true)
         end

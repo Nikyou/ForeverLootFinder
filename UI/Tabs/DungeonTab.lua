@@ -65,6 +65,7 @@ local function placeSpec(key, label, raids)
             return place ~= nil and (place.raid == true) == raids
         end,
         card = function(source) return source.dungeon end,
+        own = {raids and "raid" or "dungeon"},
         group = bossGroup,
         entries = placeEntries(raids),
     }

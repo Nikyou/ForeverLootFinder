@@ -51,6 +51,7 @@ ns.Cards.Tab({
     key = "crafts",
     label = L["Professions"],
     accept = function(source) return source.kind == "craft" end,
+    own = {"craft"},
     card = function(source)
         local key = source.profession
         local profession = type(key) == "number" and ns.Crafts.BY_ID[key]
