@@ -618,6 +618,15 @@ L["Needs AtlasLoot or ALL THE THINGS."] = "Нужен AtlasLoot или ALL THE T
 
 -- Modules/Questie.lua
 L["%s (entrance)"] = "%s (вход)"
+L["Darkmoon Faire"] = "Ярмарка Новолуния"
+L["Lunar Festival"] = "Лунный фестиваль"
+L["Love is in the Air"] = "Любовная лихорадка"
+L["Noblegarden"] = "Сад чудес"
+L["Children's Week"] = "Детская неделя"
+L["Midsummer Fire Festival"] = "Огненный солнцеворот"
+L["Harvest Festival"] = "Неделя урожая"
+L["Hallow's End"] = "Тыквовин"
+L["Feast of Winter Veil"] = "Зимний Покров"
 
 -- Modules/Waypoints.lua
 L["Waypoint set: %s"] = "Путевая точка: %s"
@@ -665,3 +674,6 @@ L["Quest %d"] = "Задание %d"
 L["%d of %d pieces"] = "%d из %d предметов"
 L["Sets"] = "Комплекты"
 L["No set pieces match the filters."] = "Нет предметов комплектов под эти фильтры."
+
+-- Core/Holidays.lua
+L["Stranglethorn Fishing Extravaganza"] = "Рыбомания Тернистой долины"

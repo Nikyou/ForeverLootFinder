@@ -618,6 +618,15 @@ L["Needs AtlasLoot or ALL THE THINGS."] = true
 
 -- Modules/Questie.lua
 L["%s (entrance)"] = true
+L["Darkmoon Faire"] = true
+L["Lunar Festival"] = true
+L["Love is in the Air"] = true
+L["Noblegarden"] = true
+L["Children's Week"] = true
+L["Midsummer Fire Festival"] = true
+L["Harvest Festival"] = true
+L["Hallow's End"] = true
+L["Feast of Winter Veil"] = true
 
 -- Modules/Waypoints.lua
 L["Waypoint set: %s"] = true
@@ -665,3 +674,6 @@ L["Quest %d"] = true
 L["%d of %d pieces"] = true
 L["Sets"] = true
 L["No set pieces match the filters."] = true
+
+-- Core/Holidays.lua
+L["Stranglethorn Fishing Extravaganza"] = true

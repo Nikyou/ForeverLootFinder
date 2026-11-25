@@ -104,7 +104,10 @@ local function refresh(ctx, kinds)
             return "r:" .. tostring(source.factionID), source.factionName or L["Reputation"], 3100
         end
         if source.kind == "pvp" then return "pvp", L["PvP"], 3200 end
-        if source.kind == "event" then return "e:" .. tostring(source.eventName), source.eventName or "?", 3300 end
+        if source.kind == "event" then
+            local name = ns.Holidays.EventName(source) or "?"
+            return "e:" .. tostring(source.holiday or name), name, 3300
+        end
         if source.kind == "world" then return "world", L["World drop"], 3400 end
         -- vendors and creatures go with their zone's quests
         if (source.kind == "vendor" or source.kind == "npcDrop") and not source.zoneKey then

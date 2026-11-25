@@ -1,4 +1,4 @@
--- the Reputation, PvP and World events tabs, from AtlasLoot's and ATT's lists
+-- the Reputation, PvP and World events tabs, from AtlasLoot's and ATT's lists. Questie's holiday quests fill events too
 local _, ns = ...
 local L = ns.L
 
@@ -41,6 +41,10 @@ ns.Cards.Tab({
     key = "events",
     label = L["World events"],
     accept = ofKind("event"),
-    card = function(source) return source.eventName or "?", source.eventName or "?" end,
-    emptyHint = emptyHint,
+    -- one card per holiday, whichever addon lists it and whatever it calls it
+    card = function(source)
+        local name = ns.Holidays.EventName(source) or "?"
+        return source.holiday or name, name
+    end,
+    emptyHint = function() return not ns.Questie.Installed() and emptyHint() or nil end,
 })

@@ -618,6 +618,15 @@ if not L then return end
 
 -- Modules/Questie.lua
 -- L["%s (entrance)"] = true -- Translation missing
+-- L["Darkmoon Faire"] = true -- Translation missing
+-- L["Lunar Festival"] = true -- Translation missing
+-- L["Love is in the Air"] = true -- Translation missing
+-- L["Noblegarden"] = true -- Translation missing
+-- L["Children's Week"] = true -- Translation missing
+-- L["Midsummer Fire Festival"] = true -- Translation missing
+-- L["Harvest Festival"] = true -- Translation missing
+-- L["Hallow's End"] = true -- Translation missing
+-- L["Feast of Winter Veil"] = true -- Translation missing
 
 -- Modules/Waypoints.lua
 -- L["Waypoint set: %s"] = true -- Translation missing
@@ -665,3 +674,6 @@ if not L then return end
 -- L["%d of %d pieces"] = true -- Translation missing
 -- L["Sets"] = true -- Translation missing
 -- L["No set pieces match the filters."] = true -- Translation missing
+
+-- Core/Holidays.lua
+-- L["Stranglethorn Fishing Extravaganza"] = true -- Translation missing

@@ -70,7 +70,11 @@
         "GameTooltip_ShowCompareItem",
         "RAID_CLASS_COLORS",
         "RunNextFrame",
-        "ScrollFrame_OnScrollRangeChanged"
+        "ScrollFrame_OnScrollRangeChanged",
+        "UNKNOWN",
+        "FACTION_HORDE",
+        "FACTION_ALLIANCE",
+        "SlashCmdList"
     ],
     "Lua.type.weakUnionCheck": true
 }
