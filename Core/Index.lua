@@ -454,6 +454,28 @@ local function tieByCreature(record, index)
     end
 end
 
+-- a line for a whole split dungeon (ATT's Scarlet Monastery, beside its wings) goes to the wing the item drops in
+local function tieToWing(record, index)
+    local places
+    for _, source in ipairs(record.sources) do
+        local wings = source.dungeon and index.splits[source.dungeon]
+        if wings then
+            if not places then
+                places = {}
+                for _, other in ipairs(record.sources) do if other.dungeon then places[other.dungeon] = true end end
+            end
+            for _, key in ipairs(wings) do
+                if places[key] and index.dungeonByKey[key] then
+                    index.merged.split = (index.merged.split or 0) + 1
+                    source.dungeon = key
+                    source.order = index.dungeonByKey[key].order or source.order
+                    break
+                end
+            end
+        end
+    end
+end
+
 -- a source keeps its addon's entry in [1] and reads through to it, holding only what the index sets on it: a build
 -- copies nothing and the entries stay as their addon made them. a field on the entry itself would often double its size
 local SOURCE = {__index = function(source, key) return rawget(source, 1)[key] end}
@@ -665,6 +687,7 @@ function Index.Build(data, extras, priority, quests)
         hasChance = false,
         placeByArea = {},
         placesByArea = {},
+        splits = {},
         placesByInstance = {},
         bossByNpc = {},
         merged = {},
@@ -685,6 +708,7 @@ function Index.Build(data, extras, priority, quests)
     for _, extra in ipairs(extras or {}) do
         for area, key in pairs(extra.areas or {}) do index.placeByArea[area] = index.placeByArea[area] or key end
         for area, keys in pairs(extra.wings or {}) do index.placesByArea[area] = index.placesByArea[area] or keys end
+        for key, wings in pairs(extra.splits or {}) do index.splits[key] = wings end
         -- AtlasLoot's raids, FDJ's dungeons through ForeverDB: one may know a wing the other doesn't
         for instance, keys in pairs(extra.instances or {}) do
             local list = index.placesByInstance[instance] or {}
@@ -723,6 +747,7 @@ function Index.Build(data, extras, priority, quests)
     priority = priority or Index.DEFAULT_PRIORITY
     for _, record in ipairs(index.records) do
         tieByCreature(record, index)
+        tieToWing(record, index)
         shareChances(record)
         resolveOverlaps(record, priority, index.dungeonByKey)
         mergeWorld(record)

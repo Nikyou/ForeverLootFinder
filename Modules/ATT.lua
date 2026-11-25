@@ -100,6 +100,7 @@ end
 function ATT.Read(root, opt)
     local out, counts = {}, {items = 0, places = 0, matched = 0, recipes = 0}
     local dungeons, areas, recipes = {}, {}, {}
+    local splits = {} -- ["att:316"] = the FDJ wings its headers matched
     local checkpoint = opt.checkpoint or function() end
     local used = {}
 
@@ -286,7 +287,15 @@ function ATT.Read(root, opt)
             ctx = with(ctx, "dungeon", place(node))
             ctx.bossCount = 0
         elseif wing and opt.dungeonOf(wing) then
-            ctx = with(ctx, "dungeon", opt.dungeonOf(wing))
+            local key = opt.dungeonOf(wing)
+            if ctx.dungeon:sub(1, 4) == "att:" then
+                local list = splits[ctx.dungeon] or {}
+                splits[ctx.dungeon] = list
+                local known = false
+                for _, k in ipairs(list) do if k == key then known = true end end
+                if not known then list[#list + 1] = key end
+            end
+            ctx = with(ctx, "dungeon", key)
             ctx.bossCount = 0
         elseif raw(node, "mapID") and not ctx.dungeon then
             ctx = with(ctx, "map", raw(node, "mapID"))
@@ -327,7 +336,7 @@ function ATT.Read(root, opt)
     local kept = {}
     for _, dungeon in ipairs(dungeons) do if used[dungeon.key] then kept[#kept + 1] = dungeon end end
     for map, key in pairs(areas) do if key:sub(1, 4) == "att:" and not used[key] then areas[map] = nil end end
-    return out, counts, kept, areas, recipes
+    return out, counts, kept, areas, recipes, splits
 end
 
 local function mapName(map)
@@ -363,9 +372,9 @@ local function read()
         end
         return seen[id] or nil
     end
-    local found, counts, dungeons, areas, recipes
+    local found, counts, dungeons, areas, recipes, splits
     Util.RunSliced(function(checkpoint)
-        found, counts, dungeons, areas, recipes = ATT.Read(root, {
+        found, counts, dungeons, areas, recipes, splits = ATT.Read(root, {
             equippable = Util.Equippable,
             nameOf = function(node) return node.name end,
             npcName = npcName,
@@ -397,7 +406,7 @@ local function read()
                     entry.factionName = factions[entry.factionID] or nil
                 end
             end
-            extra = {provider = "att", entries = found, dungeons = dungeons, areas = areas}
+            extra = {provider = "att", entries = found, dungeons = dungeons, areas = areas, splits = splits}
             placeNames = {}
             for _, dungeon in ipairs(dungeons) do placeNames[dungeon.key] = dungeon.name end
             learnedAt = recipes
