@@ -197,12 +197,19 @@ local function sameCreature(a, b)
     return false
 end
 
+-- AtlasLoot's Tarnished Undermine Real list names no vendor: it's the one the other addons name
+local function anyVendor(group, a, b)
+    local function nameless(s) return not (s.many or s.npcID or (s.npcs and #s.npcs > 0)) end
+    return group == "vendors" and (nameless(a) or nameless(b))
+end
+
 local function overlap(group, a, b)
     if group == "drops" then return a.dungeon ~= nil and a.dungeon == b.dungeon end
     if group == "crafts" then return a.profession == b.profession end
-    if group == "vendors" or group == "creatures" then return sameCreature(a, b) end
+    if group == "vendors" or group == "creatures" then return sameCreature(a, b) or anyVendor(group, a, b) end
     if group == "lists" then
         if a.kind ~= b.kind then return false end
+        if a.holiday and b.holiday then return a.holiday == b.holiday end
         return a.kind ~= "reputation" or not (a.factionID and b.factionID) or a.factionID == b.factionID
     end
     if a.questID and b.questID then return a.questID == b.questID end
@@ -220,8 +227,8 @@ local QUEST_MERGE_FIELDS = {
 local MERGE_FIELDS = {
     crafts = {"skill", "spell", "recipe"},
     creatures = {"chance", "zone", "zoneKey", "zoneName", "levelMin", "levelMax"},
-    vendors = {"faction", "zone", "zoneKey", "zoneName"},
-    lists = {"standing", "factionID", "factionName", "section", "eventName"},
+    vendors = {"faction", "zone", "zoneKey", "zoneName", "price"},
+    lists = {"standing", "factionID", "factionName", "section", "eventName", "holiday", "price"},
 }
 
 local function rankOf(priority, group, provider)
@@ -515,7 +522,10 @@ local function foldIntoLists(record, merged)
         local kind = source.kind
         if list and (kind == "vendor" or kind == "npcDrop" or Index.IsQuest(source)) then
             merged[list.kind] = (merged[list.kind] or 0) + 1
-            if list.faction == nil and source.faction and kind == "vendor" then list.faction = source.faction end
+            if kind == "vendor" then
+                if list.faction == nil and source.faction then list.faction = source.faction end
+                if list.price == nil and source.price then list.price = source.price end
+            end
         elseif world and (kind == "npcDrop" or (source.creature and Index.DROP_KINDS[kind])) then
             merged.world = (merged.world or 0) + 1
             local low, high = source.levelMin, source.levelMax
@@ -549,6 +559,27 @@ local function crossCheckQuests(record)
     end
 end
 
+-- with no event list from AtlasLoot or ATT, a holiday's quest is the item's event line, so the Events switch and card
+-- work without them
+local function holidayLine(record, holiday, merged)
+    if not holiday then return end
+    local quests, line, key = {}, nil, nil
+    for _, source in ipairs(record.sources) do
+        if source.kind == "event" then return end
+        if Index.IsQuest(source) and source.questID then
+            quests[#quests + 1] = source.questID
+            if not line then
+                key = holiday(source.questID)
+                if key then line = source end
+            end
+        end
+    end
+    if not line then return end
+    line.kind, line.holiday = "event", key
+    line.viaQuests, line.viaQuestName = quests, line.questName
+    merged.holiday = (merged.holiday or 0) + 1
+end
+
 local function sourceOrder(a, b)
     if a.order ~= b.order then return a.order < b.order end
     local bossA, bossB = a.bossIndex or 999, b.bossIndex or 999
@@ -559,10 +590,12 @@ local function sourceOrder(a, b)
     return (a.questName or a.professionName or a.section or "") < (b.questName or b.professionName or b.section or "")
 end
 
--- extras: entry lists or {entries, dungeons, provider}, their dungeons go after FDJ's
-function Index.Build(data, extras, priority)
+-- extras: entry lists or {entries, dungeons, provider}, their dungeons go after FDJ's. quests: Questie's word on a
+-- quest, hidden(questID) leaves it out (FDJ's are checked on Forever and stay), holiday(questID) is its holiday's key
+function Index.Build(data, extras, priority, quests)
+    local hiddenQuest, holiday = quests and quests.hidden, quests and quests.holiday
     local index = {records = {}, byKey = {}, dungeons = {}, dungeonByKey = {}, hasChance = false, placeByArea = {},
-                   placesByInstance = {}, bossByNpc = {}, merged = {}}
+                   placesByInstance = {}, bossByNpc = {}, merged = {}, hiddenQuests = 0}
     for _, dungeon in ipairs(data.dungeons or {}) do
         index.dungeons[#index.dungeons + 1] = dungeon
         index.dungeonByKey[dungeon.key] = dungeon
@@ -597,7 +630,11 @@ function Index.Build(data, extras, priority)
     for _, entry in ipairs(data.entries or {}) do addSource(index, entry, "fdj") end
     for _, extra in ipairs(extras or {}) do
         for _, entry in ipairs(extra.entries or extra) do
-            if entry.id and entry.id > 0 then addSource(index, entry, extra.provider) end
+            if hiddenQuest and entry.questID and Index.IsQuest(entry) and hiddenQuest(entry.questID) then
+                index.hiddenQuests = index.hiddenQuests + 1
+            elseif entry.id and entry.id > 0 then
+                addSource(index, entry, extra.provider)
+            end
         end
     end
     priority = priority or Index.DEFAULT_PRIORITY
@@ -609,6 +646,7 @@ function Index.Build(data, extras, priority)
         dropRepeatedRares(record)
         for _, source in ipairs(record.sources) do tieToPlace(source, index.placeByArea, index.dungeonByKey) end
         crossCheckQuests(record)
+        holidayLine(record, holiday, index.merged)
         foldIntoLists(record, index.merged)
         if #record.sources > 1 then table.sort(record.sources, sourceOrder) end
         record.order = record.sources[1] and record.sources[1].order or 999
