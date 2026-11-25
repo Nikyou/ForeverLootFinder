@@ -234,6 +234,7 @@ if not L then return end
 -- L["Scores count base stats only; the bonus is random."] = true -- Translation missing
 -- L["Scores don't count set bonuses."] = true -- Translation missing
 -- L["Not scored yet."] = true -- Translation missing
+-- L["Source unknown: no addon lists where it comes from."] = true -- Translation missing
 
 -- UI/Menu.lua
 -- L["Remove from favourites"] = true -- Translation missing
@@ -253,6 +254,7 @@ if not L then return end
 -- UI/SetPanel.lua
 -- L["Favourite all pieces"] = true -- Translation missing
 -- L["Owned"] = true -- Translation missing
+-- L["Source unknown"] = true -- Translation missing
 
 -- UI/Filters/FilterBar.lua
 -- L["Attributes"] = true -- Translation missing

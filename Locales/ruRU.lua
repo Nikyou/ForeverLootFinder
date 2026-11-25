@@ -247,6 +247,8 @@ L["Scores count base stats only; the bonus is random."] =
   "Оценка учитывает только базовые характеристики, бонус случаен."
 L["Scores don't count set bonuses."] = "Оценка не учитывает бонусы комплекта."
 L["Not scored yet."] = "Ещё не оценён."
+L["Source unknown: no addon lists where it comes from."] =
+  "Источник неизвестен: ни один аддон не знает, откуда этот предмет."
 
 -- UI/Menu.lua
 L["Remove from favourites"] = "Убрать из избранного"
@@ -266,6 +268,7 @@ L["Auctionator couldn't add it."] = "Auctionator не смог его добав
 -- UI/SetPanel.lua
 L["Favourite all pieces"] = "Весь комплект в избранное"
 L["Owned"] = "Есть"
+L["Source unknown"] = "Источник неизвестен"
 
 -- UI/Filters/FilterBar.lua
 L["Attributes"] = "Основные"

@@ -234,6 +234,7 @@ L["Pick a scale at the top."] = true
 L["Scores count base stats only; the bonus is random."] = true
 L["Scores don't count set bonuses."] = true
 L["Not scored yet."] = true
+L["Source unknown: no addon lists where it comes from."] = true
 
 -- UI/Menu.lua
 L["Remove from favourites"] = true
@@ -253,6 +254,7 @@ L["Auctionator couldn't add it."] = true
 -- UI/SetPanel.lua
 L["Favourite all pieces"] = true
 L["Owned"] = true
+L["Source unknown"] = true
 
 -- UI/Filters/FilterBar.lua
 L["Attributes"] = true
