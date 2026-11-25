@@ -26,6 +26,7 @@ Core\Sort.lua
 
 Core.lua
 Core\Cache.lua
+Core\Holidays.lua
 Core\State.lua
 Core\Items.lua
 Modules\Pawn.lua

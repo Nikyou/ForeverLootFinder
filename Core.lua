@@ -414,6 +414,7 @@ function addon:OnEnable()
     ns.ATT.Init()
     ns.ForeverDB.Init()
     ns.Auctionator.Init()
+    ns.Holidays.Init()
     ns.Tooltip.Enable()
     local frame = CreateFrame("Frame")
     for event in pairs(HANDLERS) do pcall(frame.RegisterEvent, frame, event) end

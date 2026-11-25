@@ -38,7 +38,7 @@ function Cache.Load(saved)
         reason = "locale"
     end
     if reason then saved = {version = Cache.VERSION, build = build, locale = locale, createdAt = time()} end
-    for _, key in ipairs({"items", "sets", "pawn", "unavailable"}) do
+    for _, key in ipairs({"items", "sets", "pawn", "unavailable", "holidays"}) do
         if type(saved[key]) ~= "table" then saved[key] = {} end
     end
     Cache.stats.reset = reason
@@ -169,6 +169,9 @@ function Cache.ClearPawn() if db then wipe(db.pawn) end end
 -- called at logout
 -- items the server didn't give last time: "failed" or "noanswer". asked again, but briefly and last. a new build
 -- starts over with the rest of the cache
+-- the calendar's holiday names by event ID, in the client's language (a new locale starts over)
+function Cache.HolidayNames() return db and db.holidays end
+
 function Cache.Unavailable(id) return db and db.unavailable[id] end
 function Cache.SetUnavailable(id, why) if db then db.unavailable[id] = why end end
 
