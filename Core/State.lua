@@ -45,7 +45,7 @@ local function build()
     ns.Sets.Invalidate()
     ns.Items.Track(index)
     local stats = ns.indexStats
-    stats.merged, stats.hiddenQuests = index.merged, index.hiddenQuests
+    stats.merged, stats.hiddenQuests, stats.raidLines = index.merged, index.hiddenQuests, index.raidLines
     stats.lastMs = Util.Clock() - started
     stats.builds, stats.ms = stats.builds + 1, stats.ms + stats.lastMs
     return index

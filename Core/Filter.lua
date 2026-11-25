@@ -41,6 +41,7 @@ function Filter.Defaults()
         ownSkillRank = true, -- and "Requires Engineering (225)" only at 225
         pvpOwnRank = false, -- PvP rewards only up to the character's rank
         repOwnStanding = false, -- reputation rewards only up to its standing
+        pvpOwnStanding = false, -- battleground rewards only up to the battleground faction's standing
         hideCosmetic = true,
         faction = true,
         maxLevel = {on = true, mode = "relative", fixed = 60, plus = 5},
@@ -254,12 +255,12 @@ local function kindOn(kind, kinds, raid)
 end
 
 -- an item that needs a PvP rank or a reputation is a PvP or reputation reward, whoever sells or gives it: without
--- AtlasLoot's lists the item's own tooltip says so
+-- FDJ's or AtlasLoot's lists the item's own tooltip says so. a battleground's faction makes it PvP
 local BY_ITEM = {vendor = true, npcDrop = true, quest = true, zoneQuest = true}
 function Filter.KindOf(source, info)
     local kind = source.kind
     if info and BY_ITEM[kind] then
-        if info.pvpRank then return "pvp" end
+        if info.pvpRank or info.pvpFaction then return "pvp" end
         if info.reqReputation then return "reputation" end
     end
     return kind
@@ -311,10 +312,16 @@ function Filter.Sources(record, state, ctx, info)
             for _, questID in ipairs(source.viaQuests) do if not ctx.completed(questID) then allDone = false end end
             if allDone then ok = false end
         end
-        -- AtlasLoot's standing on a reputation or Battleground list: what the quartermaster sells at
-        local standing = ok and state.repOwnStanding and kinds.reputation ~= false and source.standing
+        -- the standing on a reputation or battleground list: what the quartermaster sells at. each under its own switch
+        local ownStanding = state.repOwnStanding and kinds.reputation ~= false
+        if source.kind == "pvp" then ownStanding = state.pvpOwnStanding and kinds.pvp ~= false end
+        local standing = ok and ownStanding and source.standing
         if standing and (source.factionID or source.factionName)
           and not Filter.HasStanding(ctx.standings, source.factionID, source.factionName, standing) then ok = false end
+        -- FDJ's rank on an Honor reward: a Premier epic's rank is its seal's, not on the item's tooltip
+        if ok and state.pvpOwnRank and kinds.pvp ~= false and source.pvpRank and ctx.pvpRank and ctx.pvpRank < source.pvpRank then
+            ok = false
+        end
         local needed = state.craftOwnSkill ~= false and source.skill
         if ok and source.kind == "craft" and state.craftOwnBoP ~= false and ctx.professions
           and not Filter.SkillEnough(ctx.professions[source.profession], needed) then
@@ -420,8 +427,11 @@ function Filter.Evaluate(record, info, state, ctx, ignoreSlot, skipUpgrade)
     if state.pvpOwnRank and kinds.pvp ~= false and info.pvpRank and ctx.pvpRank and ctx.pvpRank < info.pvpRank then
         return "fail", nil, "pvp rank"
     end
-    if state.repOwnStanding and kinds.reputation ~= false and info.reqReputation
-      and not Filter.HasStanding(ctx.standings, nil, info.reqReputation, info.reqStanding) then return "fail", nil, "standing" end
+    local ownStanding = state.repOwnStanding and kinds.reputation ~= false
+    if info.pvpFaction then ownStanding = state.pvpOwnStanding and kinds.pvp ~= false end
+    if ownStanding and info.reqReputation and not Filter.HasStanding(ctx.standings, nil, info.reqReputation, info.reqStanding) then
+        return "fail", nil, "standing"
+    end
 
     if state.setsOnly then
         if not info.setID and not info.setName then

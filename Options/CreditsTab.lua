@@ -9,7 +9,7 @@ local function addons()
         {
             name = "DungeonJournal (ForeverDungeonJournal)",
             by = format(L["By %s"], "Exehn"),
-            use = L["Dungeon loot, bosses and quests."],
+            use = L["Dungeon loot, bosses, quests and PvP rewards."],
         }, {
             name = format(L["%s (comes with %s)"], "QuestieDB", "Questie"),
             by = format(L["By the Questie team: %s and others"], QUESTIE_TEAM),

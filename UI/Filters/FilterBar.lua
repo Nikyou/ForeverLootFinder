@@ -42,7 +42,7 @@ local LABELS = {
     priceMaxOn = L["Max auction price (gold)"],
 }
 
-local function dropsOn(f) return f.sources.dungeon ~= false or f.sources.raid ~= false end
+local function dropsOn(f) return f.sources.dungeon ~= false or (ns.Index.RAIDS_OPEN and f.sources.raid ~= false) end
 
 local function dropPart(field, label, summary)
     return {
@@ -84,6 +84,7 @@ local CHECKS = {
         label = LABELS.raid,
         usable = function(_, env) return env.atlas and env.hasRaids, env.atlasWhy end,
         summary = {[false] = L["no raids"]},
+        shown = function() return ns.Index.RAIDS_OPEN end,
     },
     rare = dropPart("rare", L["Rare spawns"], {[false] = L["no rares"]}),
     trash = dropPart("trash", L["Trash drops"], {[false] = L["no trash"]}),
@@ -189,6 +190,14 @@ local CHECKS = {
         usable = function(f) return f.sources.pvp ~= false, parentReason(LABELS.pvp) end,
         summary = {[true] = L["my PvP rank"]},
     },
+    pvpOwnStanding = {
+        field = "pvpOwnStanding",
+        default = false,
+        label = L["Only standings I have"],
+        indent = 20,
+        usable = function(f) return f.sources.pvp ~= false, parentReason(LABELS.pvp) end,
+        summary = {[true] = L["my battleground standings"]},
+    },
     event = atlasSource("event", L["World events"], L["no world events"]),
     world = {
         field = "world",
@@ -275,9 +284,9 @@ local CHECKS = {
 }
 FilterBar.CHECK_ORDER = {
     "special", "dungeon", "raid", "rare", "trash", "shared", "probable", "quest", "zoneQuest", "hideCompleted", "vendor",
-    "npcDrop", "craft", "craftOwnBoP", "craftOwnSkill", "reputation", "repOwnStanding", "pvp", "pvpOwnRank", "event", "world",
-    "faction", "chanceOn", "chanceUnknown", "priceOnly", "priceMaxOn", "dungeonLevelOn", "levelOn", "speedOn", "setsOnly",
-    "ownSkill", "ownSkillRank", "hideCosmetic", "upgradesOnly", "hideOwned",
+    "npcDrop", "craft", "craftOwnBoP", "craftOwnSkill", "reputation", "repOwnStanding", "pvp", "pvpOwnRank", "pvpOwnStanding",
+    "event", "world", "faction", "chanceOn", "chanceUnknown", "priceOnly", "priceMaxOn", "dungeonLevelOn", "levelOn", "speedOn",
+    "setsOnly", "ownSkill", "ownSkillRank", "hideCosmetic", "upgradesOnly", "hideOwned",
 }
 FilterBar.CHECKS = CHECKS
 
@@ -459,6 +468,7 @@ function FilterBar.Create(parent, width)
 
     local function check(key)
         local spec = CHECKS[key]
+        if spec.shown and not spec.shown() then return nil end
         local box = col.check(spec.label, function(value)
             groupOf(filters(), spec.group)[spec.field] = value and true or false
             changed()
@@ -558,7 +568,9 @@ function FilterBar.Create(parent, width)
     check("craft")
     check("craftOwnBoP")
     check("craftOwnSkill")
-    for _, key in ipairs({"reputation", "repOwnStanding", "pvp", "pvpOwnRank", "event", "world", "faction"}) do check(key) end
+    for _, key in ipairs({"reputation", "repOwnStanding", "pvp", "pvpOwnRank", "pvpOwnStanding", "event", "world", "faction"}) do
+        check(key)
+    end
 
     section("chance", L["Drop chance"])
     local function chanceState() return groupOf(filters(), "chance") end
@@ -596,11 +608,13 @@ function FilterBar.Create(parent, width)
     col.label(L["Dungeons"])
     controls.dungeons = ns.PlacesDropdown.Create(body, inner, "dungeons")
     col.place(controls.dungeons, 30)
-    controls.raidsLabel = col.label(L["Raids"])
-    controls.raids = ns.PlacesDropdown.Create(body, inner, "raids")
-    addWhyTooltip(controls.raids, L["Raids"])
-    col.place(controls.raids, 30)
-    col.help(L["Quests tied to a raid go with it."], 0)
+    if ns.Index.RAIDS_OPEN then
+        controls.raidsLabel = col.label(L["Raids"])
+        controls.raids = ns.PlacesDropdown.Create(body, inner, "raids")
+        addWhyTooltip(controls.raids, L["Raids"])
+        col.place(controls.raids, 30)
+        col.help(L["Quests tied to a raid go with it."], 0)
+    end
     check("dungeonLevelOn")
     controls.dungeonMin, controls.dungeonMax = rangeBoxes("dungeonLevel", 1, ns.Filter.MAX_LEVEL)
 
@@ -708,7 +722,7 @@ local function environment(f)
     env.zoneQuests, env.zoneQuestWhy = questKind("quests")
     env.vendors, env.vendorWhy = questKind("vendors")
     env.creatures, env.creatureWhy = questKind("drops")
-    env.drops = f.sources.dungeon ~= false or (env.atlas and f.sources.raid ~= false)
+    env.drops = f.sources.dungeon ~= false or (env.atlas and ns.Index.RAIDS_OPEN and f.sources.raid ~= false)
     return env
 end
 
@@ -751,9 +765,11 @@ function FilterBar.Refresh(ctx)
     if not controls.speedMax:HasFocus() then controls.speedMax:SetText(format("%.1f", f.speed.max)) end
     controls.quality:SetValue(f.minQuality)
     controls.dungeons:ShowSummary()
-    controls.raids:ShowSummary()
-    setUsable(controls.raids, env.hasRaids, env.atlasWhy)
-    controls.raidsLabel:SetTextColor(unpack(env.hasRaids and Style.TEXT or Style.MUTED))
+    if controls.raids then
+        controls.raids:ShowSummary()
+        setUsable(controls.raids, env.hasRaids, env.atlasWhy)
+        controls.raidsLabel:SetTextColor(unpack(env.hasRaids and Style.TEXT or Style.MUTED))
+    end
 
     -- these may wrap differently, restack when they change
     local levelText = FilterBar.LevelText(f, ctx)

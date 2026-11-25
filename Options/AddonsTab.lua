@@ -77,8 +77,8 @@ end
 
 local function create(parent)
     local left = W.Column(parent, 0, Options.COLUMN)
-    controls.fdj = section(left, "DungeonJournal", L["Use for dungeon loot and quests"],
-                           L["The main source: Forever's dungeons, bosses and dungeon quests."],
+    controls.fdj = section(left, "DungeonJournal", L["Use for dungeon loot, quests and PvP rewards"],
+                           L["The main source: Forever's dungeons, bosses, dungeon quests and PvP rewards."],
                            function(value) ns.DungeonJournal.SetEnabled(value) end)
     local syndicatorHelp = L["Knows your gear, bags, bank and mail across sessions. Without it, the bank counts once opened."]
     controls.syndicator = section(left, "Syndicator", L["Use for owned items"], syndicatorHelp, function(value)
@@ -174,10 +174,12 @@ local function create(parent)
         {key = "crafts", label = L["Professions"]}, {key = "reputation", label = L["Reputation"]},
         {key = "pvp", label = L["PvP"]}, {key = "events", label = L["World events"]}, {key = "sets", label = L["Sets"]},
     }) do
-        controls.tabs[tab.key] = right.check(format(L["Show the %s tab"], tab.label), function(value)
-            profile().tabs[tab.key] = value
-            ns.FireChange("profile")
-        end)
+        if tab.key ~= "raids" or ns.Index.RAIDS_OPEN then
+            controls.tabs[tab.key] = right.check(format(L["Show the %s tab"], tab.label), function(value)
+                profile().tabs[tab.key] = value
+                ns.FireChange("profile")
+            end)
+        end
     end
 end
 

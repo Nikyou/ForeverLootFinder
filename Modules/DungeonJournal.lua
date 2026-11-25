@@ -162,6 +162,100 @@ local function rewardEntry(item, base)
     return entry
 end
 
+-- FDJ counts PvP ranks 1 to 14, FLF the client's PVP_RANK_ numbers, 5 to 18
+local RANK_OFFSET = 4
+local SIDES = {"Alliance", "Horde"}
+
+-- {Honor, mark, marks} from t[at] on
+local function honorPrice(t, at)
+    local price = {}
+    local honor, mark, marks = tonumber(t[at]), tonumber(t[at + 1]), tonumber(t[at + 2])
+    if honor then price[1] = {honor = honor} end
+    if mark and marks then price[#price + 1] = {item = mark, count = marks} end
+    return #price > 0 and price or nil
+end
+
+-- PVP_REWARDS[battleground][side][standing] (and questRewards): {name, quality, itemID, level, itemID, level, ...}, one
+-- item per level bracket. supplies are consumables. PVP_HONOR: the Premier sets (a rare piece, and the epic its seal makes
+-- of it at a rank), rank rewards and rank 14 weapons
+local function readPvP(fdj, add)
+    local rewards = type(fdj.PVP_REWARDS) == "table" and fdj.PVP_REWARDS or {}
+    for key, sides in pairs(rewards) do
+        for _, side in ipairs(SIDES) do
+            local list = type(sides) == "table" and sides[side]
+            if type(list) == "table" then
+                for _, group in ipairs({1, 2, 3, 4, 5, 6, 7, 8, "questRewards"}) do
+                    for _, row in ipairs(type(list[group]) == "table" and list[group] or {}) do
+                        for i = 3, type(row) == "table" and #row or 0, 2 do
+                            local id, level = tonumber(row[i]), tonumber(row[i + 1])
+                            if id then
+                                add({
+                                    kind = "pvp",
+                                    id = id,
+                                    name = type(row[1]) == "string" and row[1] or "",
+                                    quality = tonumber(row[2]),
+                                    pvpKey = key,
+                                    faction = side,
+                                    factionID = tonumber(list.faction),
+                                    factionName = type(list.factionName) == "string" and list.factionName or nil,
+                                    standing = type(group) == "number" and group or nil,
+                                    fromQuest = group == "questRewards" or nil,
+                                    reqLevel = level and level > 1 and level or nil,
+                                })
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end
+    local honor = type(fdj.PVP_HONOR) == "table" and fdj.PVP_HONOR or {}
+    local names = type(fdj.PVP_ITEM_NAMES) == "table" and fdj.PVP_ITEM_NAMES or {}
+    local slotCost = type(honor.slotCost) == "table" and honor.slotCost or {}
+    local seals = type(honor.seals) == "table" and honor.seals or {}
+    local function addHonor(id, side, rank, price)
+        if not id then return end
+        add({
+            kind = "pvp",
+            id = id,
+            name = type(names[id]) == "string" and names[id] or "",
+            pvpKey = "honor",
+            faction = side,
+            pvpRank = rank and rank + RANK_OFFSET or nil,
+            price = price,
+        })
+    end
+    local function sideList(field, side)
+        local t = type(honor[field]) == "table" and honor[field][side]
+        return type(t) == "table" and t or {}
+    end
+    for _, side in ipairs(SIDES) do
+        for _, sets in pairs(sideList("sets", side)) do
+            for _, set in ipairs(type(sets) == "table" and sets or {}) do
+                for i = 2, type(set) == "table" and #set or 0 do
+                    local piece = type(set[i]) == "table" and set[i] or {}
+                    local rare, epic = tonumber(piece[2]), tonumber(piece[3])
+                    addHonor(rare, side, nil, type(slotCost[piece[1]]) == "table" and honorPrice(slotCost[piece[1]], 1) or nil)
+                    local seal = type(seals[piece[1]]) == "table" and seals[piece[1]] or {}
+                    local price = {}
+                    if tonumber(seal[3]) then price[1] = {honor = tonumber(seal[3])} end
+                    if tonumber(seal[1]) then price[#price + 1] = {item = tonumber(seal[1]), count = 1} end
+                    if rare then price[#price + 1] = {item = rare, count = 1} end
+                    addHonor(epic, side, tonumber(seal[2]), #price > 0 and price or nil)
+                end
+            end
+        end
+        for rank, list in pairs(sideList("ranks", side)) do
+            for _, row in ipairs(type(list) == "table" and list or {}) do
+                if type(row) == "table" then addHonor(tonumber(row[1]), side, tonumber(rank), honorPrice(row, 2)) end
+            end
+        end
+        for _, row in ipairs(sideList("weapons", side)) do
+            if type(row) == "table" then addHonor(tonumber(row[1]), side, 14, honorPrice(row, 2)) end
+        end
+    end
+end
+
 local function unknownKeys(tbl, kind, unknown)
     for key in pairs(tbl) do
         if type(key) == "string" and not knownSets[kind][key] and not key:match("^fdj") then
@@ -308,6 +402,7 @@ function DungeonJournal.ReadData(fdj)
             end
         end
     end
+    readPvP(fdj, add)
     return data
 end
 
@@ -334,6 +429,14 @@ function DungeonJournal.DungeonName(key)
     if type(key) == "string" and key:sub(1, 3) == "al:" then return ns.AtlasLootLists and ns.AtlasLootLists.Name(key) or key end
     local name = call("LocalizeDungeonName", key)
     return type(name) == "string" and name ~= "" and name or key
+end
+
+-- a PvP line's pvpKey: FDJ's battleground keys (WSG, AB, AV, DI) and "honor". nil when FDJ can't name it
+function DungeonJournal.BattlegroundName(key)
+    if key == nil then return nil end
+    if key == "honor" then return ns.L["Honor & Ranks"] end
+    local name = call("PvPBattlegroundName", key)
+    return type(name) == "string" and name ~= "" and name ~= key and name or nil
 end
 
 function DungeonJournal.BossName(name)

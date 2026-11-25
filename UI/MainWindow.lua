@@ -172,6 +172,7 @@ MainWindow.OPTIONAL_TABS = {
 
 function MainWindow.TabShown(key)
     if not MainWindow.OPTIONAL_TABS[key] then return true end
+    if key == "raids" and not ns.Index.RAIDS_OPEN then return false end
     local tabs = ns.addon.db.profile.tabs
     return not (tabs and tabs[key] == false)
 end

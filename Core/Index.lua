@@ -164,15 +164,37 @@ function Index.KeyOf(entry)
     return "name:" .. (entry.name or ""):lower()
 end
 
--- FDJ and ATT know Forever's dungeons, Questie has quest IDs and levels, ForeverDB links recipes to their items. the rest
--- fill gaps
+-- FDJ and ATT know Forever's dungeons, Questie has quest IDs and levels, ForeverDB links recipes to their items, FDJ
+-- has Forever's PvP rewards. the rest fill gaps
 Index.DEFAULT_PRIORITY = {
     drops = {"fdj", "att", "atlasloot", "questie", "foreverdb"},
     quests = {"questie", "fdj", "att", "foreverdb", "atlasloot"},
     crafts = {"skillup", "foreverdb", "atlasloot", "att", "tradeskill"},
     vendors = {"questie", "foreverdb", "att"},
     creatures = {"questie", "foreverdb", "att"},
-    lists = {"atlasloot", "att"},
+    lists = {"fdj", "atlasloot", "att"},
+}
+
+-- Forever has no raids open yet: what the addons list for raids and world bosses is classic's. off, their places go and
+-- so does every line tied to one
+Index.RAIDS_OPEN = false
+-- for creature drops no raid place took: the classic raids' instances and areas and the world bosses (AtlasLoot's raid
+-- lists; Naxxramas's instance from forever-db's spawns)
+local RAID_INSTANCES = {[409] = true, [249] = true, [309] = true, [469] = true, [509] = true, [531] = true, [533] = true}
+local RAID_AREAS = {[2717] = true, [2159] = true, [1977] = true, [2677] = true, [3429] = true, [3428] = true, [3456] = true}
+local WORLD_BOSSES = {[6109] = true, [12397] = true, [14887] = true, [14888] = true, [14889] = true, [14890] = true}
+
+-- the battlegrounds' factions, to FDJ's battleground keys: their rewards are PvP rewards, not reputation ones.
+-- Darkspear Islands is Forever's own
+Index.PVP_FACTIONS = {
+    [890] = "WSG",
+    [889] = "WSG",
+    [509] = "AB",
+    [510] = "AB",
+    [730] = "AV",
+    [729] = "AV",
+    [2799] = "DI",
+    [2798] = "DI",
 }
 
 local LIST_GROUP = {reputation = true, pvp = true, event = true}
@@ -229,7 +251,7 @@ local MERGE_FIELDS = {
     crafts = {"skill", "spell", "recipe"},
     creatures = {"chance", "zone", "zoneKey", "zoneName", "levelMin", "levelMax"},
     vendors = {"faction", "zone", "zoneKey", "zoneName", "price"},
-    lists = {"standing", "factionID", "factionName", "section", "eventName", "holiday", "price"},
+    lists = {"standing", "factionID", "factionName", "section", "pvpKey", "pvpRank", "eventName", "holiday", "price"},
 }
 
 local function rankOf(priority, group, provider)
@@ -593,6 +615,29 @@ local function holidayLine(record, holiday, merged)
     merged.holiday = (merged.holiday or 0) + 1
 end
 
+-- a line in a raid or world boss place, a quest tied to one, or a creature in a raid's instance or area or a world boss
+local function inRaid(source, dungeonByKey)
+    local key = source.dungeon or source.tiedTo
+    local place = key and dungeonByKey[key]
+    if place and place.raid then return true end
+    if RAID_INSTANCES[source.instance or 0] or RAID_AREAS[source.zone or 0] or WORLD_BOSSES[source.npcID or 0] then return true end
+    if source.many or not source.npcs or #source.npcs == 0 then return false end
+    for _, id in ipairs(source.npcs) do if not WORLD_BOSSES[id] then return false end end
+    return true
+end
+
+local function dropRaids(record, index)
+    local kept = {}
+    for _, source in ipairs(record.sources) do
+        if inRaid(source, index.dungeonByKey) then
+            index.raidLines = index.raidLines + 1
+        else
+            kept[#kept + 1] = source
+        end
+    end
+    if #kept < #record.sources then record.sources = kept end
+end
+
 local function sourceOrder(a, b)
     if a.order ~= b.order then return a.order < b.order end
     local bossA, bossB = a.bossIndex or 999, b.bossIndex or 999
@@ -618,6 +663,7 @@ function Index.Build(data, extras, priority, quests)
         bossByNpc = {},
         merged = {},
         hiddenQuests = 0,
+        raidLines = 0,
     }
     for _, dungeon in ipairs(data.dungeons or {}) do
         index.dungeons[#index.dungeons + 1] = dungeon
@@ -668,11 +714,30 @@ function Index.Build(data, extras, priority, quests)
         mergeWorld(record)
         dropRepeatedRares(record)
         for _, source in ipairs(record.sources) do tieToPlace(source, index.placeByArea, index.dungeonByKey) end
+        if not Index.RAIDS_OPEN then dropRaids(record, index) end
         crossCheckQuests(record)
         holidayLine(record, holiday, index.merged)
         foldIntoLists(record, index.merged)
         if #record.sources > 1 then table.sort(record.sources, sourceOrder) end
         record.order = record.sources[1] and record.sources[1].order or 999
+    end
+    if not Index.RAIDS_OPEN then
+        local records, dungeons = {}, {}
+        for _, record in ipairs(index.records) do
+            if #record.sources > 0 then
+                records[#records + 1] = record
+            else
+                index.byKey[record.key] = nil
+            end
+        end
+        for _, dungeon in ipairs(index.dungeons) do
+            if dungeon.raid then
+                index.dungeonByKey[dungeon.key] = nil
+            else
+                dungeons[#dungeons + 1] = dungeon
+            end
+        end
+        index.records, index.dungeons = records, dungeons
     end
     return index
 end

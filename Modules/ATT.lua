@@ -148,6 +148,11 @@ function ATT.Read(root, opt)
         local rep = raw(node, "minReputation")
         if type(rep) == "table" and type(rep[1]) == "number" then
             entry.kind, entry.factionID, entry.standing = "reputation", rep[1], standingOf(rep[2])
+            local battleground = ns.Index.PVP_FACTIONS[rep[1]]
+            if battleground then
+                entry.kind, entry.pvpKey = "pvp", battleground
+                if ctx.category == "pvp" then entry.section = ctx.header end
+            end
         elseif ctx.category == "craft" then
             if not ctx.profession then return end
             entry.kind, entry.profession = "craft", ctx.profession
@@ -311,13 +316,6 @@ local function dungeonOf(name)
     return found and found[1] or nil
 end
 
-local function factionName(id)
-    local name = Util.SafeCall(rawget(_G, "GetFactionInfoByID"), id)
-    if type(name) == "string" and not Util.IsSecret(name) then return name end
-    local info = C_Reputation and Util.SafeCall(C_Reputation.GetFactionDataByID, id)
-    return type(info) == "table" and type(info.name) == "string" and info.name or nil
-end
-
 local professions = {}
 for id in pairs(ns.Crafts.BY_ID) do professions[id] = true end
 
@@ -358,7 +356,7 @@ local function read()
                 if entry.profession then entry.professionName = ns.Crafts.Name(entry.profession) end
                 if entry.factionID then
                     if factions[entry.factionID] == nil then
-                        factions[entry.factionID] = factionName(entry.factionID) or false
+                        factions[entry.factionID] = Util.FactionName(entry.factionID) or false
                     end
                     entry.factionName = factions[entry.factionID] or nil
                 end

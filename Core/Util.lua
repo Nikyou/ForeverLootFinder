@@ -25,6 +25,13 @@ function Util.AddOnLoaded(name)
     return loaded == true or loaded == 1
 end
 
+function Util.FactionName(id)
+    local name = Util.SafeCall(rawget(_G, "GetFactionInfoByID"), id)
+    if type(name) == "string" and not Util.IsSecret(name) then return name end
+    local info = C_Reputation and Util.SafeCall(C_Reputation.GetFactionDataByID, id)
+    return type(info) == "table" and type(info.name) == "string" and not Util.IsSecret(info.name) and info.name or nil
+end
+
 -- GetItemInfoInstant only, no server request
 function Util.Equippable(id)
     local itemID, _, _, equipLoc = Util.SafeCall(C_Item.GetItemInfoInstant, id)

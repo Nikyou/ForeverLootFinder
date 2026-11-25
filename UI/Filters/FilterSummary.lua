@@ -41,7 +41,7 @@ function FilterBar.Summary(f, ctx)
     for _, key in ipairs(FilterBar.CHECK_ORDER) do
         local spec = FilterBar.CHECKS[key]
         local text = spec.summary and spec.summary[FilterBar.CheckValue(f, spec)]
-        if text and (not spec.summaryIf or spec.summaryIf(f)) then add(text) end
+        if text and (not spec.summaryIf or spec.summaryIf(f)) and (not spec.shown or spec.shown()) then add(text) end
     end
 
     if f.dungeonLevel.on then add(format(L["dungeons %d–%d"], f.dungeonLevel.min, f.dungeonLevel.max)) end
@@ -59,7 +59,8 @@ function FilterBar.Summary(f, ctx)
         add(format(L["auction price up to %s"], ns.Util.Money((f.price.max or 0) * 10000)))
     end
     if (f.minQuality or 0) > 0 then add(format(L["%s or better"], Labels.Quality(f.minQuality))) end
-    local raids, dungeons = ns.PlacesDropdown.Count(f.raids), ns.PlacesDropdown.Count(f.dungeons)
+    local raids = ns.Index.RAIDS_OPEN and ns.PlacesDropdown.Count(f.raids) or nil
+    local dungeons = ns.PlacesDropdown.Count(f.dungeons)
     if raids then add(format(L["%d raids"], raids)) end
     if dungeons then add(format(L["%d dungeons"], dungeons)) end
     if f.search and f.search ~= "" then add(format(L["name has \"%s\""], f.search)) end

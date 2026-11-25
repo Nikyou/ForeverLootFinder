@@ -57,9 +57,21 @@ function Tooltip.PriceText(price)
         elseif cost.currency then
             local info = currencies and ns.Util.SafeCall(currencies.GetCurrencyInfo, cost.currency)
             parts[#parts + 1] = iconText(type(info) == "table" and info.iconFileID or nil, cost.count or 1)
+        elseif cost.honor then
+            parts[#parts + 1] = format(L["%d Honor"], cost.honor)
         end
     end
     return #parts > 0 and table.concat(parts, " ") or nil
+end
+
+-- FDJ's or the client's battleground name, else the list's own section
+function Tooltip.PvPName(source) return ns.DungeonJournal.BattlegroundName(source.pvpKey) or source.section end
+
+-- rank: the client's PVP_RANK_ number (5 to 18), its name for that side (0 Horde, 1 Alliance)
+function Tooltip.RankName(rank, faction)
+    local name = faction and rawget(_G, "PVP_RANK_" .. rank .. "_" .. (faction == "Horde" and 0 or 1))
+    if type(name) == "string" and name ~= "" and not isSecret(name) then return name end
+    return format(L["Rank %d"], rank - 4)
 end
 
 local function withPrice(text, source)
@@ -112,11 +124,14 @@ function Tooltip.SourceText(source, dungeonByKey, withDungeon)
         return withPrice(text, source) .. Tooltip.ViaQuestNote(source)
     end
     if source.kind == "pvp" then
-        local text = source.section and format(L["PvP: %s"], source.section) or L["PvP"]
-        if source.standing then
-            text = text .. " " .. MUTED .. "(" .. ns.AtlasLootLists.StandingName(source.standing) .. ")|r"
-        end
-        return withPrice(text, source)
+        local name = Tooltip.PvPName(source)
+        local text = name and format(L["PvP: %s"], name) or L["PvP"]
+        local notes = {}
+        if source.standing then notes[#notes + 1] = ns.AtlasLootLists.StandingName(source.standing) end
+        if source.pvpRank then notes[#notes + 1] = Tooltip.RankName(source.pvpRank, source.faction) end
+        if source.faction then notes[#notes + 1] = source.faction == "Horde" and L["Horde"] or L["Alliance"] end
+        if #notes > 0 then text = text .. " " .. MUTED .. "(" .. table.concat(notes, ", ") .. ")|r" end
+        return withPrice(text, source) .. Tooltip.ViaQuestNote(source)
     end
     if source.kind == "event" then
         local name = ns.Holidays.EventName(source) or "?"
@@ -214,12 +229,13 @@ end
 function Tooltip.Lines(record, dungeonByKey, opts)
     local lines = {}
     local sources = opts.sources or record.sources
-    -- FDJ's line already covers its own loot and quests
+    -- FDJ's line already covers its own loot and quests, not its PvP rewards
     if opts.fdjLineOn then
         local rest = {}
         for _, source in ipairs(sources) do
             local fdjQuest = source.kind == "quest" and source.dungeon and not tostring(source.dungeon):find("^al:")
-            if source.kind == "probable" or (source.provider ~= "fdj" and not fdjQuest) then rest[#rest + 1] = source end
+            local fdjLoot = source.provider == "fdj" and source.kind ~= "pvp"
+            if source.kind == "probable" or not (fdjLoot or fdjQuest) then rest[#rest + 1] = source end
         end
         sources = rest
     end

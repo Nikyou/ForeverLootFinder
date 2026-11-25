@@ -129,14 +129,6 @@ function Lists.StandingName(standing)
     return type(value) == "string" and value or tostring(standing)
 end
 
-local function factionName(id)
-    local name = Util.SafeCall(rawget(_G, "GetFactionInfoByID"), id)
-    if type(name) == "string" and not isSecret(name) then return name end
-    local data = C_Reputation and Util.SafeCall(C_Reputation.GetFactionDataByID, id)
-    if type(data) == "table" and type(data.name) == "string" then return data.name end
-    return nil
-end
-
 -- a second item with a count beside the item is what it costs: 125 Tarnished Undermine Reals, 1200 Darkmoon tickets
 local AMOUNT2 = 904
 local function rowPrice(row)
@@ -202,6 +194,9 @@ local HOLIDAYS = {
     Halloween = "hallows",
     WinterVeil = "winterVeil",
 }
+
+-- its battleground lists, to FDJ's keys
+local BATTLEGROUNDS = {WarsongGulch = "WSG", ArathiBasin = "AB", AlteracValley = "AV"}
 
 -- classify returns nil to skip a content
 local function readModule(module, storage, classify, out, byName, checkpoint)
@@ -305,7 +300,7 @@ local function readModule(module, storage, classify, out, byName, checkpoint)
                                                 entry.standing = entry.standing or standing
                                                 entry.factionID = entry.factionID or standingFaction
                                                 entry.factionName =
-                                                  entry.factionID and factionName(entry.factionID) or entry.factionName
+                                                  entry.factionID and Util.FactionName(entry.factionID) or entry.factionName
                                             end
                                             if PRICED[entry.kind] then
                                                 entry.price = rowPrice(item.row)
@@ -385,9 +380,11 @@ local CLASSIFY = {
         }
     end,
     AtlasLootClassic_PvP = function(content, typeIndex, key, typeName)
-        return {base = function(sectionName, _, name)
-            return {kind = "pvp", section = typeIndex == 1 and name or sectionName}
-        end}
+        return {
+            base = function(sectionName, _, name)
+                return {kind = "pvp", section = typeIndex == 1 and name or sectionName, pvpKey = BATTLEGROUNDS[key]}
+            end,
+        }
     end,
     -- by the type's name: AtlasLoot Forever added types in front, shifting the numbers
     AtlasLootClassic_Collections = function(_, _, key, typeName)

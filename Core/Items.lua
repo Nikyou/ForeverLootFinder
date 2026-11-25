@@ -231,6 +231,20 @@ local function retryTooltip(id)
     return true
 end
 
+-- the battleground factions' names on this client, to their battleground: "Requires Silverwing Sentinels" is PvP
+local battlegroundOf
+local function pvpFaction(name)
+    if not name then return nil end
+    if not battlegroundOf then
+        battlegroundOf = {}
+        for id, key in pairs(Index.PVP_FACTIONS) do
+            local factionName = Util.FactionName(id)
+            if factionName then battlegroundOf[factionName] = key end
+        end
+    end
+    return battlegroundOf[name]
+end
+
 local function applyParsed(info, parsed)
     info.classes, info.races = parsed.classes, parsed.races
     -- not a specialization or riding
@@ -240,6 +254,7 @@ local function applyParsed(info, parsed)
     info.unique = parsed.unique
     info.pvpRank = parsed.pvpRank and rankOf[parsed.pvpRank] or nil
     info.reqReputation = parsed.reqReputation
+    info.pvpFaction = pvpFaction(info.reqReputation)
     info.reqStanding = parsed.reqStanding and standingOf[parsed.reqStanding] or nil
     info.speed, info.dps = parsed.speed, info.dps or parsed.dps
     info.hasUse, info.hasProc = parsed.hasUse or nil, parsed.hasProc or nil
@@ -356,6 +371,7 @@ local function fromCache(record)
     instant(record, info)
     if not info.slot then return nil end
     ns.Cache.Decode(text, info)
+    info.pvpFaction = pvpFaction(info.reqReputation)
     info.fromCache = true
     return info
 end
