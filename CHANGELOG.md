@@ -22,6 +22,7 @@
 * Drops showing a second time in the wrong wing of Dire Maul, Scarlet Monastery, Blackrock Spire or Stratholme.
 * Classic rank 14 weapons and insignia showing on the PvP tab next to Forever's own.
 * With ALL THE THINGS, split dungeons showing as extra cards named by a number, and bosses named "?".
+* Greyed-out filters and settings not saying why when you hover them.
 
 #### 1.4.3
 * Items the addons list more than once are now merged, so unticking a source really hides them. Dungeon and raid loot no longer also shows as a creature drop outside dungeons, and a world drop is one "World drop" line instead of also a few creatures.
