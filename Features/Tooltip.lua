@@ -233,7 +233,9 @@ function Tooltip.Lines(record, dungeonByKey, opts)
     if opts.fdjLineOn then
         local rest = {}
         for _, source in ipairs(sources) do
-            local fdjQuest = source.kind == "quest" and source.dungeon and not tostring(source.dungeon):find("^al:")
+            -- AtlasLoot's and ATT's own places aren't FDJ's
+            local place = source.dungeon and tostring(source.dungeon)
+            local fdjQuest = source.kind == "quest" and place and not place:find("^al:") and not place:find("^att:")
             local fdjLoot = source.provider == "fdj" and source.kind ~= "pvp"
             if source.kind == "probable" or not (fdjLoot or fdjQuest) then rest[#rest + 1] = source end
         end
