@@ -176,6 +176,12 @@ function Questie.QuestBasics(questID)
     return name, type(level) == "number" and level > 0 and level or nil
 end
 
+function Questie.NpcName(npcID)
+    if not db() then return nil end
+    local name = get("Npc", npcID, "name")
+    return type(name) == "string" and name ~= "" and name or nil
+end
+
 local function ids(list)
     local out = {}
     if type(list) ~= "table" then return out end

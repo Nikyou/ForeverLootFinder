@@ -32,12 +32,27 @@ local HOLIDAYS = {
     [16] = "hallows",
     [14] = "winterVeil",
 }
+-- ATT keeps a split dungeon whole, its wings are headers under it (their notes in its LocalizationDB say which portal)
+local WINGS = {
+    [-361] = "Scarlet Monastery: Graveyard",
+    [-362] = "Scarlet Monastery: Library",
+    [-363] = "Scarlet Monastery: Armory",
+    [-364] = "Scarlet Monastery: Cathedral",
+    [-353] = "Lower Blackrock Spire",
+    [-354] = "Upper Blackrock Spire",
+    [-355] = "Dire Maul: East",
+    [-356] = "Dire Maul: North",
+    [-357] = "Dire Maul: West",
+    [-365] = "Stratholme: Living",
+    [-366] = "Stratholme: Undead",
+}
 
 local status = Util.NewStatus("att", {items = 0, places = 0, matched = 0, recipes = 0, ms = 0})
 local stats = status.counts
 local EMPTY = {provider = "att", entries = {}, dungeons = {}, areas = {}}
 local extra = EMPTY
 local learnedAt = {} -- [spell] = skill, from ATT's recipes
+local placeNames = {} -- ["att:316"] = name, for places FDJ doesn't have
 local ready = false
 
 local function app()
@@ -56,6 +71,7 @@ function ATT.Status() return status end
 function ATT.Stats() return stats end
 function ATT.Entries() return ATT.Enabled() and extra or EMPTY end
 function ATT.LearnedAt(spell) return ATT.Enabled() and learnedAt[spell] or nil end
+function ATT.Name(key) return placeNames[key] end
 
 local function raw(node, key) return rawget(node, key) end
 
@@ -92,10 +108,13 @@ function ATT.Read(root, opt)
         return ok and type(name) == "string" and name ~= "" and name or nil
     end
 
+    local function firstOf(list) return type(list) == "table" and list[1] or nil end
+
     local function place(node)
         local id = raw(node, "instanceID")
-        local map = raw(node, "mapID")
-        local name = (map and opt.mapName(map)) or nameOf(node)
+        local map = raw(node, "mapID") or firstOf(raw(node, "maps"))
+        local area = raw(node, "zoneTextAreaID") or firstOf(raw(node, "zoneTextAreaIDs"))
+        local name = (map and opt.mapName(map)) or (area and opt.areaName and opt.areaName(area)) or nameOf(node)
         counts.places = counts.places + 1
         local key = name and opt.dungeonOf(name)
         if key then
@@ -178,7 +197,9 @@ function ATT.Read(root, opt)
             if ctx.boss then
                 entry.kind, entry.bossName, entry.bossIndex = "boss", ctx.boss, ctx.bossIndex
             elseif ctx.npc then
-                entry.kind, entry.bossName, entry.creature = "boss", opt.npcName(ctx.npc) or ctx.npcName, true
+                local name = opt.npcName(ctx.npc) or ctx.npcName
+                entry.kind, entry.bossName, entry.creature = "boss", name, true
+                entry.npcID, entry.npcs, entry.npcName = ctx.npc, {ctx.npc}, name
             else
                 entry.kind = "trash"
             end
@@ -260,8 +281,12 @@ function ATT.Read(root, opt)
         if side and side ~= ctx.faction then ctx = with(ctx, "faction", side) end
         local classes = classMask(raw(node, "c"))
         if classes then ctx = with(ctx, "classMask", classes) end
+        local wing = ctx.dungeon and WINGS[raw(node, "headerID")]
         if raw(node, "instanceID") then
             ctx = with(ctx, "dungeon", place(node))
+            ctx.bossCount = 0
+        elseif wing and opt.dungeonOf(wing) then
+            ctx = with(ctx, "dungeon", opt.dungeonOf(wing))
             ctx.bossCount = 0
         elseif raw(node, "mapID") and not ctx.dungeon then
             ctx = with(ctx, "map", raw(node, "mapID"))
@@ -327,17 +352,28 @@ local function read()
         return
     end
     status.state, status.error = "scanning", nil
+    -- ATT asks the client, which knows only creatures it has seen: Questie's name for the rest
     local names = type(att.NPCNameFromID) == "table" and att.NPCNameFromID or {}
+    local seen = {}
+    local function npcName(id)
+        if seen[id] == nil then
+            local name = names[id]
+            if type(name) ~= "string" or Util.IsSecret(name) then name = ns.Questie.NpcName(id) end
+            seen[id] = name or false
+        end
+        return seen[id] or nil
+    end
     local found, counts, dungeons, areas, recipes
     Util.RunSliced(function(checkpoint)
         found, counts, dungeons, areas, recipes = ATT.Read(root, {
             equippable = Util.Equippable,
             nameOf = function(node) return node.name end,
-            npcName = function(id)
-                local name = names[id]
-                return type(name) == "string" and not Util.IsSecret(name) and name or nil
-            end,
+            npcName = npcName,
             mapName = mapName,
+            areaName = function(area)
+                local name = C_Map and C_Map.GetAreaInfo and Util.SafeCall(C_Map.GetAreaInfo, area)
+                return type(name) == "string" and not Util.IsSecret(name) and name ~= "" and name or nil
+            end,
             questBasics = ns.Questie.QuestBasics,
             dungeonOf = dungeonOf,
             professions = professions,
@@ -362,6 +398,8 @@ local function read()
                 end
             end
             extra = {provider = "att", entries = found, dungeons = dungeons, areas = areas}
+            placeNames = {}
+            for _, dungeon in ipairs(dungeons) do placeNames[dungeon.key] = dungeon.name end
             learnedAt = recipes
         end
         status.state = found and #found > 0 and "done" or "nodata"
