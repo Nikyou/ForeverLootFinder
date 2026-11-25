@@ -4,7 +4,8 @@ if not L then return end
 
 -- Core.lua
 L["Error (shown once): %s"] = "Ошибка (показана один раз): %s"
-L["Copy your Dungeon Journal favourites: Favourites tab, \"Import FDJ favourites\"."] = "Скопируйте избранное Dungeon Journal: вкладка «Избранное», кнопка «Импорт из FDJ»."
+L["Copy your Dungeon Journal favourites: Favourites tab, \"Import FDJ favourites\"."] =
+  "Скопируйте избранное Dungeon Journal: вкладка «Избранное», кнопка «Импорт из FDJ»."
 L["open the window"] = "открыть окно"
 L["open the settings"] = "открыть настройки"
 L["move the windows back to the centre"] = "вернуть окна в центр"
@@ -22,10 +23,13 @@ L["AtlasLoot and profession data"] = "данные AtlasLoot и професси
 L["items not loaded, and why"] = "незагруженные предметы и причины"
 L["all dumps but stats"] = "все выгрузки, кроме stats"
 L["reread the Dungeon Journal, rebuild the lists"] = "перечитать Dungeon Journal и пересобрать списки"
-L["Can't read DungeonJournal's loot data. Forever LootFinder may need an update."] = "Не удаётся прочитать добычу DungeonJournal. Возможно, нужно обновить Forever LootFinder."
+L["Can't read DungeonJournal's loot data. Forever LootFinder may need an update."] =
+  "Не удаётся прочитать добычу DungeonJournal. Возможно, нужно обновить Forever LootFinder."
 L["That item can't be worn."] = "Этот предмет нельзя надеть."
-L["No addon lists where it's from, so it shows only under Favourites."] = "Ни один аддон не знает, откуда он, поэтому он виден только в «Избранном»."
-L["the selected slot's items with no Pawn value, and why"] = "предметы выбранной ячейки без оценки Pawn и почему"
+L["No addon lists where it's from, so it shows only under Favourites."] =
+  "Ни один аддон не знает, откуда он, поэтому он виден только в «Избранном»."
+L["the selected slot's items with no Pawn value, and why"] =
+  "предметы выбранной ячейки без оценки Pawn и почему"
 L["Commands (also /foreverlootfinder):"] = "Команды (также /foreverlootfinder):"
 L["each addon's state and memory"] = "состояние и память каждого аддона"
 
@@ -37,7 +41,8 @@ L["The string is empty."] = "Строка пуста."
 L["Not a favourites string."] = "Это не строка избранного."
 L["The string is damaged."] = "Строка повреждена."
 L["Needs a newer Forever LootFinder."] = "Нужна более новая версия Forever LootFinder."
-L["%d favourites: %d new, %d tier changed, %d unchanged."] = "Избранное: %d. Новых: %d, со сменой приоритета: %d, без изменений: %d."
+L["%d favourites: %d new, %d tier changed, %d unchanged."] =
+  "Избранное: %d. Новых: %d, со сменой приоритета: %d, без изменений: %d."
 L["From %s."] = "От: %s."
 L["%d new, %d unchanged, %d skipped."] = "Новых: %d, без изменений: %d, пропущено: %d."
 L["and %d more"] = "и ещё %d"
@@ -90,7 +95,8 @@ L["Favourite dropped: %s (%s)"] = "Выпало избранное: %s (%s)"
 -- Features/Dump.lua
 L["Ctrl+A, then Ctrl+C to copy."] = "Ctrl+A, затем Ctrl+C — скопировать."
 L["Close"] = "Закрыть"
-L["Loading items; the dump opens when done."] = "Загрузка предметов; выгрузка откроется после."
+L["Loading items; the dump opens when done."] =
+  "Загрузка предметов; выгрузка откроется после."
 L["Stat dump"] = "Выгрузка характеристик"
 L["Dungeon Journal dump"] = "Выгрузка Dungeon Journal"
 L["Questie dump"] = "Выгрузка Questie"
@@ -100,7 +106,8 @@ L["Full dump"] = "Полная выгрузка"
 L["DungeonJournal isn't installed."] = "DungeonJournal не установлен."
 L["Pawn dump"] = "Дамп Pawn"
 L["Status dump"] = "Дамп состояния"
-L["Usage: /flf dump stats, fdj, questie, crafts, items, pawn, status or all"] = "Использование: /flf dump stats, fdj, questie, crafts, items, pawn, status или all"
+L["Usage: /flf dump stats, fdj, questie, crafts, items, pawn, status or all"] =
+  "Использование: /flf dump stats, fdj, questie, crafts, items, pawn, status или all"
 
 -- Features/ImportExport.lua
 L["Not a Forever LootFinder profile string."] = "Это не строка профиля Forever LootFinder."
@@ -119,7 +126,8 @@ L["Enter a profile name."] = "Введите название профиля."
 L["Profile \"%s\" exists. Overwrite?"] = "Профиль «%s» уже есть. Перезаписать?"
 L["Overwrite"] = "Перезаписать"
 L["Cancel"] = "Отмена"
-L["Import into a new profile or over \"%s\"?"] = "Импортировать в новый профиль или поверх «%s»?"
+L["Import into a new profile or over \"%s\"?"] =
+  "Импортировать в новый профиль или поверх «%s»?"
 L["New profile name"] = "Название нового профиля"
 L["Imported"] = "Импорт"
 L["Create profile"] = "Создать профиль"
@@ -129,10 +137,12 @@ L["Export favourites"] = "Экспорт избранного"
 L["Favourites of %s. Copy (Ctrl+C) and share."] = "Избранное: %s. Скопируйте (Ctrl+C) и поделитесь."
 L["Import favourites"] = "Импорт избранного"
 L["Paste a favourites string (Ctrl+V) for %s."] = "Вставьте строку избранного (Ctrl+V) для %s."
-L["Merge adds new items and keeps your tiers. Overwrite replaces the list."] = "«Объединить» добавляет новое и сохраняет приоритеты. «Перезаписать» заменяет список."
+L["Merge adds new items and keeps your tiers. Overwrite replaces the list."] =
+  "«Объединить» добавляет новое и сохраняет приоритеты. «Перезаписать» заменяет список."
 L["Merge"] = "Объединить"
 L["Nothing new to import."] = "Нечего импортировать."
-L["Copy this character's Dungeon Journal favourites as \"Nice to have\"?"] = "Скопировать избранное Dungeon Journal этого персонажа как «Желательно»?"
+L["Copy this character's Dungeon Journal favourites as \"Nice to have\"?"] =
+  "Скопировать избранное Dungeon Journal этого персонажа как «Желательно»?"
 L["Add %s to your favourites as \"BiS\"?"] = "Добавить %s в избранное как «БиС»?"
 
 -- UI/Labels.lua
@@ -210,8 +220,10 @@ L["Auction price: %s"] = "Цена на аукционе: %s"
 L["Cheapest random-bonus version."] = "Самый дешёвый вариант со случайным бонусом."
 L["Last seen at auction %d days ago."] = "Последний раз на аукционе: %d дн. назад."
 L["Not seen at auction for 21+ days."] = "Не было на аукционе больше 21 дня."
-L["Not on this server: it says the item doesn't exist."] = "Нет на этом сервере: он сообщает, что такого предмета нет."
-L["Maybe not on this server: it never sent the item."] = "Возможно, нет на сервере: он так и не прислал данные."
+L["Not on this server: it says the item doesn't exist."] =
+  "Нет на этом сервере: он сообщает, что такого предмета нет."
+L["Maybe not on this server: it never sent the item."] =
+  "Возможно, нет на сервере: он так и не прислал данные."
 L["binding"] = "привязка"
 L["quality"] = "качество"
 L["stats"] = "характеристики"
@@ -229,7 +241,8 @@ L["reputation"] = "репутация"
 L["not an upgrade"] = "не улучшение"
 L["Score"] = "Оценка"
 L["Pick a scale at the top."] = "Выберите шкалу вверху."
-L["Scores count base stats only; the bonus is random."] = "Оценка учитывает только базовые характеристики, бонус случаен."
+L["Scores count base stats only; the bonus is random."] =
+  "Оценка учитывает только базовые характеристики, бонус случаен."
 L["Scores don't count set bonuses."] = "Оценка не учитывает бонусы комплекта."
 L["Not scored yet."] = "Ещё не оценён."
 
@@ -258,7 +271,8 @@ L["Spell"] = "Заклинания"
 L["Physical"] = "Физические"
 L["Defense"] = "Защита"
 L["Resistances"] = "Сопротивления"
-L["Click: want, exclude, any. Right-click: any."] = "Щелчок: нужно, исключить, неважно. Правый щелчок: неважно."
+L["Click: want, exclude, any. Right-click: any."] =
+  "Щелчок: нужно, исключить, неважно. Правый щелчок: неважно."
 L["Any binding"] = "Любая привязка"
 L["Bind on pickup only"] = "Только персональные при поднятии"
 L["Bind on equip only"] = "Только персональные при надевании"
@@ -269,7 +283,8 @@ L["All wanted stats"] = "Все нужные"
 L["All dungeons"] = "Все подземелья"
 L["None"] = "Ни одного"
 L["Armor type"] = "Тип брони"
-L["Cloaks, rings, necks and trinkets always show."] = "Плащи, кольца, амулеты и аксессуары видны всегда."
+L["Cloaks, rings, necks and trinkets always show."] =
+  "Плащи, кольца, амулеты и аксессуары видны всегда."
 L["Weapon type"] = "Тип оружия"
 L["Stats"] = "Характеристики"
 L["Has a Use or proc effect"] = "Есть эффект «Использование» или прок"
@@ -286,7 +301,8 @@ L["My level + 5"] = "Мой уровень + 5"
 L["Dungeon level"] = "Уровень подземелья"
 L["Only dungeons in this level range"] = "Только подземелья этих уровней"
 L["Binding"] = "Привязка"
-L["BoE items can also be bought or traded."] = "Персональные при надевании можно купить или выменять."
+L["BoE items can also be bought or traded."] =
+  "Персональные при надевании можно купить или выменять."
 L["Weapon speed"] = "Скорость оружия"
 L["Weapons in this speed range (sec)"] = "Оружие с такой скоростью (сек.)"
 L["Other items aren't affected."] = "На остальные предметы не влияет."
@@ -346,7 +362,8 @@ L["no PvP"] = "без PvP"
 L["no world events"] = "без игровых событий"
 L["no world drops"] = "без добычи в мире"
 L["Hide items for other professions"] = "Скрывать предметы чужих профессий"
-L["Like engineering goggles: wearable only with the profession."] = "Например, инженерные очки: надеть можно только с профессией."
+L["Like engineering goggles: wearable only with the profession."] =
+  "Например, инженерные очки: надеть можно только с профессией."
 L["with other professions' items"] = "с предметами чужих профессий"
 L["Hide cosmetic items"] = "Скрывать косметические предметы"
 L["with cosmetic items"] = "с косметическими предметами"
@@ -358,13 +375,16 @@ L["Places"] = "Места"
 L["Quests tied to a raid go with it."] = "Задания, связанные с рейдом, идут вместе с ним."
 L["Item"] = "Предмет"
 L["Off in Settings, Addons tab."] = "Отключено: настройки, вкладка «Аддоны»."
-L["Without it, open a profession window to list its items."] = "Без него откройте окно профессии, чтобы увидеть её предметы."
+L["Without it, open a profession window to list its items."] =
+  "Без него откройте окно профессии, чтобы увидеть её предметы."
 L["Hide drops rarer than this"] = "Скрывать добычу с шансом ниже"
 L["Keep drops with unknown chance"] = "Оставлять с неизвестным шансом"
-L["AtlasLoot's chances, per boss. Often unknown for trash and shared loot. Quests and crafts aren't affected."] = "Шансы из AtlasLoot, по боссам. У трэша и общей добычи их часто нет. Задания и ремесло не затрагиваются."
+L["AtlasLoot's chances, per boss. Often unknown for trash and shared loot. Quests and crafts aren't affected."] =
+  "Шансы из AtlasLoot, по боссам. У трэша и общей добычи их часто нет. Задания и ремесло не затрагиваются."
 L["drop chance %s or more"] = "шанс выпадения от %s"
 L["no unknown chances"] = "без неизвестных шансов"
-L["Also hides dungeons and quests above this level."] = "Также скрывает подземелья и задания выше этого уровня."
+L["Also hides dungeons and quests above this level."] =
+  "Также скрывает подземелья и задания выше этого уровня."
 L["Turn on \"%s\" first."] = "Сначала включите «%s»."
 L["Turn on \"%s\" or \"%s\" first."] = "Сначала включите «%s» или «%s»."
 L["Sold by vendors"] = "Продаётся у торговцев"
@@ -374,7 +394,8 @@ L["no creature drops"] = "без добычи с существ"
 L["Max auction price (gold)"] = "Макс. цена на аукционе (золото)"
 L["Only items with a price"] = "Только с ценой на аукционе"
 L["with an auction price"] = "с ценой на аукционе"
-L["Auctionator's prices from your scans. BoP and unpriced items: hidden by the first box, kept by the max price."] = "Цены Auctionator по вашим сканированиям. БоП и предметы без цены: первый флажок скрывает, макс. цена оставляет."
+L["Auctionator's prices from your scans. BoP and unpriced items: hidden by the first box, kept by the max price."] =
+  "Цены Auctionator по вашим сканированиям. БоП и предметы без цены: первый флажок скрывает, макс. цена оставляет."
 L["Only up to my skill"] = "Только до моего навыка"
 L["Hide items above my skill"] = "Скрывать предметы выше моего навыка"
 L["Only standings I have"] = "Только моё отношение"
@@ -408,7 +429,8 @@ L["Scores..."] = "Оценки..."
 -- UI/Tabs/SlotTab.lua
 L["No items match the filters."] = "Нет предметов под эти фильтры."
 L["By slot"] = "По ячейкам"
-L["~ Some of these haven't loaded yet, or aren't scored yet. Open the slot to load them."] = "~ Часть предметов ещё не загружена или не оценена. Откройте ячейку, чтобы загрузить их."
+L["~ Some of these haven't loaded yet, or aren't scored yet. Open the slot to load them."] =
+  "~ Часть предметов ещё не загружена или не оценена. Откройте ячейку, чтобы загрузить их."
 
 -- UI/Tabs/DungeonTab.lua
 L["All slots"] = "Все ячейки"
@@ -426,9 +448,11 @@ L["Combined"] = "Сборные"
 L["Character:"] = "Персонаж:"
 L["Export"] = "Экспорт"
 L["Import FDJ favourites"] = "Импорт из FDJ"
-L["Copies this character's Dungeon Journal favourites once, as \"Nice to have\"."] = "Однократно копирует избранное Dungeon Journal этого персонажа как «Желательно»."
+L["Copies this character's Dungeon Journal favourites once, as \"Nice to have\"."] =
+  "Однократно копирует избранное Dungeon Journal этого персонажа как «Желательно»."
 L["%d of %d favourites shown"] = "Показано избранного: %d из %d"
-L["No favourites yet. Click an item to add it."] = "Избранного пока нет. Щёлкните предмет, чтобы добавить."
+L["No favourites yet. Click an item to add it."] =
+  "Избранного пока нет. Щёлкните предмет, чтобы добавить."
 L["No favourites match the filters."] = "Нет избранного под эти фильтры."
 L["Favourites"] = "Избранное"
 L["Other"] = "Другое"
@@ -436,7 +460,8 @@ L["Sold by many vendors"] = "Продают многие торговцы"
 L["Dropped by many creatures"] = "Падает со многих существ"
 L["No source listed"] = "Источник не указан"
 L["Add item"] = "Добавить"
-L["Any wearable item, even one no addon lists. It shows only here."] = "Любой надеваемый предмет, даже если ни один аддон его не знает. Он будет виден только здесь."
+L["Any wearable item, even one no addon lists. It shows only here."] =
+  "Любой надеваемый предмет, даже если ни один аддон его не знает. Он будет виден только здесь."
 
 -- Options/GeneralTab.lua
 L["Rare"] = "Редкий"
@@ -454,11 +479,14 @@ L["Favourite stars"] = "Звёзды избранного"
 L["Item tooltips"] = "Подсказки предметов"
 L["List"] = "Список"
 L["Show items still loading (greyed)"] = "Показывать незагруженные (серым)"
-L["Random-bonus items pass stat filters"] = "Случайный бонус проходит фильтр характеристик"
-L["Their base stats differ from the drop."] = "Их базовые характеристики не совпадут с добычей."
+L["Random-bonus items pass stat filters"] =
+  "Случайный бонус проходит фильтр характеристик"
+L["Their base stats differ from the drop."] =
+  "Их базовые характеристики не совпадут с добычей."
 L["Badges on rows"] = "Метки в строках"
 L["Hidden items"] = "Скрытые предметы"
-L["Hidden with \"Hide this item\", this character only."] = "Скрытые через «Скрыть этот предмет», только этот персонаж."
+L["Hidden with \"Hide this item\", this character only."] =
+  "Скрытые через «Скрыть этот предмет», только этот персонаж."
 L["Show one again"] = "Показать снова"
 L["Show all again"] = "Показать все снова"
 L["General"] = "Общие"
@@ -468,7 +496,8 @@ L["Dungeons, Raids: hide empty places"] = "Подземелья, рейды: с�
 L["Dungeons, Raids: drop chance on icons"] = "Подземелья, рейды: шанс на значках"
 L["Auction price (Auctionator)"] = "Цена на аукционе (Auctionator)"
 L["For when Auctionator's own price lines are off."] = "Если строки цен Auctionator отключены."
-L["Empty columns stay hidden. Also: right-click the list header."] = "Пустые столбцы скрыты. То же — правым щелчком по заголовку списка."
+L["Empty columns stay hidden. Also: right-click the list header."] =
+  "Пустые столбцы скрыты. То же — правым щелчком по заголовку списка."
 L["Source on all item tooltips"] = "Источник во всех подсказках предметов"
 L["LootFinder's windows always show it."] = "В окнах LootFinder он есть всегда."
 L["Show items not on this server"] = "Показывать отсутствующие на сервере"
@@ -481,9 +510,11 @@ L["Small window"] = "Небольшое окно"
 L["Chat"] = "Чат"
 L["Off"] = "Выкл."
 L["Dungeon reminder"] = "Напоминание в подземелье"
-L["On entering a dungeon: your favourites there and their bosses."] = "При входе в подземелье: ваше избранное там и его боссы."
+L["On entering a dungeon: your favourites there and their bosses."] =
+  "При входе в подземелье: ваше избранное там и его боссы."
 L["Drop alert"] = "Оповещение о добыче"
-L["When a favourite drops: loot window, group roll or chat."] = "Когда выпадает избранное: окно добычи, розыгрыш или чат."
+L["When a favourite drops: loot window, group roll or chat."] =
+  "Когда выпадает избранное: окно добычи, розыгрыш или чат."
 L["On-screen notice"] = "Уведомление на экране"
 L["Chat line"] = "Строка в чате"
 L["Sound"] = "Звук"
@@ -497,30 +528,36 @@ L["Characters"] = "Персонажи"
 L["Delete character"] = "Удалить персонажа"
 L["Delete %s and their favourites?"] = "Удалить %s и его избранное?"
 L["Delete"] = "Удалить"
-L["Characters are added on login. The current one can't be deleted."] = "Персонажи добавляются при входе. Текущего удалить нельзя."
+L["Characters are added on login. The current one can't be deleted."] =
+  "Персонажи добавляются при входе. Текущего удалить нельзя."
 L["Share"] = "Обмен"
-L["The selected character's favourites and tiers, as a string."] = "Избранное и приоритеты выбранного персонажа в виде строки."
+L["The selected character's favourites and tiers, as a string."] =
+  "Избранное и приоритеты выбранного персонажа в виде строки."
 L["Click adds items with this tier:"] = "Щелчок добавляет с приоритетом:"
 L["It has no lists for your class yet."] = "Для вашего класса списков пока нет."
 L["AtlasLoot BiS lists"] = "Списки БиС из AtlasLoot"
-L["Adds a list's items as \"BiS\". Nothing is imported until you click."] = "Добавляет предметы списка как «БиС». Без нажатия ничего не импортируется."
+L["Adds a list's items as \"BiS\". Nothing is imported until you click."] =
+  "Добавляет предметы списка как «БиС». Без нажатия ничего не импортируется."
 L["Import BiS list"] = "Импорт списка БиС"
 
 -- Options/ProfilesTab.lua
 L["Current profile"] = "Текущий профиль"
-L["Profiles hold display and alert settings. Filters and favourites are per character."] = "Профили хранят настройки вида и оповещений. Фильтры и избранное у каждого персонажа свои."
+L["Profiles hold display and alert settings. Filters and favourites are per character."] =
+  "Профили хранят настройки вида и оповещений. Фильтры и избранное у каждого персонажа свои."
 L["New profile"] = "Новый профиль"
 L["Create"] = "Создать"
 L["Copy from"] = "Скопировать из"
 L["Copies another profile into this one."] = "Копирует другой профиль в текущий."
-L["Overwrite the current profile with \"%s\"?"] = "Перезаписать текущий профиль профилем «%s»?"
+L["Overwrite the current profile with \"%s\"?"] =
+  "Перезаписать текущий профиль профилем «%s»?"
 L["Copy"] = "Скопировать"
 L["Select a profile"] = "Выберите профиль"
 L["Delete a profile"] = "Удалить профиль"
 L["Delete the profile \"%s\"?"] = "Удалить профиль «%s»?"
 L["Reset current profile"] = "Сбросить текущий профиль"
 L["Reset this profile?"] = "Сбросить этот профиль?"
-L["Share this profile as a string. Import asks before replacing."] = "Поделиться профилем через строку. Импорт спросит перед заменой."
+L["Share this profile as a string. Import asks before replacing."] =
+  "Поделиться профилем через строку. Импорт спросит перед заменой."
 L["Profiles"] = "Профили"
 
 -- Modules/AtlasLoot/Crafts.lua
@@ -541,7 +578,8 @@ L["Fishing"] = "Рыбная ловля"
 -- UI/Tabs/QuestTab.lua
 L["Other quests"] = "Другие задания"
 L["%d quests"] = "Заданий: %d"
-L["Install Questie for quests outside dungeons."] = "Установите Questie для заданий вне подземелий."
+L["Install Questie for quests outside dungeons."] =
+  "Установите Questie для заданий вне подземелий."
 L["Reading Questie..."] = "Чтение Questie..."
 L["Quests"] = "Задания"
 L["%s (done)"] = "%s (выполнено)"
@@ -556,15 +594,18 @@ L["Master (300+)"] = "Мастер (300+)"
 L["Skill unknown"] = "Навык неизвестен"
 L["your skill %d"] = "ваш навык %d"
 L["Learned (skill %d)."] = "Изучена (навык %d)."
-L["Not learned: the filter hides its BoP items."] = "Не изучена: фильтр скрывает её БоП-предметы."
+L["Not learned: the filter hides its BoP items."] =
+  "Не изучена: фильтр скрывает её БоП-предметы."
 L["Professions"] = "Профессии"
 L["Group by skill"] = "Группировать по навыку"
-L["Install forever-db for all crafted items, or open your professions once."] = "Установите forever-db для всех предметов ремесла или откройте свои профессии."
+L["Install forever-db for all crafted items, or open your professions once."] =
+  "Установите forever-db для всех предметов ремесла или откройте свои профессии."
 
 -- Options/AddonsTab.lua
 L["Waiting to load..."] = "Ожидание загрузки..."
 L["Reading..."] = "Чтение..."
-L["Loaded, but no data found. See /flf dump questie or crafts."] = "Загружено, но данных нет. См. /flf dump questie или crafts."
+L["Loaded, but no data found. See /flf dump questie or crafts."] =
+  "Загружено, но данных нет. См. /flf dump questie или crafts."
 L["Not installed."] = "Не установлен."
 L["In use."] = "Используется."
 L["Addons"] = "Аддоны"
@@ -573,11 +614,14 @@ L["Dungeon and raid drops"] = "Добыча в подземельях и рей�
 L["Quest rewards"] = "Награды за задания"
 L["Crafted items"] = "Создаваемые предметы"
 L["Use for owned items"] = "Учитывать имеющиеся предметы"
-L["Knows your gear, bags, bank and mail across sessions. Without it, the bank counts once opened."] = "Знает экипировку, сумки, банк и почту между сессиями. Без него банк учитывается после открытия."
+L["Knows your gear, bags, bank and mail across sessions. Without it, the bank counts once opened."] =
+  "Знает экипировку, сумки, банк и почту между сессиями. Без него банк учитывается после открытия."
 L["Use for crafts, raids and other lists"] = "Ремесло, рейды и другие списки"
-L["Crafts, raid and world boss loot, reputation, PvP and event rewards."] = "Ремесло, добыча рейдов и мировых боссов, награды за репутацию, PvP и события."
+L["Crafts, raid and world boss loot, reputation, PvP and event rewards."] =
+  "Ремесло, добыча рейдов и мировых боссов, награды за репутацию, PvP и события."
 L["When addons overlap"] = "При совпадении аддонов"
-L["Same item, same place (dungeon, quest, profession): the first addon's entry wins."] = "Один предмет в одном месте (подземелье, задание, профессия): остаётся запись первого аддона."
+L["Same item, same place (dungeon, quest, profession): the first addon's entry wins."] =
+  "Один предмет в одном месте (подземелье, задание, профессия): остаётся запись первого аддона."
 L["%d crafted, %d other items."] = "Ремесло: %d, другое: %d."
 L["Tabs"] = "Вкладки"
 L["Show the %s tab"] = "Показывать вкладку «%s»"
@@ -585,36 +629,48 @@ L["%s (default)"] = "%s (по умолчанию)"
 L["Use for quests, vendors and creature drops"] = "Задания, торговцы и добыча с существ"
 L["Vendors"] = "Торговцы"
 L["Creature drops"] = "Добыча с существ"
-L["Questie's database: quest rewards, vendor goods and creature drops."] = "База Questie: награды за задания, товары торговцев и добыча с существ."
+L["Questie's database: quest rewards, vendor goods and creature drops."] =
+  "База Questie: награды за задания, товары торговцев и добыча с существ."
 L["Waypoints"] = "Путевые точки"
 L["Auto (TomTom, else map pin)"] = "Авто (TomTom, иначе метка на карте)"
 L["Game map pin"] = "Метка на карте игры"
 L["This client has no map pins."] = "В этом клиенте нет меток на карте."
-L["Right-click an item for a waypoint to its source. Shift-click a dungeon name for its entrance."] = "Правый щелчок по предмету — путевая точка к источнику. Shift+щелчок по названию подземелья — ко входу."
-L["%d quest rewards, %d vendor, %d creature sources."] = "Наград за задания: %d, торговцев: %d, существ: %d."
+L["Right-click an item for a waypoint to its source. Shift-click a dungeon name for its entrance."] =
+  "Правый щелчок по предмету — путевая точка к источнику. Shift+щелчок по названию подземелья — ко входу."
+L["%d quest rewards, %d vendor, %d creature sources."] =
+  "Наград за задания: %d, торговцев: %d, существ: %d."
 L["In use: TomTom."] = "Используется TomTom."
 L["In use: the game's map pin."] = "Используется метка на карте игры."
 L["Not available: install TomTom."] = "Недоступно: установите TomTom."
 L["Use auction prices"] = "Цены аукциона"
-L["Price column, sort, filters and shopping list. Prices are from your scans."] = "Столбец «Цена», сортировка, фильтры и список покупок. Цены — из ваших сканирований."
+L["Price column, sort, filters and shopping list. Prices are from your scans."] =
+  "Столбец «Цена», сортировка, фильтры и список покупок. Цены — из ваших сканирований."
 L["In use: %d of %d sellable items priced."] = "Используется: цена у %d из %d продаваемых."
 L["Use for dungeon loot and quests"] = "Добыча и задания подземелий"
-L["The main source: Forever's dungeons, bosses and dungeon quests."] = "Главный источник: подземелья Forever, боссы и задания подземелий."
+L["The main source: Forever's dungeons, bosses and dungeon quests."] =
+  "Главный источник: подземелья Forever, боссы и задания подземелий."
 L["In use: %d dungeons."] = "Используется: подземелий: %d."
 L["Use for quests the others miss"] = "Использовать для заданий, которых нет у других"
-L["Quest rewards from Wowhead's Forever pages. QuestieDB and DungeonJournal come first."] = "Награды за задания со страниц Wowhead для Forever. QuestieDB и DungeonJournal важнее."
+L["Quest rewards from Wowhead's Forever pages. QuestieDB and DungeonJournal come first."] =
+  "Награды за задания со страниц Wowhead для Forever. QuestieDB и DungeonJournal важнее."
 L["Use for rare creatures"] = "Использовать для редких существ"
-L["Rares and their loot. DungeonJournal and QuestieDB come first."] = "Редкие существа и их добыча. DungeonJournal и QuestieDB важнее."
+L["Rares and their loot. DungeonJournal and QuestieDB come first."] =
+  "Редкие существа и их добыча. DungeonJournal и QuestieDB важнее."
 L["%d quests, %d rewards."] = "Заданий: %d, наград: %d."
 L["%d rares, %d items."] = "Редких: %d, предметов: %d."
 L["Use for its Forever database"] = "Использовать его базу Forever"
-L["Dungeon loot, quests, vendors, crafts, reputation, PvP and event rewards. Fills what the others miss, and gives recipes their skill level on Forever."] = "Добыча подземелий, задания, торговцы, ремесло, награды за репутацию, PvP и события. Дополняет то, чего нет у других, и даёт рецептам их уровень навыка в Forever."
-L["Use for crafts, quests, vendors and drop chances"] = "Использовать для ремесла, заданий, торговцев и шансов добычи"
-L["Links every recipe to what it makes, Forever's own included. Creature drops get their chance, mostly Classic's."] = "Связывает каждый рецепт с тем, что он создаёт, включая рецепты Forever. Добыча с существ получает шанс, в основном из Classic."
+L["Dungeon loot, quests, vendors, crafts, reputation, PvP and event rewards. Fills what the others miss, and gives recipes their skill level on Forever."] =
+  "Добыча подземелий, задания, торговцы, ремесло, награды за репутацию, PvP и события. Дополняет то, чего нет у других, и даёт рецептам их уровень навыка в Forever."
+L["Use for crafts, quests, vendors and drop chances"] =
+  "Использовать для ремесла, заданий, торговцев и шансов добычи"
+L["Links every recipe to what it makes, Forever's own included. Creature drops get their chance, mostly Classic's."] =
+  "Связывает каждый рецепт с тем, что он создаёт, включая рецепты Forever. Добыча с существ получает шанс, в основном из Classic."
 L["%d sources, %d places."] = "Источников: %d, мест: %d."
-L["%d crafts, %d quest rewards, %d vendor and %d creature sources."] = "Ремесло: %d, награды заданий: %d, торговцы: %d, существа: %d."
+L["%d crafts, %d quest rewards, %d vendor and %d creature sources."] =
+  "Ремесло: %d, награды заданий: %d, торговцы: %d, существа: %d."
 L["Use for crafts and recipe skill"] = "Использовать для ремесла и навыка рецептов"
-L["Gives recipes the skill they need on Forever. For trainer recipes ALL THE THINGS comes first."] = "Даёт рецептам навык, нужный на Forever. Для рецептов у учителей сначала ALL THE THINGS."
+L["Gives recipes the skill they need on Forever. For trainer recipes ALL THE THINGS comes first."] =
+  "Даёт рецептам навык, нужный на Forever. Для рецептов у учителей сначала ALL THE THINGS."
 L["%d crafts, %d recipe skills."] = "Ремесло: %d, навыки рецептов: %d."
 
 -- UI/Tabs/SourceTabs.lua
@@ -642,16 +698,21 @@ L["auction price up to %s"] = "цена на аукционе до %s"
 L["By %s"] = "Автор: %s"
 L["%s (comes with %s)"] = "%s (входит в %s)"
 L["By the Questie team: %s and others"] = "Команда Questie: %s и другие"
-L["Quest rewards, vendors and creature drops."] = "Награды за задания, торговцы и добыча с существ."
-L["Raids, crafted gear, reputation, PvP and event rewards, drop chances."] = "Рейды, созданные предметы, награды за репутацию, PvP и события, шансы выпадения."
+L["Quest rewards, vendors and creature drops."] =
+  "Награды за задания, торговцы и добыча с существ."
+L["Raids, crafted gear, reputation, PvP and event rewards, drop chances."] =
+  "Рейды, созданные предметы, награды за репутацию, PvP и события, шансы выпадения."
 L["Item scores and upgrades."] = "Оценки предметов и улучшения."
-L["Items in bags, bank and mail across characters."] = "Предметы в сумках, банке и почте всех персонажей."
+L["Items in bags, bank and mail across characters."] =
+  "Предметы в сумках, банке и почте всех персонажей."
 L["Auction prices and shopping lists."] = "Цены аукциона и списки покупок."
 L["Made by %s"] = "Автор аддона: %s"
-L["It reads its data from these addons. Thanks to their authors!"] = "Данные берутся из этих аддонов. Спасибо их авторам!"
+L["It reads its data from these addons. Thanks to their authors!"] =
+  "Данные берутся из этих аддонов. Спасибо их авторам!"
 L["Credits"] = "Благодарности"
 L["Dungeon loot, bosses and quests."] = "Добыча, боссы и задания подземелий."
-L["Quest rewards from Wowhead's Forever pages."] = "Награды за задания со страниц Wowhead для Forever."
+L["Quest rewards from Wowhead's Forever pages."] =
+  "Награды за задания со страниц Wowhead для Forever."
 L["Rare creatures and their loot."] = "Редкие существа и их добыча."
 
 -- Modules/AtlasLoot/BiS.lua
@@ -661,7 +722,8 @@ L["%s, phase %d"] = "%s, фаза %d"
 L["%s added (%s)."] = "%s добавлен (%s)."
 L["No known source: it shows only here."] = "Источник неизвестен, он виден только здесь."
 L["no source"] = "без источника"
-L["Nothing found. Try a link (Shift-click the item) or its ID."] = "Ничего не найдено. Попробуйте ссылку (Shift-клик по предмету) или ID."
+L["Nothing found. Try a link (Shift-click the item) or its ID."] =
+  "Ничего не найдено. Попробуйте ссылку (Shift-клик по предмету) или ID."
 L["Add a favourite"] = "Добавить в избранное"
 L["Item name, ID, or Shift-click an item."] = "Название, ID или Shift-клик по предмету."
 L["SoD only"] = "только SoD"

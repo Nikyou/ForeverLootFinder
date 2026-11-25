@@ -262,9 +262,7 @@ function Options:DialogText(instance)
     return dialog and dialog:IsShown() and dialog.input.edit:GetText() or nil
 end
 
-function Options:Confirm(message, buttons)
-    self:ShowDialog({title = L["Please confirm"], message = message, buttons = buttons})
-end
+function Options:Confirm(message, buttons) self:ShowDialog({title = L["Please confirm"], message = message, buttons = buttons}) end
 
 function Options:ShowMessage(message) self:ShowDialog({title = ns.TITLE, message = message, buttons = {{label = L["Close"]}}}) end
 
@@ -388,8 +386,7 @@ function Options:ImportBiS(list)
         self:ShowMessage(L["Nothing new to import."] .. "\n\n" .. F.FDJSummary(plan))
         return
     end
-    self:Confirm(format(L["Add %s to your favourites as \"BiS\"?"], ns.AtlasLootBiS.Label(list)) .. "\n\n"
-                   .. F.FDJSummary(plan),
+    self:Confirm(format(L["Add %s to your favourites as \"BiS\"?"], ns.AtlasLootBiS.Label(list)) .. "\n\n" .. F.FDJSummary(plan),
                  {{label = L["Import"], onClick = function() F.ApplyBiS(plan) end}, {label = L["Cancel"]}})
 end
 
@@ -402,7 +399,6 @@ function Options:ImportFDJ()
         self:ShowMessage(L["Nothing new to import."] .. "\n\n" .. F.FDJSummary(plan))
         return
     end
-    self:Confirm(L["Copy this character's Dungeon Journal favourites as \"Nice to have\"?"] .. "\n\n"
-                   .. F.FDJSummary(plan),
+    self:Confirm(L["Copy this character's Dungeon Journal favourites as \"Nice to have\"?"] .. "\n\n" .. F.FDJSummary(plan),
                  {{label = L["Import"], onClick = function() F.ApplyFDJ(plan) end}, {label = L["Cancel"]}})
 end

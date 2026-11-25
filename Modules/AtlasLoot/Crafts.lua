@@ -11,18 +11,12 @@ local LOAD_DELAY = 3 -- keep it out of the loading screen
 
 Crafts.PROFESSIONS = {
     {id = 164, name = "Blacksmithing", label = L["Blacksmithing"]},
-    {id = 165, name = "Leatherworking", label = L["Leatherworking"]},
-    {id = 197, name = "Tailoring", label = L["Tailoring"]},
-    {id = 202, name = "Engineering", label = L["Engineering"]},
-    {id = 333, name = "Enchanting", label = L["Enchanting"]},
-    {id = 171, name = "Alchemy", label = L["Alchemy"]},
-    {id = 755, name = "Jewelcrafting", label = L["Jewelcrafting"]},
-    {id = 185, name = "Cooking", label = L["Cooking"]},
-    {id = 129, name = "First Aid", label = L["First Aid"]},
-    {id = 186, name = "Mining", label = L["Mining"]},
-    {id = 182, name = "Herbalism", label = L["Herbalism"]},
-    {id = 393, name = "Skinning", label = L["Skinning"]},
-    {id = 356, name = "Fishing", label = L["Fishing"]},
+    {id = 165, name = "Leatherworking", label = L["Leatherworking"]}, {id = 197, name = "Tailoring", label = L["Tailoring"]},
+    {id = 202, name = "Engineering", label = L["Engineering"]}, {id = 333, name = "Enchanting", label = L["Enchanting"]},
+    {id = 171, name = "Alchemy", label = L["Alchemy"]}, {id = 755, name = "Jewelcrafting", label = L["Jewelcrafting"]},
+    {id = 185, name = "Cooking", label = L["Cooking"]}, {id = 129, name = "First Aid", label = L["First Aid"]},
+    {id = 186, name = "Mining", label = L["Mining"]}, {id = 182, name = "Herbalism", label = L["Herbalism"]},
+    {id = 393, name = "Skinning", label = L["Skinning"]}, {id = 356, name = "Fishing", label = L["Fishing"]},
 }
 Crafts.BY_ID = {}
 for order, profession in ipairs(Crafts.PROFESSIONS) do
@@ -31,8 +25,19 @@ for order, profession in ipairs(Crafts.PROFESSIONS) do
 end
 -- AtlasLoot has its own numbers (Data\Profession.lua)
 local ATLASLOOT_PROFESSION = {
-    [1] = 129, [2] = 164, [3] = 165, [4] = 171, [5] = 182, [6] = 185, [7] = 186, [8] = 197, [9] = 202, [10] = 333,
-    [11] = 356, [12] = 393, [14] = 755,
+    [1] = 129,
+    [2] = 164,
+    [3] = 165,
+    [4] = 171,
+    [5] = 182,
+    [6] = 185,
+    [7] = 186,
+    [8] = 197,
+    [9] = 202,
+    [10] = 333,
+    [11] = 356,
+    [12] = 393,
+    [14] = 755,
 }
 
 local atlasEntries = {}

@@ -37,10 +37,28 @@ local SOD_ITEM_FIRST, SOD_ITEM_LAST = 190000, 244999
 local Util = ns.Util
 local L = ns.L
 local entries = {}
-local status = Util.NewStatus("questie", {items = 0, equippable = 0, rewards = 0, quests = 0, hidden = 0, errors = 0, ms = 0,
-                                          vendors = 0, drops = 0, manyVendors = 0, manyDrops = 0, npcs = 0,
-                                          implausible = 0, implausibleItems = 0, sodSkipped = 0, sodNpcs = 0, sodKept = 0,
-                                          sodRefs = 0, sodItems = 0, worldDrops = 0})
+local status = Util.NewStatus("questie", {
+    items = 0,
+    equippable = 0,
+    rewards = 0,
+    quests = 0,
+    hidden = 0,
+    errors = 0,
+    ms = 0,
+    vendors = 0,
+    drops = 0,
+    manyVendors = 0,
+    manyDrops = 0,
+    npcs = 0,
+    implausible = 0,
+    implausibleItems = 0,
+    sodSkipped = 0,
+    sodNpcs = 0,
+    sodKept = 0,
+    sodRefs = 0,
+    sodItems = 0,
+    worldDrops = 0,
+})
 local stats = status.counts
 local skippedSamples = {}
 -- SoD-range NPCs that Forever's quests use. nil without Quest.GetAllIds, then nothing is skipped
@@ -158,7 +176,6 @@ function Questie.QuestBasics(questID)
     return name, type(level) == "number" and level > 0 and level or nil
 end
 
-
 local function ids(list)
     local out = {}
     if type(list) ~= "table" then return out end
@@ -221,9 +238,15 @@ end
 
 -- Questie's holiday names, to ns.Holidays' keys. the rest (Brewfest and later ones) aren't Classic's
 local HOLIDAYS = {
-    ["Darkmoon Faire"] = "darkmoon", ["Lunar Festival"] = "lunar", ["Love is in the Air"] = "love",
-    ["Noblegarden"] = "noblegarden", ["Children's Week"] = "children", ["Midsummer"] = "midsummer",
-    ["Harvest Festival"] = "harvest", ["Hallow's End"] = "hallows", ["Winter Veil"] = "winterVeil",
+    ["Darkmoon Faire"] = "darkmoon",
+    ["Lunar Festival"] = "lunar",
+    ["Love is in the Air"] = "love",
+    ["Noblegarden"] = "noblegarden",
+    ["Children's Week"] = "children",
+    ["Midsummer"] = "midsummer",
+    ["Harvest Festival"] = "harvest",
+    ["Hallow's End"] = "hallows",
+    ["Winter Veil"] = "winterVeil",
 }
 
 -- the holiday a quest belongs to, nil for any other quest
@@ -390,7 +413,11 @@ local function npcEntries(found, item, itemName, kind, list, sodItem)
     if sodItem then
         local kept = {}
         for _, npcID in ipairs(npcIDs) do
-            if foreverNpcs[npcID] then kept[#kept + 1] = npcID else stats.sodSkipped = stats.sodSkipped + 1 end
+            if foreverNpcs[npcID] then
+                kept[#kept + 1] = npcID
+            else
+                stats.sodSkipped = stats.sodSkipped + 1
+            end
         end
         npcIDs = kept
         if #npcIDs == 0 then return 0 end
@@ -431,9 +458,9 @@ local function npcEntries(found, item, itemName, kind, list, sodItem)
             if why then
                 stats.implausible = stats.implausible + 1
                 if #skippedSamples < SKIPPED_SAMPLES then
-                    skippedSamples[#skippedSamples + 1] = format("%d %s: %s (%d, level %s-%s), %s", item,
-                        tostring(itemName), info.name, info.id, tostring(info.minLevel or "?"),
-                        tostring(info.maxLevel or "?"), why)
+                    skippedSamples[#skippedSamples + 1] = format("%d %s: %s (%d, level %s-%s), %s", item, tostring(itemName),
+                                                                 info.name, info.id, tostring(info.minLevel or "?"),
+                                                                 tostring(info.maxLevel or "?"), why)
                 end
             else
                 kept[#kept + 1] = npcID
@@ -469,8 +496,12 @@ local function npcEntries(found, item, itemName, kind, list, sodItem)
         if info then
             if #entry.npcs < MANY_NPCS then entry.npcs[#entry.npcs + 1] = info.id end
             if #names < 3 then names[#names + 1] = info.name end
-            if info.minLevel and (not entry.levelMin or info.minLevel < entry.levelMin) then entry.levelMin = info.minLevel end
-            if info.maxLevel and (not entry.levelMax or info.maxLevel > entry.levelMax) then entry.levelMax = info.maxLevel end
+            if info.minLevel and (not entry.levelMin or info.minLevel < entry.levelMin) then
+                entry.levelMin = info.minLevel
+            end
+            if info.maxLevel and (not entry.levelMax or info.maxLevel > entry.levelMax) then
+                entry.levelMax = info.maxLevel
+            end
             if info.zone and not zoneSet[info.zone] then
                 zoneSet[info.zone] = true
                 zoneCount = zoneCount + 1
@@ -582,8 +613,11 @@ local function dungeons()
     local list = {}
     for area, entry in pairs(type(raw) == "table" and raw or {}) do
         if type(area) == "number" and type(entry) == "table" then
-            local info = {area = area, name = type(entry[1]) == "string" and entry[1] or nil,
-                          locations = type(entry[4]) == "table" and entry[4] or {}}
+            local info = {
+                area = area,
+                name = type(entry[1]) == "string" and entry[1] or nil,
+                locations = type(entry[4]) == "table" and entry[4] or {},
+            }
             list[area] = info
             for _, other in ipairs(type(entry[2]) == "table" and entry[2] or {}) do list[other] = list[other] or info end
         end
@@ -811,8 +845,7 @@ local function scan()
                 local before = #found
                 if type(rewards) == "table" then
                     for _, questID in ipairs(ids(rewards)) do
-                        if sodItem and questID >= SOD_QUEST_FIRST and questID < FOREVER_QUEST_FIRST
-                          and not keptSodQuests[questID] then
+                        if sodItem and questID >= SOD_QUEST_FIRST and questID < FOREVER_QUEST_FIRST and not keptSodQuests[questID] then
                             stats.sodSkipped = stats.sodSkipped + 1
                         elseif Questie.HiddenQuest(questID) then
                             stats.hidden = stats.hidden + 1
@@ -831,7 +864,9 @@ local function scan()
                 before = #found
                 local sold = npcEntries(found, id, itemName, "vendor", get("Item", id, "vendors"), sodItem)
                 stats.vendors = stats.vendors + sold
-                if found[#found] and found[#found].many and #found > before then stats.manyVendors = stats.manyVendors + 1 end
+                if found[#found] and found[#found].many and #found > before then
+                    stats.manyVendors = stats.manyVendors + 1
+                end
                 before = #found
                 local dropped, world = npcEntries(found, id, itemName, "npcDrop", get("Item", id, "npcDrops"), sodItem)
                 stats.drops = stats.drops + dropped
@@ -850,8 +885,8 @@ local function scan()
                         skipReasons[id] = "hidden"
                     end
                 end
-                if sodItem and #found == itemStart and (type(rewards) == "table" or get("Item", id, "vendors")
-                                                        or get("Item", id, "npcDrops")) then
+                if sodItem and #found == itemStart
+                  and (type(rewards) == "table" or get("Item", id, "vendors") or get("Item", id, "npcDrops")) then
                     stats.sodItems = stats.sodItems + 1
                     if #sodItemSamples < SOD_SAMPLES then
                         sodItemSamples[#sodItemSamples + 1] = id .. " " .. tostring(itemName)
@@ -888,7 +923,11 @@ end
 function Questie.SetEnabled(value)
     ns.addon.db.profile.questie = value and true or false
     if value then
-        if status.state == "off" then Questie.Init() else ns.RebuildIndex() end
+        if status.state == "off" then
+            Questie.Init()
+        else
+            ns.RebuildIndex()
+        end
     else
         ns.RebuildIndex()
     end
@@ -942,6 +981,4 @@ function Questie.IsCompleted(questID)
     return completed[questID]
 end
 
-function Questie.OnQuestTurnedIn(questID)
-    if type(questID) == "number" and not isSecret(questID) then completed[questID] = true end
-end
+function Questie.OnQuestTurnedIn(questID) if type(questID) == "number" and not isSecret(questID) then completed[questID] = true end end

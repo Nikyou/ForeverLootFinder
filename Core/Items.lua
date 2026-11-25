@@ -53,8 +53,20 @@ local buildFirst, firstHead, buildLater, buildHead = {}, 1, {}, 1
 local hurry = {} -- what's on screen
 local buildScheduled = false
 
-Items.timing = {requests = 0, requestMs = 0, builds = 0, buildMs = 0, tooltipMs = 0, quick = 0, slices = 0, longestSlice = 0,
-                redraws = 0, ignored = 0, loadStarted = nil, loadDone = nil}
+Items.timing = {
+    requests = 0,
+    requestMs = 0,
+    builds = 0,
+    buildMs = 0,
+    tooltipMs = 0,
+    quick = 0,
+    slices = 0,
+    longestSlice = 0,
+    redraws = 0,
+    ignored = 0,
+    loadStarted = nil,
+    loadDone = nil,
+}
 local timing = Items.timing
 
 local isSecret = Util.IsSecret
@@ -141,9 +153,7 @@ local changePending, pendingSince, lastChange = false, 0, 0
 local function notify()
     changePending = false
     timing.redraws = timing.redraws + 1
-    if not timing.loadDone and timing.loadStarted and Items.Pending() == 0 and not buildWork() then
-        timing.loadDone = GetTime()
-    end
+    if not timing.loadDone and timing.loadStarted and Items.Pending() == 0 and not buildWork() then timing.loadDone = GetTime() end
     for _, fn in ipairs(listeners) do ns.Guard(fn) end
 end
 
@@ -179,8 +189,7 @@ end
 -- date by the first answer only
 local refreshed = {}
 local function complete(info)
-    return info ~= nil and info.loaded and info.tooltipLoaded and not info.partial
-           and (not info.fromCache or refreshed[info.id])
+    return info ~= nil and info.loaded and info.tooltipLoaded and not info.partial and (not info.fromCache or refreshed[info.id])
 end
 
 local function markDirty(id)
@@ -704,16 +713,27 @@ function Items.Diagnose(id)
     local hasIt = "no API"
     if C_Item.IsItemDataCachedByID then
         local ok, result = pcall(C_Item.IsItemDataCachedByID, id)
-        if ok then hasIt = tostring(result) else hasIt = "error" end
+        if ok then
+            hasIt = tostring(result)
+        else
+            hasIt = "error"
+        end
     end
-    return {state = (Items.LoadState(id)), client = hasIt, refetches = refetches[id] or 0, waiting = askedAt[id] ~= nil,
-            requested = requested[id] == true, urgent = inUrgent[id] == true, tracked = tracked[id] == true}
+    return {
+        state = (Items.LoadState(id)),
+        client = hasIt,
+        refetches = refetches[id] or 0,
+        waiting = askedAt[id] ~= nil,
+        requested = requested[id] == true,
+        urgent = inUrgent[id] == true,
+        tracked = tracked[id] == true,
+    }
 end
 
 -- what's asked for and not in yet: the status line's "loading"
 function Items.Pending()
     return math.max(0, #urgent - urgentHead + 1) + math.max(0, #queue - head + 1) + inFlight
-           + math.max(0, #refetchQueue - refetchHead + 1)
+             + math.max(0, #refetchQueue - refetchHead + 1)
 end
 
 -- loaded, failed, noanswer, waiting or queued
@@ -728,9 +748,16 @@ end
 function Items.QueueInfo()
     local toBuild = 0
     for _ in pairs(dirty) do toBuild = toBuild + 1 end
-    return {queued = math.max(0, #queue - head + 1), urgent = math.max(0, #urgent - urgentHead + 1), started = started,
-            paused = paused, toBuild = toBuild, inFlight = inFlight, recounts = timing.recounts or 0,
-            refetches = math.max(0, #refetchQueue - refetchHead + 1)}
+    return {
+        queued = math.max(0, #queue - head + 1),
+        urgent = math.max(0, #urgent - urgentHead + 1),
+        started = started,
+        paused = paused,
+        toBuild = toBuild,
+        inFlight = inFlight,
+        recounts = timing.recounts or 0,
+        refetches = math.max(0, #refetchQueue - refetchHead + 1),
+    }
 end
 
 function Items.Waiting()
@@ -750,9 +777,7 @@ function Items.SetPaused(value)
     end
 end
 
-local function busy()
-    return urgentHead <= #urgent or head <= #queue or refetchHead <= #refetchQueue or next(askedAt) ~= nil
-end
+local function busy() return urgentHead <= #urgent or head <= #queue or refetchHead <= #refetchQueue or next(askedAt) ~= nil end
 
 function Items.Init()
     deferred = true

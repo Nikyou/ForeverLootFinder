@@ -20,17 +20,17 @@ local function showEntries(root, row, record, id)
     -- only for what FDJ lists itself
     local fdj = firstSource(row, record, function(source) return source.provider == "fdj" and source.dungeon ~= nil end)
     if fdj and ns.DungeonJournal.CanOpenDungeon() then
-        root:CreateButton(L["Show in Dungeon Journal"], function() ns.DungeonJournal.OpenDungeon(fdj.dungeon, fdj.bossIndex) end)
+        root:CreateButton(L["Show in Dungeon Journal"], function()
+            ns.DungeonJournal.OpenDungeon(fdj.dungeon, fdj.bossIndex)
+        end)
     elseif fdj and id and ns.DungeonJournal.CanOpenItem() then
         root:CreateButton(L["Show in Dungeon Journal"], function() ns.DungeonJournal.OpenItem(id) end)
     end
-    local atlas = firstSource(row, record, function(source)
-        return source.provider == "atlasloot" and ns.AtlasLootLists.CanOpen(source)
-    end)
+    local atlas = firstSource(row, record,
+                              function(source) return source.provider == "atlasloot" and ns.AtlasLootLists.CanOpen(source) end)
     if atlas then root:CreateButton(L["Show in AtlasLoot"], function() ns.AtlasLootLists.Open(atlas) end) end
-    local quest = firstSource(row, record, function(source)
-        return source.questID ~= nil and ns.Questie.CanOpen(source.questID)
-    end)
+    local quest = firstSource(row, record,
+                              function(source) return source.questID ~= nil and ns.Questie.CanOpen(source.questID) end)
     if quest then
         root:CreateButton(format(L["Quest in Questie: %s"], quest.questName or quest.section or "?"),
                           function() ns.Questie.Open(quest.questID) end)
@@ -47,7 +47,9 @@ local function waypointEntries(root, row, record)
                 if count < MAX_WAYPOINTS and not seen[key] then
                     seen[key] = true
                     count = count + 1
-                    root:CreateButton(format(L["Waypoint: %s"], target.name), function() ns.Waypoints.Go(target) end)
+                    root:CreateButton(format(L["Waypoint: %s"], target.name), function()
+                        ns.Waypoints.Go(target)
+                    end)
                 end
             end
         end

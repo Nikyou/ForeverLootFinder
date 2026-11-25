@@ -111,9 +111,7 @@ function SilverDragon.Entries()
     return entries
 end
 
-function SilverDragon.Init()
-    status.state = (SilverDragon.Installed() and SilverDragon.Enabled()) and "waiting" or "off"
-end
+function SilverDragon.Init() status.state = (SilverDragon.Installed() and SilverDragon.Enabled()) and "waiting" or "off" end
 
 function SilverDragon.SetEnabled(value)
     ns.addon.db.profile.silverdragon = value and true or false

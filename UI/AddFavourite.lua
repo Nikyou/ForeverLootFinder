@@ -32,12 +32,8 @@ function AddFavourite.Search(text, records, nameOf, lists, limit, hidden)
         local list = groups[group]
         list[#list + 1] = {id = itemID, name = name}
     end
-    for _, record in ipairs(records or {}) do
-        if record.id and record.id > 0 then consider(record.id, nameOf(record)) end
-    end
-    for _, names in ipairs(lists or {}) do
-        for itemID, name in pairs(names) do consider(itemID, name) end
-    end
+    for _, record in ipairs(records or {}) do if record.id and record.id > 0 then consider(record.id, nameOf(record)) end end
+    for _, names in ipairs(lists or {}) do for itemID, name in pairs(names) do consider(itemID, name) end end
     local function byName(a, b)
         if a.name ~= b.name then return a.name < b.name end
         return a.id < b.id
@@ -74,8 +70,7 @@ local function search(text)
     local index = ns.GetIndex()
     local found = AddFavourite.Search(text, index and index.records,
                                       function(record) return ns.Items.Info(record).name or record.name end,
-                                      {ns.Questie.ItemNames()}, nil,
-                                      function(id) return select(2, stateOf(id)) == true end)
+                                      {ns.Questie.ItemNames()}, nil, function(id) return select(2, stateOf(id)) == true end)
     -- the game finds an exact name only if it has seen the item this session
     if #found == 0 and #strtrim(text or "") >= MIN_CHARS then
         local _, link = ns.Util.SafeCall(C_Item.GetItemInfo, strtrim(text))

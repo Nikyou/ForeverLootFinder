@@ -334,9 +334,7 @@ function Owned.Env(scale, class, level)
     return env
 end
 
-function Owned.Compare(record, info, scale, class, level)
-    return Owned.CompareWith(Owned.Env(scale, class, level), record, info)
-end
+function Owned.Compare(record, info, scale, class, level) return Owned.CompareWith(Owned.Env(scale, class, level), record, info) end
 
 -- cached per record so a redraw only redoes what changed. not while Pawn is still working it out
 local function resultsOf(env)

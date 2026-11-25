@@ -215,9 +215,7 @@ function Favourites.FDJPlan()
     return Favourites.PlanImport(ns.DungeonJournal.FavouriteItems(), Favourites.List(), Favourites.CanAdd)
 end
 
-function Favourites.BiSPlan(list)
-    return Favourites.PlanImport(list.items, Favourites.List(), Favourites.CanAdd)
-end
+function Favourites.BiSPlan(list) return Favourites.PlanImport(list.items, Favourites.List(), Favourites.CanAdd) end
 
 function Favourites.ApplyBiS(plan)
     Favourites.ApplyImport(global().favourites, ns.charKey, plan, "BIS")

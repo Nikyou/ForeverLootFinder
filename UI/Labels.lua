@@ -11,21 +11,14 @@ end
 ns.Labels = Labels
 
 Labels.BADGES = {
-    {key = "rare", label = L["Rare"], color = "ffa335ee"},
-    {key = "trash", label = L["Trash"], color = "ff9d9d9d"},
-    {key = "shared", label = L["Shared"], color = "ff40c0ff"},
-    {key = "quest", label = L["Quest"], color = "ffffd100"},
-    {key = "craft", label = L["Crafted"], color = "ffff9a3c"},
-    {key = "probable", label = L["Unconfirmed"], color = "ffff7f50"},
-    {key = "random", label = L["Random bonus"], color = "ff1eff00"},
-    {key = "faction", label = L["Faction"], color = "ffff4040"},
+    {key = "rare", label = L["Rare"], color = "ffa335ee"}, {key = "trash", label = L["Trash"], color = "ff9d9d9d"},
+    {key = "shared", label = L["Shared"], color = "ff40c0ff"}, {key = "quest", label = L["Quest"], color = "ffffd100"},
+    {key = "craft", label = L["Crafted"], color = "ffff9a3c"}, {key = "probable", label = L["Unconfirmed"], color = "ffff7f50"},
+    {key = "random", label = L["Random bonus"], color = "ff1eff00"}, {key = "faction", label = L["Faction"], color = "ffff4040"},
     {key = "notInGame", label = L["Not in game data yet"], color = "ffff4040"},
-    {key = "owned", label = L["Owned"], color = "ff80ff80"},
-    {key = "boe", label = L["BoE"], color = "ff00ccff"},
-    {key = "unique", label = L["Unique"], color = "ffffffff"},
-    {key = "set", label = L["Set"], color = "ffffd100"},
-    {key = "vendor", label = L["Vendor"], color = "ffc0e080"},
-    {key = "creature", label = L["Creature"], color = "ffd08060"},
+    {key = "owned", label = L["Owned"], color = "ff80ff80"}, {key = "boe", label = L["BoE"], color = "ff00ccff"},
+    {key = "unique", label = L["Unique"], color = "ffffffff"}, {key = "set", label = L["Set"], color = "ffffd100"},
+    {key = "vendor", label = L["Vendor"], color = "ffc0e080"}, {key = "creature", label = L["Creature"], color = "ffd08060"},
 }
 
 -- the ruRU, koKR and zh fonts have no middle dot. "||" is an escaped "|"

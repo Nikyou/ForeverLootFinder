@@ -149,8 +149,9 @@ end
 
 -- the developers' own items, still in the game's data: "Ring of Uber Resists (TEST)", "Monster - Spear, Rusty",
 -- "OLDThug Belt". English on every client. "Testament of Hope" is a real one
-local TEST_NAMES = {"%f[%a][Tt][Ee][Ss][Tt]%f[%A]", "^Monster %- ", "^OLD%u", "%[PH%]", "^Deprecated ", "^Unused ", "^[Zz][Zz]",
-                    "^Placeholder$"}
+local TEST_NAMES = {
+    "%f[%a][Tt][Ee][Ss][Tt]%f[%A]", "^Monster %- ", "^OLD%u", "%[PH%]", "^Deprecated ", "^Unused ", "^[Zz][Zz]", "^Placeholder$",
+}
 function Index.TestItem(name)
     if type(name) ~= "string" then return false end
     for _, pattern in ipairs(TEST_NAMES) do if name:find(pattern) then return true end end
@@ -272,7 +273,9 @@ local function resolveOverlaps(record, priority, dungeonByKey)
             if not removed[a] and not removed[b] and a.provider ~= b.provider and group and group == groupOf(b.kind)
               and overlap(group, a, b) then
                 local winner, loser = a, b
-                if rankOf(priority, group, b.provider) < rankOf(priority, group, a.provider) then winner, loser = b, a end
+                if rankOf(priority, group, b.provider) < rankOf(priority, group, a.provider) then
+                    winner, loser = b, a
+                end
                 removed[loser] = true
                 for _, field in ipairs(MERGE_FIELDS[group] or {}) do
                     if winner[field] == nil and loser[field] ~= nil then
@@ -315,8 +318,16 @@ local function newRecord(index, entry)
     return record
 end
 
-local KIND_ORDER = {zoneQuest = 1000, vendor = 1500, npcDrop = 1600, craft = 2000, reputation = 3000, pvp = 3100,
-                    event = 3200, world = 3300}
+local KIND_ORDER = {
+    zoneQuest = 1000,
+    vendor = 1500,
+    npcDrop = 1600,
+    craft = 2000,
+    reputation = 3000,
+    pvp = 3100,
+    event = 3200,
+    world = 3300,
+}
 
 -- a creature drop inside a dungeon becomes its boss, rare or trash, to overlap with FDJ and AtlasLoot
 local function tieCreature(source, placeByArea, dungeonByKey)
@@ -357,9 +368,7 @@ local function namedBy(record, name)
             if lower(source.bossName) == name then return source end
             local mobs = lower(source.mobs)
             if mobs then
-                for mob in mobs:gmatch("[^/,]+") do
-                    if mob:match("^%s*(.-)%s*$") == name then return source end
-                end
+                for mob in mobs:gmatch("[^/,]+") do if mob:match("^%s*(.-)%s*$") == name then return source end end
             end
         end
     end
@@ -475,7 +484,9 @@ local function dropRepeatedRares(record)
     if not creatures then return end
     local kept = {}
     for _, source in ipairs(record.sources) do
-        if not (source.provider == "silverdragon" and source.npcID and creatures[source.npcID]) then kept[#kept + 1] = source end
+        if not (source.provider == "silverdragon" and source.npcID and creatures[source.npcID]) then
+            kept[#kept + 1] = source
+        end
     end
     if #kept < #record.sources then record.sources = kept end
 end
@@ -492,7 +503,9 @@ local function mergeWorld(record)
             first = source
             kept[#kept + 1] = source
         else
-            if source.section and not first.section then first.section, first.provider = source.section, source.provider end
+            if source.section and not first.section then
+                first.section, first.provider = source.section, source.provider
+            end
             first.levelMin = math.min(first.levelMin or source.levelMin or 99, source.levelMin or first.levelMin or 99)
             if first.levelMin == 99 then first.levelMin = nil end
             first.levelMax = math.max(first.levelMax or 0, source.levelMax or 0)
@@ -594,8 +607,18 @@ end
 -- quest, hidden(questID) leaves it out (FDJ's are checked on Forever and stay), holiday(questID) is its holiday's key
 function Index.Build(data, extras, priority, quests)
     local hiddenQuest, holiday = quests and quests.hidden, quests and quests.holiday
-    local index = {records = {}, byKey = {}, dungeons = {}, dungeonByKey = {}, hasChance = false, placeByArea = {},
-                   placesByInstance = {}, bossByNpc = {}, merged = {}, hiddenQuests = 0}
+    local index = {
+        records = {},
+        byKey = {},
+        dungeons = {},
+        dungeonByKey = {},
+        hasChance = false,
+        placeByArea = {},
+        placesByInstance = {},
+        bossByNpc = {},
+        merged = {},
+        hiddenQuests = 0,
+    }
     for _, dungeon in ipairs(data.dungeons or {}) do
         index.dungeons[#index.dungeons + 1] = dungeon
         index.dungeonByKey[dungeon.key] = dungeon

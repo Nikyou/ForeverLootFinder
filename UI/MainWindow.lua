@@ -161,7 +161,13 @@ end
 
 -- By slot and Favourites can't be hidden
 MainWindow.OPTIONAL_TABS = {
-    dungeon = true, raids = true, quests = true, crafts = true, reputation = true, pvp = true, events = true,
+    dungeon = true,
+    raids = true,
+    quests = true,
+    crafts = true,
+    reputation = true,
+    pvp = true,
+    events = true,
 }
 
 function MainWindow.TabShown(key)
@@ -222,10 +228,8 @@ end
 
 -- labels go first, then the search box and dropdowns shrink
 local BAR_STEPS = {
-    {search = 170, labels = true, dropdown = 150},
-    {search = 170, labels = false, dropdown = 150},
-    {search = 120, labels = false, dropdown = 150},
-    {search = 110, labels = false, dropdown = 120},
+    {search = 170, labels = true, dropdown = 150}, {search = 170, labels = false, dropdown = 150},
+    {search = 120, labels = false, dropdown = 150}, {search = 110, labels = false, dropdown = 120},
 }
 local function layoutBar()
     local bar = frame.bar
@@ -363,8 +367,7 @@ local function create()
         ns.FireChange("pawn")
     end)
     frame.pawnRefresh:SetPoint("LEFT", frame.pawn, "RIGHT", 4, 0)
-    W.AddTooltip(frame.pawnRefresh,
-                 function(tooltip) tooltip:AddLine(L["Reread scores (after editing a Pawn scale)"]) end)
+    W.AddTooltip(frame.pawnRefresh, function(tooltip) tooltip:AddLine(L["Reread scores (after editing a Pawn scale)"]) end)
 
     frame.filtersToggle = W.Button(bar, L["Filters"], nil, 22, function()
         ns.addon.db.profile.window.filters = not (ns.addon.db.profile.window.filters ~= false)
@@ -397,7 +400,6 @@ local function create()
     frame.panel:SetPoint("TOPRIGHT", frame.Inset, "TOPRIGHT", -BODY_PAD, -BODY_TOP)
     frame.panel:SetPoint("BOTTOMRIGHT", frame.Inset, "BOTTOMRIGHT", -BODY_PAD, BODY_PAD)
     frame.panel:SetWidth(PANEL_WIDTH)
-
 
     frame.status = W.Label(frame, "", 11, Style.MUTED)
     frame.status:SetPoint("BOTTOMLEFT", 14, 8)
@@ -450,10 +452,24 @@ end
 
 -- any other kind only redraws the tab's list
 local BAR_KINDS = {
-    tab = true, window = true, filters = true, sort = true, pawn = true, profile = true, data = true, prices = true,
+    tab = true,
+    window = true,
+    filters = true,
+    sort = true,
+    pawn = true,
+    profile = true,
+    data = true,
+    prices = true,
 }
 local PANEL_KINDS = {
-    tab = true, window = true, filters = true, pawn = true, profile = true, data = true, professions = true, level = true,
+    tab = true,
+    window = true,
+    filters = true,
+    pawn = true,
+    profile = true,
+    data = true,
+    professions = true,
+    level = true,
     prices = true,
 }
 
@@ -493,7 +509,7 @@ function MainWindow.EmptyText(text)
         if state == "waiting" or state == "scanning" then return text end
     end
     return L["Nothing to list yet."] .. "\n\n" .. L["Needs one of these addons:"] .. "\n"
-           .. "DungeonJournal\nQuestie, QuestieDB\nAtlasLoot Classic Forever\nALL THE THINGS\nforever-db\nSkillUp Forever"
+             .. "DungeonJournal\nQuestie, QuestieDB\nAtlasLoot Classic Forever\nALL THE THINGS\nforever-db\nSkillUp Forever"
 end
 
 -- kinds nil redraws everything

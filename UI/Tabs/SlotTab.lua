@@ -82,8 +82,8 @@ local function create(parent)
         button:HookScript("OnEnter", function(self)
             if not (ui.approximate and ui.approximate[slot] and slot ~= ns.Filters().slot) then return end
             if GameTooltip:GetOwner() ~= self then GameTooltip:SetOwner(self, "ANCHOR_RIGHT") end
-            GameTooltip:AddLine(L["~ Some of these haven't loaded yet, or aren't scored yet. Open the slot to load them."],
-                                1, 1, 1, true)
+            GameTooltip:AddLine(L["~ Some of these haven't loaded yet, or aren't scored yet. Open the slot to load them."], 1, 1,
+                                1, true)
             GameTooltip:Show()
         end)
         button:HookScript("OnLeave", function(self) if GameTooltip:GetOwner() == self then GameTooltip:Hide() end end)
@@ -115,8 +115,13 @@ local function refresh(ctx, kinds)
                 if upgradesOnly or not ns.Filter.Shows(status, ctx) then
                     counts[slot] = (counts[slot] or 0) + 1
                     if slot == filters.slot and not listed[id] then
-                        rows[#rows + 1] = {record = record, info = info, status = info.loaded and "pass" or "unknown",
-                                           sources = record.sources, worn = true}
+                        rows[#rows + 1] = {
+                            record = record,
+                            info = info,
+                            status = info.loaded and "pass" or "unknown",
+                            sources = record.sources,
+                            worn = true,
+                        }
                     end
                 end
             end
@@ -144,7 +149,7 @@ local function refresh(ctx, kinds)
     local toTop = (kinds and kinds.tab) or ui.shownSlot ~= filters.slot
     ui.shownSlot = filters.slot
     ui.list:SetRows(rows, ns.MainWindow.RowOptions(nil, filters.slot, ctx),
-                     ns.MainWindow.EmptyText(L["No items match the filters."]), toTop)
+                    ns.MainWindow.EmptyText(L["No items match the filters."]), toTop)
 end
 
 table.insert(ns.MainTabs, {key = "slot", label = L["By slot"], Create = create, Refresh = refresh})

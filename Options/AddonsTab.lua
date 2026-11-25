@@ -49,8 +49,7 @@ local function orderText(order)
 end
 
 local GROUPS = {
-    {key = "drops", label = L["Dungeon and raid drops"]},
-    {key = "quests", label = L["Quest rewards"]},
+    {key = "drops", label = L["Dungeon and raid drops"]}, {key = "quests", label = L["Quest rewards"]},
     {key = "crafts", label = L["Crafted items"]},
 }
 
@@ -61,7 +60,9 @@ local function priorityDropdown(col, parent, group)
         for _, order in ipairs(orders(ns.Index.DEFAULT_PRIORITY[group.key], ns.Priority()[group.key])) do
             local value = table.concat(order, ">")
             local text = orderText(order)
-            if value == table.concat(ns.Index.DEFAULT_PRIORITY[group.key], ">") then text = format(L["%s (default)"], text) end
+            if value == table.concat(ns.Index.DEFAULT_PRIORITY[group.key], ">") then
+                text = format(L["%s (default)"], text)
+            end
             items[#items + 1] = {value = value, text = text}
         end
         return items
@@ -80,23 +81,23 @@ local function create(parent)
                            L["The main source: Forever's dungeons, bosses and dungeon quests."],
                            function(value) ns.DungeonJournal.SetEnabled(value) end)
     local syndicatorHelp = L["Knows your gear, bags, bank and mail across sessions. Without it, the bank counts once opened."]
-    controls.syndicator = section(left, "Syndicator", L["Use for owned items"], syndicatorHelp,
-                                  function(value)
+    controls.syndicator = section(left, "Syndicator", L["Use for owned items"], syndicatorHelp, function(value)
         profile().syndicator = value
         ns.Owned.ScanSyndicator()
         ns.FireChange("owned")
         ns.FireChange("profile") -- the filter panel says what counts as owned
     end)
     left.title("QuestieDB")
-    controls.questie = {box = left.check(L["Use for quests, vendors and creature drops"],
-                                         function(value) ns.Questie.SetEnabled(value) end)}
+    controls.questie = {
+        box = left.check(L["Use for quests, vendors and creature drops"], function(value) ns.Questie.SetEnabled(value) end),
+    }
     controls.questieKinds = {}
     for _, kind in ipairs({
         {key = "quests", label = L["Quest rewards"]}, {key = "vendors", label = L["Vendors"]},
         {key = "drops", label = L["Creature drops"]},
     }) do
-        controls.questieKinds[kind.key] = left.check(kind.label,
-                                                     function(value) ns.Questie.SetKindEnabled(kind.key, value) end, 20)
+        controls.questieKinds[kind.key] =
+          left.check(kind.label, function(value) ns.Questie.SetKindEnabled(kind.key, value) end, 20)
     end
     left.help(L["Questie's database: quest rewards, vendor goods and creature drops."])
     controls.questie.status = left.label("")
@@ -135,12 +136,21 @@ local function create(parent)
             end
         end
         return {
-            {value = "auto", text = L["Auto (TomTom, else map pin)"],
-             disabled = not (hasTomTom or hasPin), tooltip = not (hasTomTom or hasPin) and needs({"TomTom"}) or nil},
+            {
+                value = "auto",
+                text = L["Auto (TomTom, else map pin)"],
+                disabled = not (hasTomTom or hasPin),
+                tooltip = not (hasTomTom or hasPin) and needs({"TomTom"}) or nil,
+            },
             {value = "tomtom", text = "TomTom", disabled = not hasTomTom, tooltip = not hasTomTom and needs({"TomTom"}) or nil},
-            {value = "pin", text = L["Game map pin"], disabled = not hasPin, tooltip = not hasPin and function(tooltip)
-                tooltip:AddLine(L["This client has no map pins."], 1, 1, 1, true)
-            end or nil},
+            {
+                value = "pin",
+                text = L["Game map pin"],
+                disabled = not hasPin,
+                tooltip = not hasPin and function(tooltip)
+                    tooltip:AddLine(L["This client has no map pins."], 1, 1, 1, true)
+                end or nil,
+            },
         }
     end, function(value)
         profile().waypoints = value
@@ -161,9 +171,8 @@ local function create(parent)
     controls.tabs = {}
     for _, tab in ipairs({
         {key = "dungeon", label = L["Dungeons"]}, {key = "raids", label = L["Raids"]}, {key = "quests", label = L["Quests"]},
-        {key = "crafts", label = L["Professions"]},
-        {key = "reputation", label = L["Reputation"]}, {key = "pvp", label = L["PvP"]},
-        {key = "events", label = L["World events"]}, {key = "sets", label = L["Sets"]},
+        {key = "crafts", label = L["Professions"]}, {key = "reputation", label = L["Reputation"]},
+        {key = "pvp", label = L["PvP"]}, {key = "events", label = L["World events"]}, {key = "sets", label = L["Sets"]},
     }) do
         controls.tabs[tab.key] = right.check(format(L["Show the %s tab"], tab.label), function(value)
             profile().tabs[tab.key] = value
@@ -200,8 +209,8 @@ local function refresh()
               ns.Owned.HasSyndicator() and good(L["In use."]) or STATE_TEXT.waiting)
     local questState = ns.Questie.State()
     local qs = ns.Questie.Stats()
-    local questText = questState == "done" and good(format(L["%d quest rewards, %d vendor, %d creature sources."],
-                                                           qs.rewards, qs.vendors, qs.drops))
+    local questText = questState == "done"
+                        and good(format(L["%d quest rewards, %d vendor, %d creature sources."], qs.rewards, qs.vendors, qs.drops))
                         or STATE_TEXT[questState] or ""
     setStatus(controls.questie, ns.Questie.Installed(), p.questie ~= false, questText)
     local kindsUsable = ns.Questie.Installed() and p.questie ~= false
@@ -212,32 +221,28 @@ local function refresh()
     end
     controls.waypoints:SetValue(ns.Waypoints.Setting(), true)
     local method = ns.Waypoints.Method()
-    controls.waypointStatus:SetText(method == "tomtom" and good(L["In use: TomTom."])
-                                      or method == "pin" and good(L["In use: the game's map pin."])
-                                      or muted(L["Not available: install TomTom."]))
+    controls.waypointStatus:SetText(method == "tomtom" and good(L["In use: TomTom."]) or method == "pin"
+                                      and good(L["In use: the game's map pin."]) or muted(L["Not available: install TomTom."]))
     local craftState, lootState = ns.Crafts.State(), ns.AtlasLootLists.State()
     local atlasText
     if craftState == "done" or lootState == "done" then
-        atlasText = good(format(L["%d crafted, %d other items."], ns.Crafts.Stats().equippable,
-                                ns.AtlasLootLists.Stats().items))
+        atlasText = good(format(L["%d crafted, %d other items."], ns.Crafts.Stats().equippable, ns.AtlasLootLists.Stats().items))
     else
         atlasText = STATE_TEXT[lootState] or STATE_TEXT[craftState] or ""
     end
     setStatus(controls.atlasloot, ns.Crafts.Installed(), p.atlasloot ~= false, atlasText)
     local att = ns.ATT.Stats()
-    setStatus(controls.att, ns.ATT.Installed(), p.att ~= false,
-              ns.ATT.State() == "done" and good(format(L["%d sources, %d places."], att.items, att.places))
-                or STATE_TEXT[ns.ATT.State()] or "")
+    setStatus(controls.att, ns.ATT.Installed(), p.att ~= false, ns.ATT.State() == "done"
+                and good(format(L["%d sources, %d places."], att.items, att.places)) or STATE_TEXT[ns.ATT.State()] or "")
     local skillup = ns.SkillUp.Stats()
     setStatus(controls.skillup, ns.SkillUp.Installed(), p.skillup ~= false,
               ns.SkillUp.State() == "done" and good(format(L["%d crafts, %d recipe skills."], skillup.items, skillup.skills))
                 or STATE_TEXT[ns.SkillUp.State()] or "")
     local fdb = ns.ForeverDB.Stats()
-    setStatus(controls.foreverdb, ns.ForeverDB.Installed(), p.foreverdb ~= false,
-              ns.ForeverDB.State() == "done"
-                and good(format(L["%d crafts, %d quest rewards, %d vendor and %d creature sources."], fdb.crafts, fdb.quests,
-                                fdb.vendors, fdb.drops))
-                or STATE_TEXT[ns.ForeverDB.State()] or "")
+    setStatus(controls.foreverdb, ns.ForeverDB.Installed(), p.foreverdb ~= false, ns.ForeverDB.State() == "done"
+                and good(
+                  format(L["%d crafts, %d quest rewards, %d vendor and %d creature sources."], fdb.crafts, fdb.quests,
+                         fdb.vendors, fdb.drops)) or STATE_TEXT[ns.ForeverDB.State()] or "")
     local attune = ns.Attune.Stats()
     setStatus(controls.attune, ns.Attune.Installed(), p.attune ~= false,
               ns.Attune.State() == "done" and good(format(L["%d quests, %d rewards."], attune.quests, attune.rewards))

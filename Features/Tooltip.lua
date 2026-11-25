@@ -68,9 +68,7 @@ local function withPrice(text, source)
 end
 
 local function zonesText(source)
-    if source.zones and #source.zones > 0 then
-        return table.concat(source.zones, ", ") .. (source.moreZones and ", ..." or "")
-    end
+    if source.zones and #source.zones > 0 then return table.concat(source.zones, ", ") .. (source.moreZones and ", ..." or "") end
     return source.zoneName
 end
 
@@ -84,7 +82,7 @@ local function npcText(source, withDungeon)
     local text, notes = nil, {}
     if source.kind == "vendor" then
         text = source.many and format(L["Sold by %d vendors"], source.count or 0)
-            or (source.npcName and format(L["Vendor: %s"], source.npcName)) or L["Vendor"]
+                 or (source.npcName and format(L["Vendor: %s"], source.npcName)) or L["Vendor"]
         if source.faction then notes[#notes + 1] = source.faction == "Horde" and L["Horde"] or L["Alliance"] end
     else
         text = source.many and format(L["Dropped by %d creatures"], source.count or 0)
@@ -115,7 +113,9 @@ function Tooltip.SourceText(source, dungeonByKey, withDungeon)
     end
     if source.kind == "pvp" then
         local text = source.section and format(L["PvP: %s"], source.section) or L["PvP"]
-        if source.standing then text = text .. " " .. MUTED .. "(" .. ns.AtlasLootLists.StandingName(source.standing) .. ")|r" end
+        if source.standing then
+            text = text .. " " .. MUTED .. "(" .. ns.AtlasLootLists.StandingName(source.standing) .. ")|r"
+        end
         return withPrice(text, source)
     end
     if source.kind == "event" then
@@ -141,7 +141,9 @@ function Tooltip.SourceText(source, dungeonByKey, withDungeon)
         local parts = {}
         for _, part in ipairs(source.parts or {}) do
             local text = part.name or "?"
-            if part.bossName then text = text .. " " .. MUTED .. "(" .. ns.DungeonJournal.BossName(part.bossName) .. ")|r" end
+            if part.bossName then
+                text = text .. " " .. MUTED .. "(" .. ns.DungeonJournal.BossName(part.bossName) .. ")|r"
+            end
             parts[#parts + 1] = text
         end
         where = format(L["Combine: %s"], table.concat(parts, " + "))
@@ -196,9 +198,7 @@ function Tooltip.MergeQuests(sources)
             if source.reqLevel and (not merged.reqLevel or source.reqLevel < merged.reqLevel) then
                 merged.reqLevel = source.reqLevel
             end
-            for _, field in ipairs(MERGED_DROP) do
-                if merged[field] ~= source[field] then merged[field] = nil end
-            end
+            for _, field in ipairs(MERGED_DROP) do if merged[field] ~= source[field] then merged[field] = nil end end
         else
             if out then out[#out + 1] = source end
             if name then
@@ -227,9 +227,7 @@ function Tooltip.Lines(record, dungeonByKey, opts)
     if opts.showSource and #sources > 0 then
         local limit = opts.showAll and #sources or math.min(#sources, MAX_SOURCES)
         local label = L["Drops from: %s"]
-        for i = 1, limit do
-            if not ns.Index.DROP_KINDS[sources[i].kind] then label = L["Source: %s"] end
-        end
+        for i = 1, limit do if not ns.Index.DROP_KINDS[sources[i].kind] then label = L["Source: %s"] end end
         for i = 1, limit do
             local text = Tooltip.SourceText(sources[i], dungeonByKey)
             if i > 1 then
@@ -240,10 +238,7 @@ function Tooltip.Lines(record, dungeonByKey, opts)
             lines[#lines + 1] = {text = text, color = SOURCE_COLOR}
         end
         if limit < #sources then
-            lines[#lines + 1] = {
-                text = "    " .. format(L["%d more (Shift)"], #sources - limit),
-                color = {0.6, 0.6, 0.6},
-            }
+            lines[#lines + 1] = {text = "    " .. format(L["%d more (Shift)"], #sources - limit), color = {0.6, 0.6, 0.6}}
         end
     end
     -- off by default, Auctionator has its own line

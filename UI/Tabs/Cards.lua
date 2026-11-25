@@ -177,10 +177,14 @@ function Cards.Create(parent, top)
                     if tier then W.SetStar(b.star, tier) end
                     local chance = profile.cardChance ~= false and group.chances and group.chances[n]
                     b.chance:SetText(chance and ns.Labels.Chance(chance) or "")
-                    b:SetAlpha((row.status == "unknown" or row.status == "missing" or
-                                (row.filteredOut and row.filteredOut ~= "level")) and 0.5 or 1)
+                    b:SetAlpha((row.status == "unknown" or row.status == "missing"
+                                 or (row.filteredOut and row.filteredOut ~= "level")) and 0.5 or 1)
                     -- too high a level for now: red, not faded
-                    if row.filteredOut == "level" then b.icon:SetVertexColor(1, 0.3, 0.3) else b.icon:SetVertexColor(1, 1, 1) end
+                    if row.filteredOut == "level" then
+                        b.icon:SetVertexColor(1, 0.3, 0.3)
+                    else
+                        b.icon:SetVertexColor(1, 1, 1)
+                    end
                     b:SetFrameLevel(c:GetFrameLevel() + 5)
                     b:Show()
                     ns.Row.RefreshTooltip(b)
@@ -318,9 +322,7 @@ function Cards.Tab(spec)
                     for _, row in ipairs(group.rows) do records[#records + 1] = row.record end
                 end
             end
-            if spec.alsoLoad then
-                for _, record in ipairs(spec.alsoLoad()) do records[#records + 1] = record end
-            end
+            if spec.alsoLoad then for _, record in ipairs(spec.alsoLoad()) do records[#records + 1] = record end end
             ns.Items.Request(records, true)
         end
         ui.shownSlot = slot

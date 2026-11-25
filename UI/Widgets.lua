@@ -314,9 +314,7 @@ function W.Dropdown(parent, width, getItems, onSelect, placeholder)
     end)
 
     local function find(value)
-        for _, item in ipairs(items) do
-            if not item.header and item.value == value then return item.text end
-        end
+        for _, item in ipairs(items) do if not item.header and item.value == value then return item.text end end
     end
     -- may be new, e.g. a Pawn scale
     local function labelOf(value)
@@ -344,11 +342,9 @@ function W.Dropdown(parent, width, getItems, onSelect, placeholder)
         dropdown:GenerateMenu()
         relabel = false
     end
-    if dropdown.RegisterCallback and DropdownButtonMixin and DropdownButtonMixin.Event
-        and DropdownButtonMixin.Event.OnMenuClose then
-        dropdown:RegisterCallback(DropdownButtonMixin.Event.OnMenuClose, function()
-            if dropdown.pending then C_Timer.After(0, apply) end
-        end, dropdown)
+    if dropdown.RegisterCallback and DropdownButtonMixin and DropdownButtonMixin.Event and DropdownButtonMixin.Event.OnMenuClose then
+        dropdown:RegisterCallback(DropdownButtonMixin.Event.OnMenuClose,
+                                  function() if dropdown.pending then C_Timer.After(0, apply) end end, dropdown)
     end
 
     -- reread: the texts may have changed too (a count, a level)

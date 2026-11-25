@@ -132,8 +132,11 @@ local function combineEntry(made, dungeonKey, bossIndex)
     local parts = {}
     for _, part in ipairs(type(made.from) == "table" and made.from or {}) do
         if type(part) == "table" and tonumber(part[1]) then
-            parts[#parts + 1] = {id = tonumber(part[1]), name = type(part[2]) == "string" and part[2] or "?",
-                                 bossName = type(part[3]) == "string" and part[3] or nil}
+            parts[#parts + 1] = {
+                id = tonumber(part[1]),
+                name = type(part[2]) == "string" and part[2] or "?",
+                bossName = type(part[3]) == "string" and part[3] or nil,
+            }
         end
     end
     return {
@@ -207,9 +210,8 @@ function DungeonJournal.ReadData(fdj)
                 bosses = {},
             }
             -- from FDJ's DungeonEntrances.lua
-            local entrance = dungeon.entrance
-            if type(entrance) == "table" and type(entrance.mapID) == "number" and type(entrance.x) == "number"
-              and type(entrance.y) == "number" then
+            local entrance = type(dungeon.entrance) == "table" and dungeon.entrance or {}
+            if type(entrance.mapID) == "number" and type(entrance.x) == "number" and type(entrance.y) == "number" then
                 record.entrance = {mapID = entrance.mapID, x = entrance.x, y = entrance.y}
             end
             data.dungeons[#data.dungeons + 1] = record

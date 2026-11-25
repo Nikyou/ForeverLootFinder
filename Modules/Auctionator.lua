@@ -151,8 +151,7 @@ end
 
 -- works away from the auction house too
 function AH.CanAddToList()
-    return AH.Active() and AH.Has("CreateShoppingList") and AH.Has("GetShoppingListItems")
-             and AH.Has("ConvertToSearchString")
+    return AH.Active() and AH.Has("CreateShoppingList") and AH.Has("GetShoppingListItems") and AH.Has("ConvertToSearchString")
 end
 
 function AH.AddToList(name)

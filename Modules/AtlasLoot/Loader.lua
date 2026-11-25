@@ -61,8 +61,6 @@ function AtlasLoot.AddReader(reader) readers[#readers + 1] = reader end
 
 function AtlasLoot.SetEnabled(value)
     ns.addon.db.profile.atlasloot = value and true or false
-    if value then
-        for _, reader in ipairs(readers) do if reader.State() == "off" then reader.Init() end end
-    end
+    if value then for _, reader in ipairs(readers) do if reader.State() == "off" then reader.Init() end end end
     ns.RebuildIndex()
 end

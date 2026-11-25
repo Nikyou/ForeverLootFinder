@@ -65,7 +65,11 @@ function SkillUp.Read(source, opt)
         local profession = type(recipe) == "table" and tonumber(recipe.skillLineID)
         if output and profession and opt.professions[profession] and opt.equippable(output) then
             out[#out + 1] = {
-                id = output, kind = "craft", profession = profession, skill = skill, spell = spell,
+                id = output,
+                kind = "craft",
+                profession = profession,
+                skill = skill,
+                spell = spell,
                 recipe = need and need.source == "item" and tonumber(need.recipeItem) or nil,
             }
             counts.items = counts.items + 1
@@ -82,9 +86,8 @@ local function read(source)
     status.state, status.error = "scanning", nil
     local found, counts, skills
     Util.RunSliced(function(checkpoint)
-        found, counts, skills = SkillUp.Read(source, {
-            equippable = Util.Equippable, professions = professions, checkpoint = checkpoint,
-        })
+        found, counts, skills = SkillUp.Read(source,
+                                             {equippable = Util.Equippable, professions = professions, checkpoint = checkpoint})
     end, function(ok, err, ms)
         if not ok then
             status.error = tostring(err)

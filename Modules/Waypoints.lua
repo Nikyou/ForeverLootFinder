@@ -19,9 +19,7 @@ end
 local function pinAPI()
     local map, point = rawget(_G, "C_Map"), rawget(_G, "UiMapPoint")
     if type(map) == "table" and type(map.SetUserWaypoint) == "function" and type(point) == "table"
-      and type(point.CreateFromCoordinates) == "function" then
-        return map, point
-    end
+      and type(point.CreateFromCoordinates) == "function" then return map, point end
     return nil
 end
 
@@ -138,9 +136,7 @@ function Waypoints.Targets(source)
             end
         end
     end
-    if source.kind == "vendor" and ns.Questie.Installed() then
-        add(npcTarget(source.npcs or (source.npcID and {source.npcID})))
-    end
+    if source.kind == "vendor" and ns.Questie.Installed() then add(npcTarget(source.npcs or (source.npcID and {source.npcID}))) end
     if source.dungeon then add(Waypoints.EntranceTarget(source.dungeon)) end
     return out
 end
@@ -185,7 +181,7 @@ function Waypoints.DumpLines()
         end
     end
     lines[#lines + 1] = format("area to map: Questie ZoneDB %s, QuestieDB support data %d areas; entrances: %d of %d places "
-                               .. "from FDJ, %d more from QuestieDB", tostring(sources.zoneDB), sources.support, fdjEntrances,
+                                 .. "from FDJ, %d more from QuestieDB", tostring(sources.zoneDB), sources.support, fdjEntrances,
                                places, questieEntrances)
     return lines
 end

@@ -150,9 +150,7 @@ function Util.RunSliced(fn, done, budget)
     budget = budget or Util.FRAME_BUDGET_MS
     local co = coroutine.create(fn)
     local frameStart, spent = 0, 0
-    local function checkpoint()
-        if Util.Clock() - frameStart > budget then coroutine.yield() end
-    end
+    local function checkpoint() if Util.Clock() - frameStart > budget then coroutine.yield() end end
     local function step()
         if ns.inCombat then return C_Timer.After(1, step) end
         frameStart = Util.Clock()
@@ -166,6 +164,4 @@ function Util.RunSliced(fn, done, budget)
 end
 
 -- state: off, waiting, scanning, done or nodata
-function Util.NewStatus(name, counts)
-    return {name = name, state = "off", error = nil, ms = 0, counts = counts or {}}
-end
+function Util.NewStatus(name, counts) return {name = name, state = "off", error = nil, ms = 0, counts = counts or {}} end

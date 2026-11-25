@@ -187,15 +187,15 @@ function Dump.QuestieText()
     local function add(text) lines[#lines + 1] = text end
     header(lines, "questie")
     local Questie = ns.Questie
-    add(format("Questie installed: %s, on: %s, state: %s",
-               tostring(Questie.Installed()), tostring(Questie.Enabled()), Questie.State()))
+    add(format("Questie installed: %s, on: %s, state: %s", tostring(Questie.Installed()), tostring(Questie.Enabled()),
+               Questie.State()))
     add(format("LibQuestieDB: %s", tostring(type(rawget(_G, "LibQuestieDB")) == "table")))
     add(statusLine(Questie.Status()))
     local stats = Questie.Stats()
     add(format("items in QuestieDB: %d, equippable: %d, quest rewards: %d, quests: %d, hidden quests skipped: %d, errors: %d",
                stats.items, stats.equippable, stats.rewards, stats.quests, stats.hidden, stats.errors))
     add(format("vendor sources: %d (%d items sold by more than 5), creature drop sources: %d (%d items dropped by more "
-               .. "than 5), creatures read: %d; switches: quests %s, vendors %s, drops %s", stats.vendors, stats.manyVendors,
+                 .. "than 5), creatures read: %d; switches: quests %s, vendors %s, drops %s", stats.vendors, stats.manyVendors,
                stats.drops, stats.manyDrops, stats.npcs, tostring(Questie.KindEnabled("quests")),
                tostring(Questie.KindEnabled("vendors")), tostring(Questie.KindEnabled("drops"))))
     add(format("implausible creature drops skipped: %d (%d items left with no creature)", stats.implausible or 0,
@@ -203,7 +203,7 @@ function Dump.QuestieText()
     add(format("world drops (creatures in %d+ zones): %d items", 4, stats.worldDrops or 0))
     if Questie.SodRuleOn() then
         add(format("SoD-only vendors and creatures (ids 200000-244999 unused by Forever quests) skipped: %d sources from %d "
-                   .. "NPCs; SoD-range NPCs Forever's quests use: %d (%d sources kept)", stats.sodSkipped or 0,
+                     .. "NPCs; SoD-range NPCs Forever's quests use: %d (%d sources kept)", stats.sodSkipped or 0,
                    stats.sodNpcs or 0, stats.sodRefs or 0, stats.sodKept or 0))
         local count = Questie.SodItems()
         add(format("SoD gear (ids 190000-244999) left with no Questie source: %d items", count or 0))
@@ -231,7 +231,9 @@ function Dump.QuestieText()
     end
     local merged = 0
     for _, record in ipairs(index and index.records or {}) do
-        for _, source in ipairs(record.sources) do if source.kind == "quest" and source.zoneKey then merged = merged + 1 end end
+        for _, source in ipairs(record.sources) do
+            if source.kind == "quest" and source.zoneKey then merged = merged + 1 end
+        end
     end
     add(format("dungeon quests matched with Questie: %d", merged))
     local kinds, tied, vendorSamples, dropSamples = {}, {}, {}, {}
@@ -280,16 +282,16 @@ function Dump.CraftsText()
     local function add(text) lines[#lines + 1] = text end
     header(lines, "crafts")
     local Crafts = ns.Crafts
-    add(format("AtlasLoot installed: %s, on: %s, state: %s",
-               tostring(Crafts.Installed()), tostring(Crafts.Enabled()), Crafts.State()))
+    add(format("AtlasLoot installed: %s, on: %s, state: %s", tostring(Crafts.Installed()), tostring(Crafts.Enabled()),
+               Crafts.State()))
     add(statusLine(Crafts.Status()))
     add(statusLine(ns.AtlasLootLists.Status()))
     local stats = Crafts.Stats()
-    add(format("sections: %d, craft spells: %d, equippable results: %d, spells AtlasLoot has no data for: %d",
-               stats.sections, stats.spells, stats.equippable, stats.missing))
+    add(format("sections: %d, craft spells: %d, equippable results: %d, spells AtlasLoot has no data for: %d", stats.sections,
+               stats.spells, stats.equippable, stats.missing))
     local loot = ns.AtlasLootLists.Stats()
     add(format("AtlasLoot loot lists: state %s, modules %d, places %d (%d matched to FDJ dungeons), items %d, "
-               .. "set lists skipped %d", ns.AtlasLootLists.State(), loot.modules, loot.places, loot.matched, loot.items,
+                 .. "set lists skipped %d", ns.AtlasLootLists.State(), loot.modules, loot.places, loot.matched, loot.items,
                loot.skippedSets))
     local shared = 0
     for _, record in ipairs(ns.GetIndex() and ns.GetIndex().records or {}) do
@@ -321,8 +323,8 @@ function Dump.CraftsText()
     local listed, noLevel = 0, {}
     for _, record in ipairs(idx and idx.records or {}) do
         for _, source in ipairs(record.sources) do
-            if source.provider == "atlasloot" and (source.kind == "reputation" or source.kind == "pvp"
-                                                    or source.kind == "event" or source.kind == "world") then
+            if source.provider == "atlasloot"
+              and (source.kind == "reputation" or source.kind == "pvp" or source.kind == "event" or source.kind == "world") then
                 listed = listed + 1
                 local info = ns.Items.Info(record)
                 local estimate = ns.Filter.EstimatedLevel(source, info)
@@ -369,12 +371,9 @@ function Dump.CraftsText()
 end
 
 -- lists every item: the high IDs (Forever's own and SoD's) are the interesting part
-local ID_RANGES = {{25000, "<25k"}, {190000, "25k-190k"}, {240000, "190k-240k"}, {260000, "240k-260k"},
-                   {math.huge, "260k+"}}
+local ID_RANGES = {{25000, "<25k"}, {190000, "25k-190k"}, {240000, "190k-240k"}, {260000, "240k-260k"}, {math.huge, "260k+"}}
 
-local function idRange(id)
-    for _, range in ipairs(ID_RANGES) do if id < range[1] then return range[2] end end
-end
+local function idRange(id) for _, range in ipairs(ID_RANGES) do if id < range[1] then return range[2] end end end
 
 function Dump.PawnLine()
     local Pawn = ns.Pawn
@@ -384,8 +383,8 @@ function Dump.PawnLine()
         scales[#scales + 1] = format("%s (%s, %d values)", entry.scale, tostring(entry.signature), entry.values)
     end
     return format("Pawn: ready %s, queue %d, values computed %d in %.1f ms (longest frame %.1f ms), last full pass %s ms, "
-                  .. "%d values from the cache; scales in use: %s", tostring(Pawn.IsReady()), Pawn.QueueLength(),
-                  timing.count, timing.ms, timing.longestFrame, timing.lastPassMs and format("%.0f", timing.lastPassMs) or "-",
+                    .. "%d values from the cache; scales in use: %s", tostring(Pawn.IsReady()), Pawn.QueueLength(), timing.count,
+                  timing.ms, timing.longestFrame, timing.lastPassMs and format("%.0f", timing.lastPassMs) or "-",
                   timing.fromCache, #scales > 0 and table.concat(scales, ", ") or "none")
 end
 
@@ -401,8 +400,8 @@ function Dump.LoadLines()
     local queue = ns.Items.QueueInfo()
     local finished = t.loadDone and t.loadStarted and format("in %.1f s", t.loadDone - t.loadStarted) or "not yet"
     lines[#lines + 1] = format("loading: %d requests (%.0f ms); %d infos built (%.0f ms, tooltips %.0f ms), %d quick ones "
-                               .. "without the tooltip; %d build slices, longest %.1f ms; %d left to build; %d redraws; "
-                               .. "finished %s", t.requests, t.requestMs, t.builds, t.buildMs, t.tooltipMs, t.quick, t.slices,
+                                 .. "without the tooltip; %d build slices, longest %.1f ms; %d left to build; %d redraws; "
+                                 .. "finished %s", t.requests, t.requestMs, t.builds, t.buildMs, t.tooltipMs, t.quick, t.slices,
                                t.longestSlice, queue.toBuild, t.redraws, finished)
     lines[#lines + 1] = format("answers for finished items, ignored: %d; asked and waiting: %d; to fetch again: %d",
                                t.ignored or 0, queue.inFlight or 0, queue.refetches or 0)
@@ -412,12 +411,11 @@ function Dump.LoadLines()
     else
         local s = ns.Cache.stats
         lines[#lines + 1] = format("cache: %d items, %d sets, %d the server didn't give last time, about %.0f KB; client %s, "
-                                   .. "%s; created %s, last saved %s; started over at login: %s", cache.items, cache.sets,
-                                   cache.unavailable or 0, cache.bytes / 1024,
-                                   tostring(cache.build), tostring(cache.locale), ago(cache.createdAt), ago(cache.savedAt),
-                                   s.reset or "no")
+                                     .. "%s; created %s, last saved %s; started over at login: %s", cache.items, cache.sets,
+                                   cache.unavailable or 0, cache.bytes / 1024, tostring(cache.build), tostring(cache.locale),
+                                   ago(cache.createdAt), ago(cache.savedAt), s.reset or "no")
         lines[#lines + 1] = format("cache this session: %d hits, %d misses, %d new, %d changed, %d removed (not on the "
-                                   .. "server), %d pruned", s.hits, s.misses, s.written, s.changed, s.removed, s.pruned)
+                                     .. "server), %d pruned", s.hits, s.misses, s.written, s.changed, s.removed, s.pruned)
         for _, entry in ipairs(cache.scales) do
             lines[#lines + 1] = format("cache Pawn %s: %d values, weights %s", tostring(entry.scale), entry.values,
                                        tostring(entry.sig))
@@ -448,7 +446,7 @@ function Dump.ItemsText(index)
                table.concat(ranked, ", ", 1, math.min(#ranked, 5)), #reputation,
                table.concat(reputation, ", ", 1, math.min(#reputation, 5))))
     add("states: loaded; failed = the server said it doesn't exist; noanswer = asked 3 times, no answer; "
-        .. "waiting = asked, still in time; queued = not asked yet")
+          .. "waiting = asked, still in time; queued = not asked yet")
     local byState, byProvider, list, seenIDs = {}, {}, {}, {}
     local byRange, hidden = {}, {}
     for _, range in ipairs(ID_RANGES) do byRange[range[2]] = {} end
@@ -481,9 +479,11 @@ function Dump.ItemsText(index)
                 if Items.Info(record).missing then hidden[providerText] = (hidden[providerText] or 0) + 1 end
                 local ok, itemID, _, _, equipLoc = pcall(C_Item.GetItemInfoInstant, id)
                 local client = ok and itemID and (equipLoc ~= "" and equipLoc or "not equippable") or "not in the client"
-                list[#list + 1] = {id = id, text = format("%d;%s;%s;%s;%s;%s;%s", id, loadState, tostring(tries or ""),
-                                                           client, providerText, table.concat(kinds, "+"),
-                                                           record.name or "?")}
+                list[#list + 1] = {
+                    id = id,
+                    text = format("%d;%s;%s;%s;%s;%s;%s", id, loadState, tostring(tries or ""), client, providerText,
+                                  table.concat(kinds, "+"), record.name or "?"),
+                }
             end
         end
     end
@@ -525,14 +525,16 @@ end
 function Dump.AuctionatorLines()
     local AH = ns.Auctionator
     local status = AH.Status()
-    local lines = {format("auctionator: installed %s, on %s, state %s, API calls %d, errors %d%s", tostring(AH.Installed()),
-                          tostring(AH.Enabled()), status.state, status.counts.calls, status.counts.errors,
-                          status.error and (", last error: " .. status.error) or "")}
+    local lines = {
+        format("auctionator: installed %s, on %s, state %s, API calls %d, errors %d%s", tostring(AH.Installed()),
+               tostring(AH.Enabled()), status.state, status.counts.calls, status.counts.errors,
+               status.error and (", last error: " .. status.error) or ""),
+    }
     if AH.Active() then
         local index = ns.GetIndex()
         local c = AH.Coverage(index and index.records or {}, ns.Items.Info)
         lines[#lines + 1] = format("auction prices: %d items, %d can be sold (not bind on pickup), %d with a price; bind on "
-                                   .. "equip %d, %d with a price; old (over %d days) %d, not exact %d; prices cached %d",
+                                     .. "equip %d, %d with a price; old (over %d days) %d, not exact %d; prices cached %d",
                                    c.items, c.sellable, c.priced, c.boe, c.pricedBoe, AH.OLD_DAYS, c.old, c.inexact,
                                    status.counts.cached)
         lines[#lines + 1] = format("auctionator API: search %s, shopping list %s, update callback %s, auction house open %s",
@@ -575,8 +577,9 @@ function Dump.StatusText()
         collectgarbage("collect")
         ns.Util.SafeCall(update)
         local parts = {}
-        for _, name in ipairs({"ForeverLootFinder", "ForeverDB", "ForeverDB_Locales", "AllTheThings", "QuestieDB", "Questie",
-                               "AtlasLootClassic"}) do
+        for _, name in ipairs({
+            "ForeverLootFinder", "ForeverDB", "ForeverDB_Locales", "AllTheThings", "QuestieDB", "Questie", "AtlasLootClassic",
+        }) do
             local kb = ns.Util.SafeCall(usage, name)
             if type(kb) == "number" and kb > 0 then parts[#parts + 1] = format("%s %.1f MB", name, kb / 1024) end
         end
@@ -612,9 +615,7 @@ function Dump.StatusText()
     add(format("## errors caught (%d)", #errors))
     for _, entry in ipairs(errors) do
         add(format("x%d %s", entry.count, entry.message))
-        if entry.stack and entry.stack ~= "" then
-            for line in entry.stack:gmatch("[^\n]+") do add("    " .. line) end
-        end
+        if entry.stack and entry.stack ~= "" then for line in entry.stack:gmatch("[^\n]+") do add("    " .. line) end end
     end
     return lines
 end
@@ -644,7 +645,7 @@ function Dump.PawnText()
     local q = ns.Items.QueueInfo()
     lines[#lines + 1] = format("active scale: %s; selected slot: %s", tostring(scale), tostring(slot))
     lines[#lines + 1] = format("item loader: asked and waiting %d, on-screen queue %d, refetch queue %d, other queue %d, "
-                               .. "to build %d, paused %s, started %s, count fixes %d", q.inFlight or 0, q.urgent or 0,
+                                 .. "to build %d, paused %s, started %s, count fixes %d", q.inFlight or 0, q.urgent or 0,
                                q.refetches or 0, q.queued or 0, q.toBuild or 0, tostring(q.paused), tostring(q.started),
                                q.recounts or 0)
     if not scale then return lines end
@@ -662,8 +663,8 @@ function Dump.PawnText()
                     local d = ns.Items.Diagnose(record.id)
                     out[#out + 1] = format("%d;%s;%s;%s;%s;%s;%s;%s;%d;%s;%d;%s", record.id, tostring(info.name), status,
                                            tostring(info.loaded), tostring(info.fromCache == true), d.client, d.state,
-                                           tostring(d.requested), d.refetches, tostring(d.waiting),
-                                           ns.Pawn.ReadyTries(record.id), tostring(ns.Pawn.Waiting(record.id, scale)))
+                                           tostring(d.requested), d.refetches, tostring(d.waiting), ns.Pawn.ReadyTries(record.id),
+                                           tostring(ns.Pawn.Waiting(record.id, scale)))
                 end
             end
         end
@@ -671,7 +672,7 @@ function Dump.PawnText()
     lines[#lines + 1] = format("shown in the slot: %d, without a value: %d", shown, missing)
     lines[#lines + 1] = ""
     lines[#lines + 1] = "## no value yet: id;name;status;loaded;from cache;in client;load state;requested;refetches this view;"
-                        .. "asked and waiting;Pawn tries on arrival;Pawn waits for it"
+                          .. "asked and waiting;Pawn tries on arrival;Pawn waits for it"
     for _, line in ipairs(out) do lines[#lines + 1] = line end
     return lines
 end

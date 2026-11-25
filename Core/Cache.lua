@@ -73,13 +73,13 @@ function Cache.Encode(info)
     for key, value in pairs(info.stats or {}) do stats[#stats + 1] = key .. "=" .. num(value) end
     table.sort(stats)
     local flags = (info.cosmetic and "c" or "") .. (info.hasUse and "u" or "") .. (info.hasProc and "p" or "")
-                  .. (info.unique == "equipped" and "e" or info.unique and "q" or "")
+                    .. (info.unique == "equipped" and "e" or info.unique and "q" or "")
     local skill = info.reqSkill
     local fields = {
         info.name or "", num(info.quality), num(info.ilvl), num(info.minLevel), BIND[info.bind] or "", num(info.setID), flags,
         table.concat(stats, ","), num(info.speed), num(info.dps), list(info.classes), list(info.races),
-        skill and (skill.id .. "," .. num(skill.rank) .. "," .. (skill.name or "")) or "", info.setName or "",
-        num(info.setTotal), num(info.pvpRank), num(info.reqStanding), info.reqReputation or "",
+        skill and (skill.id .. "," .. num(skill.rank) .. "," .. (skill.name or "")) or "", info.setName or "", num(info.setTotal),
+        num(info.pvpRank), num(info.reqStanding), info.reqReputation or "",
     }
     for _, field in ipairs(fields) do if field:find(SEP, 1, true) then return nil end end
     return (table.concat(fields, SEP):gsub("%^+$", ""))
@@ -190,16 +190,23 @@ function Cache.Prune(listed, scaleExists)
             end
         end
     end
-    if scaleExists then
-        for scale in pairs(db.pawn) do if not scaleExists(scale) then db.pawn[scale] = nil end end
-    end
+    if scaleExists then for scale in pairs(db.pawn) do if not scaleExists(scale) then db.pawn[scale] = nil end end end
     db.savedAt = time()
 end
 
 function Cache.Summary()
     if not db then return nil end
-    local out = {build = db.build, locale = db.locale, createdAt = db.createdAt, savedAt = db.savedAt, items = 0, sets = 0,
-                 unavailable = 0, bytes = 0, scales = {}}
+    local out = {
+        build = db.build,
+        locale = db.locale,
+        createdAt = db.createdAt,
+        savedAt = db.savedAt,
+        items = 0,
+        sets = 0,
+        unavailable = 0,
+        bytes = 0,
+        scales = {},
+    }
     for _ in pairs(db.unavailable) do out.unavailable = out.unavailable + 1 end
     -- ["key"] = "value", plus indentation
     for id, text in pairs(db.items) do

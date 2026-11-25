@@ -10,13 +10,27 @@ local MAX_EACH = 5 -- creatures listed on an item, more make one "many" source
 local STANDINGS = {{42000, 8}, {21000, 7}, {9000, 6}, {3000, 5}, {0, 4}}
 -- Enum.FlightPathFaction
 local SIDES = {[1] = "Horde", [2] = "Alliance"}
-local SKIP_CATEGORIES = {NeverImplemented = true, HiddenQuestTriggers = true, Unsorted = true, Secrets = true,
-                         ExpansionFeatures = true, Promotions = true}
+local SKIP_CATEGORIES = {
+    NeverImplemented = true,
+    HiddenQuestTriggers = true,
+    Unsorted = true,
+    Secrets = true,
+    ExpansionFeatures = true,
+    Promotions = true,
+}
 local CATEGORY_KIND = {PVP = "pvp", Holidays = "event", WorldDrops = "world", Craftables = "craft"}
 -- ATT's event numbers on its holiday headers (e=), to ns.Holidays' keys
 local HOLIDAYS = {
-    [1] = "darkmoon", [18] = "lunar", [9] = "love", [15] = "noblegarden", [13] = "children", [11] = "midsummer",
-    [6] = "fishing", [17] = "harvest", [16] = "hallows", [14] = "winterVeil",
+    [1] = "darkmoon",
+    [18] = "lunar",
+    [9] = "love",
+    [15] = "noblegarden",
+    [13] = "children",
+    [11] = "midsummer",
+    [6] = "fishing",
+    [17] = "harvest",
+    [16] = "hallows",
+    [14] = "winterVeil",
 }
 
 local status = Util.NewStatus("att", {items = 0, places = 0, matched = 0, recipes = 0, ms = 0})
@@ -89,9 +103,16 @@ function ATT.Read(root, opt)
         else
             key = "att:" .. tostring(id)
             local level = tonumber(raw(node, "lvl"))
-            dungeons[#dungeons + 1] = {key = key, name = name or key, raid = raw(node, "isRaid") and true or nil,
-                                       levelMin = level, levelMax = level, levelText = level and tostring(level) or nil,
-                                       bosses = {}, att = true}
+            dungeons[#dungeons + 1] = {
+                key = key,
+                name = name or key,
+                raid = raw(node, "isRaid") and true or nil,
+                levelMin = level,
+                levelMax = level,
+                levelText = level and tostring(level) or nil,
+                bosses = {},
+                att = true,
+            }
         end
         if map then areas["m" .. map] = key end
         return key
@@ -172,8 +193,15 @@ function ATT.Read(root, opt)
                 entry.zoneName = ctx.map and opt.mapName(ctx.map) or nil
             else
                 for _, npcID in ipairs(creatures) do
-                    local one = {id = id, kind = "npcDrop", npcID = npcID, npcs = {npcID}, npcName = opt.npcName(npcID),
-                                 faction = entry.faction, classMask = entry.classMask}
+                    local one = {
+                        id = id,
+                        kind = "npcDrop",
+                        npcID = npcID,
+                        npcs = {npcID},
+                        npcName = opt.npcName(npcID),
+                        faction = entry.faction,
+                        classMask = entry.classMask,
+                    }
                     one.zoneKey = ctx.map and ("map:" .. ctx.map) or nil
                     one.zoneName = ctx.map and opt.mapName(ctx.map) or nil
                     out[#out + 1] = one
@@ -213,7 +241,9 @@ function ATT.Read(root, opt)
                 if type(link) == "table" and link[1] == "select" and link[2] == "itemID" then
                     for i = 3, #link do
                         local item = link[i]
-                        if type(item) == "number" and opt.equippable(item) then addItem({cost = true}, item, sells) end
+                        if type(item) == "number" and opt.equippable(item) then
+                            addItem({cost = true}, item, sells)
+                        end
                     end
                 end
             end
@@ -239,9 +269,7 @@ function ATT.Read(root, opt)
             ctx = with(ctx, "boss", name or ("#" .. encounter))
             ctx.bossIndex = ctx.bossCount
         end
-        if type(npc) == "number" and npc > 0 then
-            ctx = with(ctx, "npc", npc)
-        end
+        if type(npc) == "number" and npc > 0 then ctx = with(ctx, "npc", npc) end
         local quest = raw(node, "questID")
         if quest then
             ctx = with(ctx, "quest", quest)
@@ -262,13 +290,9 @@ function ATT.Read(root, opt)
 
     for _, category in ipairs(type(raw(root, "g")) == "table" and raw(root, "g") or {}) do
         local key = type(category) == "table" and raw(category, "RootCategory")
-        if key and not SKIP_CATEGORIES[key] then
-            walk(category, {category = CATEGORY_KIND[key], header = nameOf(category)})
-        end
+        if key and not SKIP_CATEGORIES[key] then walk(category, {category = CATEGORY_KIND[key], header = nameOf(category)}) end
     end
-    for _, entry in ipairs(out) do
-        if entry.kind == "vendor" and not entry.price then entry.price = costs[entry.id] end
-    end
+    for _, entry in ipairs(out) do if entry.kind == "vendor" and not entry.price then entry.price = costs[entry.id] end end
     -- places with nothing wearable stay off the Raids tab (Forever's raids, for now)
     local kept = {}
     for _, dungeon in ipairs(dungeons) do if used[dungeon.key] then kept[#kept + 1] = dungeon end end
@@ -333,7 +357,9 @@ local function read()
             for _, entry in ipairs(found) do
                 if entry.profession then entry.professionName = ns.Crafts.Name(entry.profession) end
                 if entry.factionID then
-                    if factions[entry.factionID] == nil then factions[entry.factionID] = factionName(entry.factionID) or false end
+                    if factions[entry.factionID] == nil then
+                        factions[entry.factionID] = factionName(entry.factionID) or false
+                    end
                     entry.factionName = factions[entry.factionID] or nil
                 end
             end

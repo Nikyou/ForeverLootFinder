@@ -57,8 +57,7 @@ ns.Cards.Tab({
     card = zoneOf,
     group = function(source, ctx)
         local done = source.questID and ctx.completed and ctx.completed(source.questID)
-        return questKey(source), questLabel(source, done),
-               source.questLevel or source.reqLevel or 0
+        return questKey(source), questLabel(source, done), source.questLevel or source.reqLevel or 0
     end,
     grouping = {
         label = L["Group by quest"],

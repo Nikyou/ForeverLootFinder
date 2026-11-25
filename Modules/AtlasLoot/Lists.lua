@@ -117,8 +117,13 @@ local function pickDungeon(list, bossName)
     return list[1]
 end
 
-local STANDING = {[4] = "FACTION_STANDING_LABEL4", [5] = "FACTION_STANDING_LABEL5", [6] = "FACTION_STANDING_LABEL6",
-                  [7] = "FACTION_STANDING_LABEL7", [8] = "FACTION_STANDING_LABEL8"}
+local STANDING = {
+    [4] = "FACTION_STANDING_LABEL4",
+    [5] = "FACTION_STANDING_LABEL5",
+    [6] = "FACTION_STANDING_LABEL6",
+    [7] = "FACTION_STANDING_LABEL7",
+    [8] = "FACTION_STANDING_LABEL8",
+}
 function Lists.StandingName(standing)
     local value = STANDING[standing] and rawget(_G, STANDING[standing])
     return type(value) == "string" and value or tostring(standing)
@@ -150,7 +155,11 @@ local function rowItems(row, diffFaction)
     local value = row[2]
     if type(value) == "number" and value > 0 then
         local faction = diffFaction
-        if row[901] == true then faction = "Horde" elseif row[902] == true then faction = "Alliance" end
+        if row[901] == true then
+            faction = "Horde"
+        elseif row[902] == true then
+            faction = "Alliance"
+        end
         out[#out + 1] = {id = value, faction = faction}
     elseif value == nil then
         if type(row[901]) == "number" then out[#out + 1] = {id = row[901], faction = "Horde"} end
@@ -182,9 +191,16 @@ end
 
 -- AtlasLoot's holiday lists, to ns.Holidays' keys
 local HOLIDAYS = {
-    Darkmoon = "darkmoon", LunarFestival = "lunar", Valentineday = "love", Noblegarden = "noblegarden",
-    ChildrensWeek = "children", MidsummerFestival = "midsummer", FishingExtravaganza = "fishing",
-    HarvestFestival = "harvest", Halloween = "hallows", WinterVeil = "winterVeil",
+    Darkmoon = "darkmoon",
+    LunarFestival = "lunar",
+    Valentineday = "love",
+    Noblegarden = "noblegarden",
+    ChildrensWeek = "children",
+    MidsummerFestival = "midsummer",
+    FishingExtravaganza = "fishing",
+    HarvestFestival = "harvest",
+    Halloween = "hallows",
+    WinterVeil = "winterVeil",
 }
 
 -- classify returns nil to skip a content
@@ -246,8 +262,8 @@ local function readModule(module, storage, classify, out, byName, checkpoint)
                         if isSetTable(storage, content, section) then
                             stats.skippedSets = stats.skippedSets + 1
                         else
-                            local sectionName = clean(section.name)
-                                                or clean(call(content, "GetNameForItemTable", index, true)) or name
+                            local sectionName = clean(section.name) or clean(call(content, "GetNameForItemTable", index, true))
+                                                  or name
                             local base = how.base(sectionName, section, name, content)
                             if base then
                                 local dungeonKey = ownKey
@@ -257,8 +273,7 @@ local function readModule(module, storage, classify, out, byName, checkpoint)
                                 if dungeonKey and base.bossName and type(npcs) == "table" then
                                     for _, npc in ipairs(npcs) do
                                         if type(npc) == "number" and not out.npcs[npc] then
-                                            out.npcs[npc] = {dungeon = dungeonKey, bossName = base.bossName,
-                                                             kind = base.kind}
+                                            out.npcs[npc] = {dungeon = dungeonKey, bossName = base.bossName, kind = base.kind}
                                         end
                                     end
                                 end
@@ -268,24 +283,40 @@ local function readModule(module, storage, classify, out, byName, checkpoint)
                                     if type(marker) == "string" then
                                         -- "f529rep8": faction and standing for the rows below
                                         local factionID, rank = marker:match("^f(%d+)rep(%d+)$")
-                                        if factionID then standing, standingFaction = tonumber(rank), tonumber(factionID) end
+                                        if factionID then
+                                            standing, standingFaction = tonumber(rank), tonumber(factionID)
+                                        end
                                     end
                                     for _, row in ipairs(rowItems(item.row, item.faction)) do
                                         if equippable(row.id) then
-                                            local entry = {id = row.id, provider = "atlasloot", dungeon = dungeonKey,
-                                                           faction = row.faction, alModule = module, alContent = key,
-                                                           alBoss = index}
-                                            for field, value in pairs(base) do entry[field] = value end
+                                            local entry = {
+                                                id = row.id,
+                                                provider = "atlasloot",
+                                                dungeon = dungeonKey,
+                                                faction = row.faction,
+                                                alModule = module,
+                                                alContent = key,
+                                                alBoss = index,
+                                            }
+                                            for field, value in pairs(base) do
+                                                entry[field] = value
+                                            end
                                             if entry.kind == "reputation" or entry.kind == "pvp" then
                                                 entry.standing = entry.standing or standing
                                                 entry.factionID = entry.factionID or standingFaction
-                                                entry.factionName = entry.factionID and factionName(entry.factionID)
-                                                    or entry.factionName
+                                                entry.factionName =
+                                                  entry.factionID and factionName(entry.factionID) or entry.factionName
                                             end
-                                            if PRICED[entry.kind] then entry.price = rowPrice(item.row) end
-                                            if entry.bossName then entry.bossIndex = index end
+                                            if PRICED[entry.kind] then
+                                                entry.price = rowPrice(item.row)
+                                            end
+                                            if entry.bossName then
+                                                entry.bossIndex = index
+                                            end
                                             entry.chance = dropRate(section, row.id)
-                                            if entry.chance then stats.chances = stats.chances + 1 end
+                                            if entry.chance then
+                                                stats.chances = stats.chances + 1
+                                            end
                                             -- a vendor list without a price isn't one
                                             if entry.kind ~= "vendor" or entry.price then
                                                 out.entries[#out.entries + 1] = entry
@@ -340,13 +371,18 @@ Lists.DungeonSection = dungeonSection
 local CLASSIFY = {
     AtlasLootClassic_DungeonsAndRaids = function(content, typeIndex, key)
         local raid = key == "WorldBosses" or DR_RAID_TYPES[typeIndex] == true
-        return {place = "dungeon", raid = raid,
-                base = function(sectionName, section) return dungeonSection(sectionName, section) end}
+        return {
+            place = "dungeon",
+            raid = raid,
+            base = function(sectionName, section) return dungeonSection(sectionName, section) end,
+        }
     end,
     AtlasLootClassic_Factions = function(content)
-        return {base = function(_, _, name)
-            return {kind = "reputation", factionID = tonumber(content.FactionID), factionName = name}
-        end}
+        return {
+            base = function(_, _, name)
+                return {kind = "reputation", factionID = tonumber(content.FactionID), factionName = name}
+            end,
+        }
     end,
     AtlasLootClassic_PvP = function(content, typeIndex, key, typeName)
         return {base = function(sectionName, _, name)
@@ -363,9 +399,7 @@ local CLASSIFY = {
             return {base = function(sectionName) return {kind = "world", section = sectionName} end}
         end
         -- AtlasLoot Forever's own type, not translated: the Tarnished Undermine Real vendor. it names no vendor
-        if typeName == "Forever" then
-            return {base = function() return {kind = "vendor"} end}
-        end
+        if typeName == "Forever" then return {base = function() return {kind = "vendor"} end} end
         return nil
     end,
 }

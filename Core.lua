@@ -282,10 +282,9 @@ function addon:OnProfileChanged()
     self:Migrate("profile")
     LibStub("LibDBIcon-1.0"):Refresh(ADDON_NAME, self.db.profile.minimap)
     if started then
-        for _, provider in ipairs({ns.Questie, ns.Crafts, ns.AtlasLootLists, ns.ATT, ns.SkillUp, ns.ForeverDB, ns.Attune,
-                                   ns.SilverDragon}) do
-            if provider.Enabled() and provider.State() == "off" then provider.Init() end
-        end
+        for _, provider in ipairs({
+            ns.Questie, ns.Crafts, ns.AtlasLootLists, ns.ATT, ns.SkillUp, ns.ForeverDB, ns.Attune, ns.SilverDragon,
+        }) do if provider.Enabled() and provider.State() == "off" then provider.Init() end end
         ns.Owned.ScanSyndicator()
         ns.Auctionator.Hook()
         ns.Auctionator.Invalidate()
@@ -393,9 +392,7 @@ local HANDLERS = {
     end,
 }
 local function onTradeSkill() ns.Crafts.OnTradeSkill() end
-for _, event in ipairs({"TRADE_SKILL_SHOW", "TRADE_SKILL_LIST_UPDATE", "TRADE_SKILL_UPDATE"}) do
-    HANDLERS[event] = onTradeSkill
-end
+for _, event in ipairs({"TRADE_SKILL_SHOW", "TRADE_SKILL_LIST_UPDATE", "TRADE_SKILL_UPDATE"}) do HANDLERS[event] = onTradeSkill end
 
 local function onEvent(_, event, ...)
     local handler = HANDLERS[event]
@@ -432,8 +429,7 @@ function addon:OnEnable()
         self:Print(message)
     elseif not message and not self.db.char.fdjHint and ns.Favourites.HasFDJList() then
         self.db.char.fdjHint = true
-        self:Print(
-          L["Copy your Dungeon Journal favourites: Favourites tab, \"Import FDJ favourites\"."])
+        self:Print(L["Copy your Dungeon Journal favourites: Favourites tab, \"Import FDJ favourites\"."])
     end
 end
 
@@ -481,7 +477,9 @@ function addon:OnSlashCommand(input)
             local tier = self.db.profile.favourites.defaultTier
             ns.Favourites.Set(id, tier)
             self:Print(format(L["Added to favourites (%s)."], ns.Favourites.TierLabel(tier)))
-            if not (idx and idx.byKey[id]) then self:Print(L["No addon lists where it's from, so it shows only under Favourites."]) end
+            if not (idx and idx.byKey[id]) then
+                self:Print(L["No addon lists where it's from, so it shows only under Favourites."])
+            end
         end
     elseif command == "dump" then
         ns.Dump.Start(rest:lower())

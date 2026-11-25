@@ -137,8 +137,8 @@ local function refresh()
     controls.hideEmpty:SetChecked(p.dungeonTab.hideEmpty)
     controls.cardChance:SetChecked(p.cardChance ~= false)
     controls.learnedFirst:SetChecked(p.craftTab.learnedFirst ~= false)
-    setUsable(controls.auction, ns.Auctionator.Active(), {needs = {"Auctionator"},
-              reason = ns.Auctionator.Installed() and L["Off in Settings, Addons tab."] or nil})
+    setUsable(controls.auction, ns.Auctionator.Active(),
+              {needs = {"Auctionator"}, reason = ns.Auctionator.Installed() and L["Off in Settings, Addons tab."] or nil})
     controls.auction:SetChecked(p.tooltip.auction == true)
     for key, box in pairs(controls.columns) do
         box:SetChecked(ns.Row.ColumnChosen(p.columns, key))

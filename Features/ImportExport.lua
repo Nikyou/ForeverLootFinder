@@ -7,10 +7,13 @@ ns.ImportExport = ImportExport
 local PREFIX = "!FLF1!"
 local PAYLOAD_VERSION = 1
 local ENUMS = {mode = {off = true, chat = true, window = true}}
-local SECTIONS = {"badges", "tooltip", "dungeonTab", "favourites", "reminder", "dropAlert", "tabs", "questTab", "craftTab",
-                  "questieKinds", "columns"}
-local FLAGS = {"showUnknown", "showMissing", "randomPass", "stars", "cardChance", "syndicator", "questie", "atlasloot",
-               "auctionator"}
+local SECTIONS = {
+    "badges", "tooltip", "dungeonTab", "favourites", "reminder", "dropAlert", "tabs", "questTab", "craftTab", "questieKinds",
+    "columns",
+}
+local FLAGS = {
+    "showUnknown", "showMissing", "randomPass", "stars", "cardChance", "syndicator", "questie", "atlasloot", "auctionator",
+}
 local WAYPOINTS = {auto = true, tomtom = true, pin = true}
 
 local function allowed(key, value)

@@ -83,9 +83,7 @@ local function create(parent)
     left.place(controls.defaultTier, 34)
 
     left.title(L["From the Dungeon Journal"])
-    controls.fdjHelp = left.help(
-                         L["Copies this character's Dungeon Journal favourites once, as \"Nice to have\"."],
-                         0)
+    controls.fdjHelp = left.help(L["Copies this character's Dungeon Journal favourites once, as \"Nice to have\"."], 0)
     controls.fdj = W.Button(parent, L["Import FDJ favourites"], nil, 22, function() Options:ImportFDJ() end)
     controls.fdj:FitWidth()
     left.place(controls.fdj, 30)
@@ -95,9 +93,7 @@ local function create(parent)
     controls.bis = W.Dropdown(parent, Options.COLUMN - 20, bisItems, function(value) bisList = value end)
     left.place(controls.bis, 34)
     controls.bisImport = W.Button(parent, L["Import BiS list"], nil, 22, function()
-        for _, list in ipairs(bisLists()) do
-            if list.key == bisList then return Options:ImportBiS(list) end
-        end
+        for _, list in ipairs(bisLists()) do if list.key == bisList then return Options:ImportBiS(list) end end
     end)
     controls.bisImport:FitWidth()
     W.WhyTooltip(controls.bisImport, L["AtlasLoot BiS lists"])

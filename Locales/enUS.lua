@@ -608,7 +608,8 @@ L["Rares and their loot. DungeonJournal and QuestieDB come first."] = true
 L["%d quests, %d rewards."] = true
 L["%d rares, %d items."] = true
 L["Use for its Forever database"] = true
-L["Dungeon loot, quests, vendors, crafts, reputation, PvP and event rewards. Fills what the others miss, and gives recipes their skill level on Forever."] = true
+L["Dungeon loot, quests, vendors, crafts, reputation, PvP and event rewards. Fills what the others miss, and gives recipes their skill level on Forever."] =
+  true
 L["Use for crafts, quests, vendors and drop chances"] = true
 L["Links every recipe to what it makes, Forever's own included. Creature drops get their chance, mostly Classic's."] = true
 L["%d sources, %d places."] = true

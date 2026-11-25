@@ -37,12 +37,8 @@ local function build()
     ns.SkillUp.ApplySkills()
     index = ns.Index.Build(data, {
         {provider = "questie", entries = ns.Questie.Entries(), areas = ns.Questie.Areas()},
-        {provider = "atlasloot", entries = ns.Crafts.Entries()},
-        ns.AtlasLootLists.Entries(),
-        ns.ATT.Entries(),
-        ns.SkillUp.Entries(),
-        ns.ForeverDB.Entries(),
-        {provider = "attune", entries = ns.Attune.Entries()},
+        {provider = "atlasloot", entries = ns.Crafts.Entries()}, ns.AtlasLootLists.Entries(), ns.ATT.Entries(),
+        ns.SkillUp.Entries(), ns.ForeverDB.Entries(), {provider = "attune", entries = ns.Attune.Entries()},
         {provider = "silverdragon", entries = ns.SilverDragon.Entries()},
     }, ns.Priority(), {hidden = ns.Questie.HiddenQuest, holiday = ns.Questie.Holiday})
     dirty = false

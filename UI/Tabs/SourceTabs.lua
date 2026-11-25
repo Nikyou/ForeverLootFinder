@@ -2,9 +2,7 @@
 local _, ns = ...
 local L = ns.L
 
-local function standingLabel(standing)
-    return standing and ns.AtlasLootLists.StandingName(standing) or ""
-end
+local function standingLabel(standing) return standing and ns.AtlasLootLists.StandingName(standing) or "" end
 
 local function emptyHint()
     if ns.AtlasLootLists.Installed() or ns.ATT.Installed() then return nil end
@@ -31,8 +29,8 @@ ns.Cards.Tab({
         local faction = source.faction == "Horde" and L["Horde"] or (source.faction == "Alliance" and L["Alliance"]) or nil
         local label = standingLabel(source.standing)
         if faction then label = label ~= "" and (label .. " " .. ns.Labels.DOT .. " " .. faction) or faction end
-        return tostring(source.standing) .. tostring(source.faction), label, (source.standing or 0) * 10
-                 + (source.faction == "Horde" and 1 or 0)
+        return tostring(source.standing) .. tostring(source.faction), label,
+               (source.standing or 0) * 10 + (source.faction == "Horde" and 1 or 0)
     end,
     emptyHint = emptyHint,
 })

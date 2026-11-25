@@ -2,10 +2,8 @@ local _, ns = ...
 local L = ns.L
 
 local TIERS = {
-    {max = 74, label = L["Apprentice (1–74)"]},
-    {max = 149, label = L["Journeyman (75–149)"]},
-    {max = 224, label = L["Expert (150–224)"]},
-    {max = 299, label = L["Artisan (225–299)"]},
+    {max = 74, label = L["Apprentice (1–74)"]}, {max = 149, label = L["Journeyman (75–149)"]},
+    {max = 224, label = L["Expert (150–224)"]}, {max = 299, label = L["Artisan (225–299)"]},
     {max = math.huge, label = L["Master (300+)"]},
 }
 
@@ -40,8 +38,7 @@ local function entries(_, order, ctx, _)
                 if rank then
                     tooltip:AddLine(format(L["Learned (skill %d)."], rank), 1, 1, 1)
                 else
-                    tooltip:AddLine(L["Not learned: the filter hides its BoP items."],
-                                    1, 1, 1, true)
+                    tooltip:AddLine(L["Not learned: the filter hides its BoP items."], 1, 1, 1, true)
                 end
             end,
             groups = card.list,

@@ -25,8 +25,20 @@ local RARE_RANKS = {[2] = true, [4] = true}
 local FACTIONS = {A = "Alliance", H = "Horde"}
 local ENGLISH = {enUS = true, enGB = true}
 
-local status = Util.NewStatus("foreverdb", {items = 0, quests = 0, vendors = 0, drops = 0, chances = 0, world = 0,
-                                           crafts = 0, trainer = 0, implausible = 0, sod = 0, pruned = 0, ms = 0})
+local status = Util.NewStatus("foreverdb", {
+    items = 0,
+    quests = 0,
+    vendors = 0,
+    drops = 0,
+    chances = 0,
+    world = 0,
+    crafts = 0,
+    trainer = 0,
+    implausible = 0,
+    sod = 0,
+    pruned = 0,
+    ms = 0,
+})
 local stats = status.counts
 local EMPTY = {provider = "foreverdb", entries = {}, areas = {}, instances = {}}
 local extra = EMPTY
@@ -64,8 +76,17 @@ local function npcEntries(out, id, kind, npcIDs, chances, npcOf, zoneName)
     if #npcIDs <= MAX_EACH then
         for _, npcID in ipairs(npcIDs) do
             local info = npcOf(npcID)
-            local entry = {id = id, kind = kind, npcID = npcID, npcName = info.name, npcs = {npcID}, zone = info.zone,
-                           zoneKey = info.zone, zoneName = info.zone and zoneName(info.zone), instance = info.instance}
+            local entry = {
+                id = id,
+                kind = kind,
+                npcID = npcID,
+                npcName = info.name,
+                npcs = {npcID},
+                zone = info.zone,
+                zoneKey = info.zone,
+                zoneName = info.zone and zoneName(info.zone),
+                instance = info.instance,
+            }
             if kind == "vendor" then
                 entry.faction, entry.npcLevel = info.faction, info.maxLevel
             else
@@ -126,9 +147,7 @@ local function pick(ids, spell)
     if #ids == 1 then return ids[1] end
     local forever = spell >= FOREVER_SPELL_FIRST
     local best
-    for _, id in ipairs(ids) do
-        if (id >= FOREVER_ITEM_FIRST) == forever and (not best or id < best) then best = id end
-    end
+    for _, id in ipairs(ids) do if (id >= FOREVER_ITEM_FIRST) == forever and (not best or id < best) then best = id end end
     if best then return best end
     for _, id in ipairs(ids) do if not best or id < best then best = id end end
     return best
@@ -136,8 +155,18 @@ end
 
 -- pure, for tests: opt holds the client and FDJ lookups. localNames is nil on an English client
 function ForeverDB.Read(D, opt)
-    local out, counts = {}, {items = 0, quests = 0, vendors = 0, drops = 0, chances = 0, world = 0, crafts = 0, trainer = 0,
-                            implausible = 0, sod = 0}
+    local out, counts = {}, {
+        items = 0,
+        quests = 0,
+        vendors = 0,
+        drops = 0,
+        chances = 0,
+        world = 0,
+        crafts = 0,
+        trainer = 0,
+        implausible = 0,
+        sod = 0,
+    }
     local checkpoint = opt.checkpoint or function() end
     local areas, instances = {}, {}
     local mapDungeon = {}
@@ -310,8 +339,14 @@ function ForeverDB.Read(D, opt)
 
     local function craft(spell, id, recipe)
         local skillRow = list(list(D.sla[spell])[1])
-        out[#out + 1] = {id = id, kind = "craft", profession = skillRow[1], skill = tonumber(skillRow[3]), spell = spell,
-                         recipe = recipe}
+        out[#out + 1] = {
+            id = id,
+            kind = "craft",
+            profession = skillRow[1],
+            skill = tonumber(skillRow[3]),
+            spell = spell,
+            recipe = recipe,
+        }
         counts.crafts = counts.crafts + 1
     end
     local function craftable(spell)
@@ -490,7 +525,11 @@ function ForeverDB.Prune()
     local kept = {}
     for _, entry in ipairs(extra.entries) do
         local k = not entry.chance and key(entry)
-        if k and have[k] then stats.pruned = stats.pruned + 1 else kept[#kept + 1] = entry end
+        if k and have[k] then
+            stats.pruned = stats.pruned + 1
+        else
+            kept[#kept + 1] = entry
+        end
     end
     extra = {provider = "foreverdb", entries = kept, areas = extra.areas, instances = extra.instances}
 end
@@ -512,9 +551,7 @@ function load()
     if ns.inCombat then return C_Timer.After(2, load) end
     if not data() then Util.SafeCall(C_AddOns.LoadAddOn, ADDON) end
     if not ENGLISH[GetLocale()] and ns.addon.db.profile.foreverdbLocales ~= false and exists(LOCALES)
-      and not Util.AddOnLoaded(LOCALES) then
-        Util.SafeCall(C_AddOns.LoadAddOn, LOCALES)
-    end
+      and not Util.AddOnLoaded(LOCALES) then Util.SafeCall(C_AddOns.LoadAddOn, LOCALES) end
     ns.Guard(read)
 end
 

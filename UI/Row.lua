@@ -4,10 +4,19 @@ local W, Style, Labels = ns.Widgets, ns.Style, ns.Labels
 
 -- Filter.Evaluate's reasons that a set piece can have
 local FILTERED_OUT = {
-    bind = L["binding"], quality = L["quality"], stats = L["stats"], speed = L["weapon speed"],
-    special = L["Use or proc"], set = L["sets only"], search = L["search"], owned = L["owned"],
-    upgrade = L["not an upgrade"], price = L["price"], source = L["drop chance or source"],
-    ["pvp rank"] = L["PvP rank"], standing = L["reputation"],
+    bind = L["binding"],
+    quality = L["quality"],
+    stats = L["stats"],
+    speed = L["weapon speed"],
+    special = L["Use or proc"],
+    set = L["sets only"],
+    search = L["search"],
+    owned = L["owned"],
+    upgrade = L["not an upgrade"],
+    price = L["price"],
+    source = L["drop chance or source"],
+    ["pvp rank"] = L["PvP rank"],
+    standing = L["reputation"],
 }
 local LEVEL_NOTE = L["Above your level filter for now."]
 
@@ -83,7 +92,9 @@ function Row.ColumnMenu(owner, opts)
             local box = root:CreateCheckbox(text, chosen, function() Row.SetColumn(key, not chosen()) end, key)
             if not usable and box then
                 if box.SetEnabled then box:SetEnabled(false) end
-                if box.SetTooltip then box:SetTooltip(function(tooltip) W.AddWhyLines(tooltip, column.menu, why) end) end
+                if box.SetTooltip then
+                    box:SetTooltip(function(tooltip) W.AddWhyLines(tooltip, column.menu, why) end)
+                end
             end
         end
     end)
@@ -123,8 +134,8 @@ function Row.Columns(opts, width)
     local list, right = {}, 6
     for _, column in ipairs(COLUMNS) do
         local shown = (not column.pawn or opts.pawn) and (not column.chance or opts.chance)
-                          and (not column.weapon or opts.weapons ~= false) and (not column.price or opts.price)
-                          and Row.ColumnChosen(opts.columns, column.key)
+                        and (not column.weapon or opts.weapons ~= false) and (not column.price or opts.price)
+                        and Row.ColumnChosen(opts.columns, column.key)
         if shown then
             local w = fitWidth(column)
             if column.key == "source" and width and width > 0 then
@@ -370,9 +381,8 @@ function Row.CreateHeader(parent, onSort)
         return b
     end
     header:EnableMouse(true)
-    header:SetScript("OnMouseUp", function(self, mouse)
-        if mouse == "RightButton" then ns.Guard(Row.ColumnMenu, self, self.opts) end
-    end)
+    header:SetScript("OnMouseUp",
+                     function(self, mouse) if mouse == "RightButton" then ns.Guard(Row.ColumnMenu, self, self.opts) end end)
     local name = button("name")
     name.sortKey = "name"
     name.text:SetText(L["Name"])

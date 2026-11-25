@@ -45,9 +45,7 @@ local function create(parent)
     ui.fdj:SetPoint("LEFT", ui.import, "RIGHT", 4, 0)
     W.AddTooltip(ui.fdj, function(tooltip)
         tooltip:AddLine(L["Import FDJ favourites"])
-        tooltip:AddLine(
-          L["Copies this character's Dungeon Journal favourites once, as \"Nice to have\"."],
-          1, 1, 1, true)
+        tooltip:AddLine(L["Copies this character's Dungeon Journal favourites once, as \"Nice to have\"."], 1, 1, 1, true)
     end)
     ui.note = W.Label(parent, "", 11, Style.MUTED)
     ui.note:SetPoint("TOPRIGHT", -4, -10)
@@ -116,8 +114,7 @@ local function refresh(ctx, kinds)
         end
         -- by name: QuestieDB keys zones by area, ATT and ForeverDB by map
         return "q:" .. (source.zoneName and ns.Util.Lower(source.zoneName) or tostring(source.zoneKey)),
-               source.zoneName or L["Other quests"],
-               2000 + (source.reqLevel or source.levelMin or source.npcLevel or 0)
+               source.zoneName or L["Other quests"], 2000 + (source.reqLevel or source.levelMin or source.npcLevel or 0)
     end
     local byTier = {}
     for _, row in ipairs(rows) do
@@ -149,8 +146,7 @@ local function refresh(ctx, kinds)
     end
     ui.note:SetText(format(L["%d of %d favourites shown"], #rows, total))
     ns.MainWindow.shownCount = #rows
-    local empty = total == 0 and L["No favourites yet. Click an item to add it."]
-                    or L["No favourites match the filters."]
+    local empty = total == 0 and L["No favourites yet. Click an item to add it."] or L["No favourites match the filters."]
     local toTop = (kinds and kinds.tab) or ui.shownKey ~= key
     ui.shownKey = key
     ui.list:SetRows(list, ns.MainWindow.RowOptions(key, nil, ctx), empty, toTop)

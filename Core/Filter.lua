@@ -95,8 +95,7 @@ end
 Filter.FACTION_RACES = {Alliance = 1 + 4 + 8 + 64 + 2 ^ 32, Horde = 2 + 16 + 32 + 128 + 2 ^ 33}
 
 function Filter.CharacterContext(character)
-    local ctx = {class = character.class, faction = character.faction, classBit = character.classBit,
-                 raceBit = character.raceBit}
+    local ctx = {class = character.class, faction = character.faction, classBit = character.classBit, raceBit = character.raceBit}
     local races = character.factionRaces or Filter.FACTION_RACES[character.faction or ""]
     if races and ctx.raceBit and not Filter.HasBit(races, ctx.raceBit) then races = races + ctx.raceBit end
     ctx.factionRaces = races
@@ -298,10 +297,8 @@ function Filter.Sources(record, state, ctx, info)
                 ok = false
             end
         end
-        if ok and ctx.maxLevel and (source.kind == "npcDrop" or source.kind == "world") and source.levelMin
-          and source.levelMin > ctx.maxLevel then
-            ok = false
-        end
+        if ok and ctx.maxLevel and (source.kind == "npcDrop" or source.kind == "world") and source.levelMin and source.levelMin
+          > ctx.maxLevel then ok = false end
         if ok and ctx.maxLevel and source.reqLevel and source.reqLevel > ctx.maxLevel then ok = false end
         if ok and ctx.maxLevel then
             local estimate = Filter.EstimatedLevel(source, info)
@@ -309,8 +306,7 @@ function Filter.Sources(record, state, ctx, info)
         end
         if ok and state.hideCompleted ~= false and source.questID and ctx.completed and ctx.completed(source.questID)
           and not (record.id and ctx.owned[record.id]) then ok = false end
-        if ok and state.hideCompleted ~= false and source.viaQuests and ctx.completed
-          and not (record.id and ctx.owned[record.id]) then
+        if ok and state.hideCompleted ~= false and source.viaQuests and ctx.completed and not (record.id and ctx.owned[record.id]) then
             local allDone = true
             for _, questID in ipairs(source.viaQuests) do if not ctx.completed(questID) then allDone = false end end
             if allDone then ok = false end
@@ -318,9 +314,7 @@ function Filter.Sources(record, state, ctx, info)
         -- AtlasLoot's standing on a reputation or Battleground list: what the quartermaster sells at
         local standing = ok and state.repOwnStanding and kinds.reputation ~= false and source.standing
         if standing and (source.factionID or source.factionName)
-          and not Filter.HasStanding(ctx.standings, source.factionID, source.factionName, standing) then
-            ok = false
-        end
+          and not Filter.HasStanding(ctx.standings, source.factionID, source.factionName, standing) then ok = false end
         local needed = state.craftOwnSkill ~= false and source.skill
         if ok and source.kind == "craft" and state.craftOwnBoP ~= false and ctx.professions
           and not Filter.SkillEnough(ctx.professions[source.profession], needed) then
@@ -427,9 +421,7 @@ function Filter.Evaluate(record, info, state, ctx, ignoreSlot, skipUpgrade)
         return "fail", nil, "pvp rank"
     end
     if state.repOwnStanding and kinds.reputation ~= false and info.reqReputation
-      and not Filter.HasStanding(ctx.standings, nil, info.reqReputation, info.reqStanding) then
-        return "fail", nil, "standing"
-    end
+      and not Filter.HasStanding(ctx.standings, nil, info.reqReputation, info.reqStanding) then return "fail", nil, "standing" end
 
     if state.setsOnly then
         if not info.setID and not info.setName then

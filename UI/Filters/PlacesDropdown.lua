@@ -59,8 +59,7 @@ function PlacesDropdown.Create(parent, width, field)
         self.pending = nil
         self.summary = text
     end
-    if dropdown.RegisterCallback and DropdownButtonMixin and DropdownButtonMixin.Event
-        and DropdownButtonMixin.Event.OnMenuClose then
+    if dropdown.RegisterCallback and DropdownButtonMixin and DropdownButtonMixin.Event and DropdownButtonMixin.Event.OnMenuClose then
         dropdown:RegisterCallback(DropdownButtonMixin.Event.OnMenuClose, function()
             if dropdown.pending then C_Timer.After(0, function() ns.Guard(dropdown.ShowSummary, dropdown) end) end
         end, dropdown)

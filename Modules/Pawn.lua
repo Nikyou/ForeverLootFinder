@@ -85,9 +85,7 @@ end
 function Pawn.Resolve(saved)
     if saved and Pawn.Exists(saved) then return saved end
     local scales = Pawn.Scales()
-    for _, scale in ipairs(scales) do
-        if scale.visible and not isGearQuest(scale.name) then return scale.name end
-    end
+    for _, scale in ipairs(scales) do if scale.visible and not isGearQuest(scale.name) then return scale.name end end
     local gearQuest = ns.GearQuest.Default()
     if gearQuest then return gearQuest end
     return scales[1] and scales[1].name or nil
@@ -265,7 +263,6 @@ end
 
 local function pending() return live > 0 or laterHead <= #later end
 
-
 function Pawn.Tables() return {values = values} end
 
 function Pawn.Forget(id)
@@ -365,9 +362,7 @@ function Pawn.Step()
     repeat
         local job = pop()
         local fromLater = false
-        if not job then
-            job, fromLater = popLater(), true
-        end
+        if not job then job, fromLater = popLater(), true end
         if not job then break end
         local started = Util.Clock()
         local value, why = Pawn.Compute(job.id, job.scale)

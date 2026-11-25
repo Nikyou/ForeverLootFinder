@@ -70,8 +70,13 @@ end
 
 local CHECKS = {
     special = {field = "special", default = false, label = L["Has a Use or proc effect"], summary = {[true] = L["Use or proc"]}},
-    dungeon = {field = "dungeon", group = "sources", default = true, label = LABELS.dungeon,
-               summary = {[false] = L["no dungeon drops"]}},
+    dungeon = {
+        field = "dungeon",
+        group = "sources",
+        default = true,
+        label = LABELS.dungeon,
+        summary = {[false] = L["no dungeon drops"]},
+    },
     raid = {
         field = "raid",
         group = "sources",
@@ -84,8 +89,13 @@ local CHECKS = {
     trash = dropPart("trash", L["Trash drops"], {[false] = L["no trash"]}),
     shared = dropPart("shared", L["Shared loot (low chance)"], {[false] = L["no shared loot"]}),
     probable = dropPart("probable", L["Unconfirmed drops"], {[true] = L["with unconfirmed"]}),
-    quest = {field = "quest", group = "sources", default = true, label = LABELS.quest,
-             summary = {[false] = L["no dungeon quests"]}},
+    quest = {
+        field = "quest",
+        group = "sources",
+        default = true,
+        label = LABELS.quest,
+        summary = {[false] = L["no dungeon quests"]},
+    },
     zoneQuest = {
         field = "zoneQuest",
         group = "sources",
@@ -128,8 +138,8 @@ local CHECKS = {
         label = LABELS.craft,
         usable = function(_, env)
             local why = env.atlasWhy
-            return env.crafts, {needs = why.needs, reason = why.reason,
-                                hint = L["Without it, open a profession window to list its items."]}
+            return env.crafts,
+                   {needs = why.needs, reason = why.reason, hint = L["Without it, open a profession window to list its items."]}
         end,
         summary = {[false] = L["no crafted"]},
     },
@@ -155,8 +165,13 @@ local CHECKS = {
         end,
     },
     -- without AtlasLoot the item's "Requires" line still makes it one
-    reputation = {field = "reputation", group = "sources", default = true, label = LABELS.reputation,
-                  summary = {[false] = L["no reputation"]}},
+    reputation = {
+        field = "reputation",
+        group = "sources",
+        default = true,
+        label = LABELS.reputation,
+        summary = {[false] = L["no reputation"]},
+    },
     repOwnStanding = {
         field = "repOwnStanding",
         default = false,
@@ -187,8 +202,7 @@ local CHECKS = {
         end,
         summary = {[false] = L["no world drops"]},
     },
-    faction = {field = "faction", default = false, label = L["Hide the other faction"],
-               summary = {[false] = L["both factions"]}},
+    faction = {field = "faction", default = false, label = L["Hide the other faction"], summary = {[false] = L["both factions"]}},
     chanceOn = {
         field = "on",
         group = "chance",
@@ -227,8 +241,12 @@ local CHECKS = {
     levelOn = {field = "on", group = "maxLevel", default = false, label = L["Hide items above this level"]},
     speedOn = {field = "on", group = "speed", default = false, label = L["Weapons in this speed range (sec)"]},
     setsOnly = {field = "setsOnly", default = false, label = L["Only set pieces"], summary = {[true] = L["set pieces"]}},
-    ownSkill = {field = "ownSkill", default = true, label = LABELS.ownSkill,
-                summary = {[false] = L["with other professions' items"]}},
+    ownSkill = {
+        field = "ownSkill",
+        default = true,
+        label = LABELS.ownSkill,
+        summary = {[false] = L["with other professions' items"]},
+    },
     ownSkillRank = {
         field = "ownSkillRank",
         default = true,
@@ -236,8 +254,12 @@ local CHECKS = {
         indent = 20,
         usable = function(f) return f.ownSkill ~= false, parentReason(LABELS.ownSkill) end,
     },
-    hideCosmetic = {field = "hideCosmetic", default = true, label = L["Hide cosmetic items"],
-                    summary = {[false] = L["with cosmetic items"]}},
+    hideCosmetic = {
+        field = "hideCosmetic",
+        default = true,
+        label = L["Hide cosmetic items"],
+        summary = {[false] = L["with cosmetic items"]},
+    },
     upgradesOnly = {
         field = "pawnUpgradesOnly",
         default = false,
@@ -253,9 +275,9 @@ local CHECKS = {
 }
 FilterBar.CHECK_ORDER = {
     "special", "dungeon", "raid", "rare", "trash", "shared", "probable", "quest", "zoneQuest", "hideCompleted", "vendor",
-    "npcDrop", "craft", "craftOwnBoP", "craftOwnSkill", "reputation", "repOwnStanding", "pvp", "pvpOwnRank",
-    "event", "world", "faction", "chanceOn", "chanceUnknown", "priceOnly", "priceMaxOn", "dungeonLevelOn", "levelOn",
-    "speedOn", "setsOnly", "ownSkill", "ownSkillRank", "hideCosmetic", "upgradesOnly", "hideOwned",
+    "npcDrop", "craft", "craftOwnBoP", "craftOwnSkill", "reputation", "repOwnStanding", "pvp", "pvpOwnRank", "event", "world",
+    "faction", "chanceOn", "chanceUnknown", "priceOnly", "priceMaxOn", "dungeonLevelOn", "levelOn", "speedOn", "setsOnly",
+    "ownSkill", "ownSkillRank", "hideCosmetic", "upgradesOnly", "hideOwned",
 }
 FilterBar.CHECKS = CHECKS
 
@@ -364,9 +386,8 @@ end
 
 local function modeItems() return {{value = "relative", text = L["My level + N"]}, {value = "fixed", text = L["Fixed level"]}} end
 
-local function statModeItems()
-    return {{value = "ANY", text = L["Any wanted stat"]}, {value = "ALL", text = L["All wanted stats"]}}
-end
+local function statModeItems() return
+  {{value = "ANY", text = L["Any wanted stat"]}, {value = "ALL", text = L["All wanted stats"]}} end
 
 local function folded()
     local window = ns.addon.db.profile.window
@@ -537,9 +558,7 @@ function FilterBar.Create(parent, width)
     check("craft")
     check("craftOwnBoP")
     check("craftOwnSkill")
-    for _, key in ipairs({"reputation", "repOwnStanding", "pvp", "pvpOwnRank", "event", "world", "faction"}) do
-        check(key)
-    end
+    for _, key in ipairs({"reputation", "repOwnStanding", "pvp", "pvpOwnRank", "event", "world", "faction"}) do check(key) end
 
     section("chance", L["Drop chance"])
     local function chanceState() return groupOf(filters(), "chance") end
@@ -570,7 +589,8 @@ function FilterBar.Create(parent, width)
     end)
     col.row(28, {{controls.priceBox, 6}, {controls.priceSlider, 64}})
     controls.priceHelp = col.help(
-        L["Auctionator's prices from your scans. BoP and unpriced items: hidden by the first box, kept by the max price."], 0)
+                           L["Auctionator's prices from your scans. BoP and unpriced items: hidden by the first box, kept by the max price."],
+                           0)
 
     section("places", L["Places"])
     col.label(L["Dungeons"])

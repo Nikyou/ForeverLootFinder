@@ -45,9 +45,7 @@ function Holidays.Name(key)
 end
 
 -- an event line's name: its holiday's, or the one its addon gave
-function Holidays.EventName(source)
-    return source.holiday and Holidays.Name(source.holiday) or source.eventName
-end
+function Holidays.EventName(source) return source.holiday and Holidays.Name(source.holiday) or source.eventName end
 
 function Holidays.Named()
     local count, total = 0, 0
@@ -74,10 +72,8 @@ local function readMonth(calendar, names)
         for index = 1, tonumber(Util.SafeCall(calendar.GetNumDayEvents, 0, day)) or 0 do
             local event = Util.SafeCall(calendar.GetDayEvent, 0, day, index)
             local id, title = type(event) == "table" and event.eventID, type(event) == "table" and event.title
-            if event and event.calendarType == "HOLIDAY" and type(id) == "number" and not Util.IsSecret(id)
-              and type(title) == "string" and not Util.IsSecret(title) and title ~= "" then
-                names[id] = title
-            end
+            if event and event.calendarType == "HOLIDAY" and type(id) == "number" and not Util.IsSecret(id) and type(title)
+              == "string" and not Util.IsSecret(title) and title ~= "" then names[id] = title end
         end
     end
 end
