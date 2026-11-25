@@ -128,6 +128,8 @@ function W.AddWhyLines(tooltip, title, why)
 end
 
 function W.WhyTooltip(widget, title)
+    -- a disabled button gets no OnEnter without it, and the why is only there while disabled
+    if widget.SetMotionScriptsWhileDisabled then widget:SetMotionScriptsWhileDisabled(true) end
     widget:HookScript("OnEnter", function(self)
         if not self.why then return end
         GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
