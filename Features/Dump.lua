@@ -567,6 +567,7 @@ function Dump.StatusText()
     for _, key in ipairs(sortedKeys(index.merged or {})) do merged[#merged + 1] = key .. " " .. index.merged[key] end
     add("merged: " .. (#merged > 0 and table.concat(merged, ", ") or "none"))
     add(format("quest lines Questie hides, left out: %d", index.hiddenQuests or 0))
+    add(format("AtlasLoot's classic rank rewards beside FDJ's Honor list, left out: %d", index.rankLines or 0))
     add(format("raids: %s, raid and world boss lines left out: %d", ns.Index.RAIDS_OPEN and "open" or "closed",
                index.raidLines or 0))
     local named, holidays = ns.Holidays.Named()

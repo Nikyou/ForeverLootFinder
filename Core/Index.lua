@@ -351,11 +351,13 @@ local KIND_ORDER = {
     world = 3300,
 }
 
--- a creature drop inside a dungeon becomes its boss, rare or trash, to overlap with FDJ and AtlasLoot
-local function tieCreature(source, placeByArea, dungeonByKey)
+-- a creature drop inside a dungeon becomes its boss, rare or trash, to overlap with FDJ and AtlasLoot. a known boss
+-- and an area wings share wait for tieByCreature
+local function tieCreature(source, index)
     if source.kind ~= "npcDrop" or source.dungeon or not source.zone then return end
-    local key = placeByArea[source.zone]
-    if not (key and dungeonByKey[key]) then return end
+    if index.placesByArea[source.zone] or (not source.many and source.npcID and index.bossByNpc[source.npcID]) then return end
+    local key = index.placeByArea[source.zone]
+    if not (key and index.dungeonByKey[key]) then return end
     source.dungeon, source.creature = key, true
     if source.many then
         source.kind = "trash"
@@ -398,7 +400,7 @@ local function namedBy(record, name)
 end
 
 -- creature drops tieCreature couldn't place: a boss's own creature, a creature the item's boss or trash line names, a
--- spawn in a dungeon's instance (the place the item drops in when the wings share one), a few zones with a place the
+-- spawn in a dungeon's instance or an area its wings share (the wing the item drops in), a few zones with a place the
 -- item drops in among them, or creatures with no spawn at all: only instances' creatures lack one
 local function tieByCreature(record, index)
     local places
@@ -437,6 +439,9 @@ local function tieByCreature(record, index)
                 local keys = index.placesByInstance[source.instance]
                 local outside = source.zone or (source.zones and source.zones[1])
                 key = firstIn(keys) or (#keys == 1 and not outside and keys[1]) or nil
+            elseif source.zone and index.placesByArea[source.zone] then
+                local keys = index.placesByArea[source.zone]
+                key, how = firstIn(keys) or keys[1], "wing"
             elseif source.zoneSet then
                 local keys = {}
                 for _, zone in ipairs(source.zoneSet) do keys[#keys + 1] = index.placeByArea[zone] end
@@ -467,7 +472,7 @@ local function addSource(index, entry, provider)
     local record = newRecord(index, entry)
     local source = setmetatable({entry}, SOURCE)
     if not entry.provider then source.provider = provider end
-    tieCreature(source, index.placeByArea, index.dungeonByKey)
+    tieCreature(source, index)
     local dungeon = source.dungeon and index.dungeonByKey[source.dungeon]
     source.order = dungeon and dungeon.order or KIND_ORDER[entry.kind] or 999
     record.sources[#record.sources + 1] = source
@@ -659,11 +664,13 @@ function Index.Build(data, extras, priority, quests)
         dungeonByKey = {},
         hasChance = false,
         placeByArea = {},
+        placesByArea = {},
         placesByInstance = {},
         bossByNpc = {},
         merged = {},
         hiddenQuests = 0,
         raidLines = 0,
+        rankLines = 0, -- AtlasLoot's classic rank rewards, left out beside FDJ's Honor list
     }
     for _, dungeon in ipairs(data.dungeons or {}) do
         index.dungeons[#index.dungeons + 1] = dungeon
@@ -677,6 +684,7 @@ function Index.Build(data, extras, priority, quests)
     for key, dungeon in pairs(data.dungeonByKey or {}) do index.dungeonByKey[key] = index.dungeonByKey[key] or dungeon end
     for _, extra in ipairs(extras or {}) do
         for area, key in pairs(extra.areas or {}) do index.placeByArea[area] = index.placeByArea[area] or key end
+        for area, keys in pairs(extra.wings or {}) do index.placesByArea[area] = index.placesByArea[area] or keys end
         -- AtlasLoot's raids, FDJ's dungeons through ForeverDB: one may know a wing the other doesn't
         for instance, keys in pairs(extra.instances or {}) do
             local list = index.placesByInstance[instance] or {}
@@ -696,11 +704,17 @@ function Index.Build(data, extras, priority, quests)
             end
         end
     end
-    for _, entry in ipairs(data.entries or {}) do addSource(index, entry, "fdj") end
+    local fdjHonor = false
+    for _, entry in ipairs(data.entries or {}) do
+        addSource(index, entry, "fdj")
+        if entry.pvpKey == "honor" then fdjHonor = true end
+    end
     for _, extra in ipairs(extras or {}) do
         for _, entry in ipairs(extra.entries or extra) do
             if hiddenQuest and entry.questID and Index.IsQuest(entry) and hiddenQuest(entry.questID) then
                 index.hiddenQuests = index.hiddenQuests + 1
+            elseif entry.rankList and fdjHonor then
+                index.rankLines = index.rankLines + 1
             elseif entry.id and entry.id > 0 then
                 addSource(index, entry, extra.provider)
             end

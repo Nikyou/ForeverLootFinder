@@ -21,7 +21,7 @@ local ALIAS = {
 }
 
 local function newExtra()
-    return {provider = "atlasloot", entries = {}, dungeons = {}, areas = {}, names = {}, instances = {}, npcs = {}}
+    return {provider = "atlasloot", entries = {}, dungeons = {}, areas = {}, wings = {}, names = {}, instances = {}, npcs = {}}
 end
 
 -- areas: [area ID] = place key, so a raid's quests can go with it. instances: [instance map ID] = place keys, the
@@ -241,7 +241,17 @@ local function readModule(module, storage, classify, out, byName, checkpoint)
                 end
                 local area = tonumber(content.MapID)
                 local placeKey = ownKey or (matched and matched[1].key)
-                if area and placeKey and not out.areas[area] then out.areas[area] = placeKey end
+                local first = area and out.areas[area]
+                if area and placeKey and not first then
+                    out.areas[area] = placeKey
+                elseif first and placeKey and first ~= placeKey then
+                    -- Dire Maul's, Scarlet Monastery's wings share one area: the area alone can't pick the wing
+                    local keys = out.wings[area] or {first}
+                    out.wings[area] = keys
+                    local known = false
+                    for _, k in ipairs(keys) do if k == placeKey then known = true end end
+                    if not known then keys[#keys + 1] = placeKey end
+                end
                 local instance = tonumber(content.InstanceID)
                 if instance and placeKey then
                     local keys = out.instances[instance] or {}
@@ -382,7 +392,14 @@ local CLASSIFY = {
     AtlasLootClassic_PvP = function(content, typeIndex, key, typeName)
         return {
             base = function(sectionName, _, name)
-                return {kind = "pvp", section = typeIndex == 1 and name or sectionName, pvpKey = BATTLEGROUNDS[key]}
+                -- the rest are classic's rank rewards: Forever's replace them when FDJ lists those
+                local battleground = BATTLEGROUNDS[key]
+                return {
+                    kind = "pvp",
+                    section = typeIndex == 1 and name or sectionName,
+                    pvpKey = battleground,
+                    rankList = not battleground or nil,
+                }
             end,
         }
     end,
@@ -413,6 +430,11 @@ local function dropEmptyPlaces(out)
         local kept = {}
         for _, key in ipairs(keys) do if not gone(key) then kept[#kept + 1] = key end end
         out.instances[instance] = #kept > 0 and kept or nil
+    end
+    for area, keys in pairs(out.wings) do
+        local kept = {}
+        for _, key in ipairs(keys) do if not gone(key) then kept[#kept + 1] = key end end
+        out.wings[area] = #kept > 1 and kept or nil
     end
     out.dungeons = kept
 end
