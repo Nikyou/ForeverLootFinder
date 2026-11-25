@@ -1,17 +1,23 @@
 #### 1.4.4
-* SkillUp Forever is supported: crafted gear shows the skill its recipe needs on Forever.
-* GearQuest Forever is supported: its stat weights for every spec are listed as scales next to Pawn's, and score items when Pawn isn't installed.
-* Items you buy show their price, in gold or in the currency you pay with (125 Tarnished Undermine Reals, 1200 Darkmoon Faire tickets).
-* Holiday rewards show under their holiday on the World events tab, also without AtlasLoot.
+##### New
+* SkillUp Forever support: crafted gear shows the skill its recipe needs on Forever.
+* GearQuest Forever support: its stat weights for every spec are scales next to Pawn's, and score items without Pawn.
+* Items you buy show their price, in gold or the currency you pay with (Tarnished Undermine Reals, Darkmoon Faire tickets).
+* PvP rewards from every battleground, Darkspear Islands included, and Forever's Premier gear, rank rewards and rank 14 weapons, with the Honor and Marks they cost.
+* New filter "Only standings I have" under PvP rewards: hides battleground rewards your standing can't buy yet.
+
+##### Changed
+* The PvP tab has a card per battleground and one for Honor & Ranks, grouped by the standing or rank each item needs.
+* Holiday rewards show under their holiday on the World events tab.
+* The Sets tab and the set window show every piece of a set, marking the ones nobody knows the source of.
 * With Questie, quests that were never in the game or were removed no longer show.
-* PvP rewards come from DungeonJournal first: every battleground's quartermaster, Darkspear Islands included, and Forever's Premier gear, rank rewards and rank 14 weapons, with the Honor and Marks they cost.
-* The PvP tab shows a card per battleground and one for Honor & Ranks, grouped by the standing or rank each item needs.
-* New filter "Only standings I have" under PvP rewards: hides battleground rewards your standing doesn't let you buy yet. The one under reputation rewards no longer covers them.
-* Raids and world bosses are hidden until Forever opens its raids: the other addons only have classic's loot for them.
-* Fixed battleground reputation rewards showing as reputation rewards instead of PvP rewards.
-* Fixed some quests missing, holiday quests among them.
-* Fixed world events and world epics missing from AtlasLoot since 1.4.3.
-* Fixed AtlasLoot's dungeon quest rewards showing as trash drops on non-English clients.
+* Raids and world bosses are hidden until Forever opens its raids: the addons only have classic's loot for them.
+
+##### Fixed
+* Battleground reputation rewards showing as reputation rewards instead of PvP rewards.
+* Some quests missing, holiday quests among them.
+* World events and world epics missing from AtlasLoot since 1.4.3.
+* AtlasLoot's dungeon quest rewards showing as trash drops on non-English clients.
 
 #### 1.4.3
 * Items the addons list more than once are now merged, so unticking a source really hides them. Dungeon and raid loot no longer also shows as a creature drop outside dungeons, and a world drop is one "World drop" line instead of also a few creatures.
