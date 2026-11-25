@@ -564,6 +564,10 @@ function Dump.StatusText()
     local merged = {}
     for _, key in ipairs(sortedKeys(index.merged or {})) do merged[#merged + 1] = key .. " " .. index.merged[key] end
     add("merged: " .. (#merged > 0 and table.concat(merged, ", ") or "none"))
+    add(format("quest lines Questie hides, left out: %d", index.hiddenQuests or 0))
+    local named, holidays = ns.Holidays.Named()
+    add(format("holidays: calendar %s, %d months read, %d of %d named by the game", ns.Holidays.stats.state,
+               ns.Holidays.stats.months, named, holidays))
     -- after a full collection: what's kept, not garbage waiting for it
     local update, usage = rawget(_G, "UpdateAddOnMemoryUsage"), rawget(_G, "GetAddOnMemoryUsage")
     if update and usage then

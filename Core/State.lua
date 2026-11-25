@@ -42,12 +42,12 @@ local function build()
         ns.ForeverDB.Entries(),
         {provider = "attune", entries = ns.Attune.Entries()},
         {provider = "silverdragon", entries = ns.SilverDragon.Entries()},
-    }, ns.Priority())
+    }, ns.Priority(), {hidden = ns.Questie.HiddenQuest, holiday = ns.Questie.Holiday})
     dirty = false
     ns.Sets.Invalidate()
     ns.Items.Track(index)
     local stats = ns.indexStats
-    stats.merged = index.merged
+    stats.merged, stats.hiddenQuests = index.merged, index.hiddenQuests
     stats.lastMs = Util.Clock() - started
     stats.builds, stats.ms = stats.builds + 1, stats.ms + stats.lastMs
     return index

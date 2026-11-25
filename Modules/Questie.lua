@@ -193,20 +193,45 @@ function Questie.ClassBit(classID)
     return 2 ^ (classID - 1)
 end
 
--- Questie may still be loading, try again a second later
-local hiddenQuests, hiddenTriedAt
-local function isHidden(questID)
-    if not hiddenQuests and (not hiddenTriedAt or GetTime() - hiddenTriedAt >= 1) then
-        hiddenTriedAt = GetTime()
+-- Questie may still be loading, try again a second later. its hidden list is filled in while it starts
+local corrections, events, modulesTriedAt
+local function questieModules()
+    if not corrections and (not modulesTriedAt or GetTime() - modulesTriedAt >= 1) then
+        modulesTriedAt = GetTime()
         local loader = rawget(_G, "QuestieLoader")
         if type(loader) == "table" then
-            local corrections = Util.SafeCall(loader.ImportModule, loader, "QuestieCorrections")
-            if type(corrections) == "table" and type(corrections.hiddenQuests) == "table" then
-                hiddenQuests = corrections.hiddenQuests
-            end
+            local found = Util.SafeCall(loader.ImportModule, loader, "QuestieCorrections")
+            if type(found) == "table" then corrections = found end
+            found = Util.SafeCall(loader.ImportModule, loader, "QuestieEvent")
+            if type(found) == "table" then events = found end
         end
     end
-    return hiddenQuests ~= nil and hiddenQuests[questID] ~= nil
+    return corrections, events
+end
+
+-- Questie's own rule: "HIDE_ON_MAP" quests are only kept off its map, and a holiday's quests sit in the hidden
+-- list all year (Questie shows them while the holiday runs). Other addons' quest lines go through this too
+function Questie.HiddenQuest(questID)
+    local fixes, holidays = questieModules()
+    local list = fixes and fixes.hiddenQuests
+    local hidden = type(list) == "table" and list[questID]
+    if not hidden or hidden == "HIDE_ON_MAP" then return false end
+    return not (holidays and Util.SafeCall(holidays.IsEventQuest, questID) == true)
+end
+
+-- Questie's holiday names, to ns.Holidays' keys. the rest (Brewfest and later ones) aren't Classic's
+local HOLIDAYS = {
+    ["Darkmoon Faire"] = "darkmoon", ["Lunar Festival"] = "lunar", ["Love is in the Air"] = "love",
+    ["Noblegarden"] = "noblegarden", ["Children's Week"] = "children", ["Midsummer"] = "midsummer",
+    ["Harvest Festival"] = "harvest", ["Hallow's End"] = "hallows", ["Winter Veil"] = "winterVeil",
+}
+
+-- the holiday a quest belongs to, nil for any other quest
+function Questie.Holiday(questID)
+    local _, holidays = questieModules()
+    local name = holidays and Util.SafeCall(holidays.GetEventNameFor, questID)
+    if type(name) ~= "string" or Util.IsSecret(name) then return nil end
+    return HOLIDAYS[name]
 end
 
 local zoneNames = {}
@@ -789,7 +814,7 @@ local function scan()
                         if sodItem and questID >= SOD_QUEST_FIRST and questID < FOREVER_QUEST_FIRST
                           and not keptSodQuests[questID] then
                             stats.sodSkipped = stats.sodSkipped + 1
-                        elseif isHidden(questID) then
+                        elseif Questie.HiddenQuest(questID) then
                             stats.hidden = stats.hidden + 1
                         else
                             local info = quest(questID)
