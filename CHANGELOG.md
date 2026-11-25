@@ -1,3 +1,13 @@
+#### 1.4.4
+* SkillUp Forever is supported: crafted gear shows the skill its recipe needs on Forever.
+* GearQuest Forever is supported: its stat weights for every spec are listed as scales next to Pawn's, and score items when Pawn isn't installed.
+* Items you buy show their price, in gold or in the currency you pay with (125 Tarnished Undermine Reals, 1200 Darkmoon Faire tickets).
+* Holiday rewards show under their holiday on the World events tab, also without AtlasLoot.
+* With Questie, quests that were never in the game or were removed no longer show.
+* Fixed some quests missing, holiday quests among them.
+* Fixed world events and world epics missing from AtlasLoot since 1.4.3.
+* Fixed AtlasLoot's dungeon quest rewards showing as trash drops on non-English clients.
+
 #### 1.4.3
 * Items the addons list more than once are now merged, so unticking a source really hides them. Dungeon and raid loot no longer also shows as a creature drop outside dungeons, and a world drop is one "World drop" line instead of also a few creatures.
 * PvP, reputation and world event rewards show as one line, with the vendor that sells them, the creatures that drop them and the quest that gives them. Unticking "PvP rewards" now hides Grand Marshal's gear, and unticking "Raids and world bosses" hides Ouro's Larvae of the Great Worm.

@@ -6,14 +6,14 @@ https://www.curseforge.com/wow/addons/forever-lootfinder
 
 **Forever LootFinder** lists the gear you can get in Forever **by equipment slot**: dungeon and raid drops, quest rewards, crafted items, vendor goods, reputation, PvP and event rewards. Filter and sort it to plan what to farm next.
 
-Pick a slot and see every item for it, with where it comes from and its level. Only what your class can use is listed: armor for your level and every weapon type your class can learn. Sort by item level, a stat, required level, dungeon level, weapon speed or DPS, or with Pawn, by your scale and upgrade percent. Mark favourites to get a reminder when you enter their dungeon and a notice when one drops.
+Pick a slot and see every item for it, with where it comes from and its level. Only what your class can use is listed: armor for your level and every weapon type your class can learn. Sort by item level, a stat, required level, dungeon level, weapon speed or DPS, or by your scale's score and upgrade percent (Pawn or GearQuest Forever). Mark favourites to get a reminder when you enter their dungeon and a notice when one drops.
 
 ## Other addons
 
 Forever LootFinder has no item lists of its own: it reads them from other addons. None is required, but the more you have, the more it lists. When two addons list the same item, it shows once.
 
 Recommended:
-* **Pawn**: item scores, upgrade percent and the "Pawn upgrades only" filter.
+* **Pawn**: item scores, upgrade percent and the "Upgrades only" filter.
 * **DungeonJournal**: Forever's dungeons with their bosses, loot and quests, and drop chances when it has them.
 * **Questie**: quest rewards, vendors, creature drops and world drops.
 * **AtlasLoot Classic Forever**: raids and world bosses, crafted gear, reputation, PvP and event rewards, world drops and drop chances. Its BiS lists can be added to your favourites.
@@ -21,6 +21,8 @@ Recommended:
 
 Also used if you already have them:
 * **ALL THE THINGS**: Forever's dungeons, quest rewards, vendors, crafted gear, reputation, PvP and event rewards, and the skill each recipe is learned at on Forever.
+* **SkillUp Forever**: the skill each recipe needs on Forever, and more crafted gear.
+* **GearQuest Forever**: stat weights for every spec, Forever's new ones too, as scales next to Pawn's. Without Pawn, they score items and upgrades.
 * **Attune**: quest rewards the others miss.
 * **SilverDragon**: rare creatures and what they drop.
 * **Syndicator** (comes with Baganator): what you own in your bags, bank and mail.
@@ -49,7 +51,7 @@ You can filter by armor and weapon type, stats, sources, drop chance, price, dun
 
 ## Notes
 
-Only what you look at is loaded from the server: the open slot, tab or favourites. Everything else shows what was saved last time, and rows still loading are greyed out. A "~" before a slot's count means some of its items haven't loaded yet, or Pawn hasn't scored them; open the slot to load them. Pawn doesn't count set bonuses, and auction prices come from your own Auctionator scans.
+Only what you look at is loaded from the server: the open slot, tab or favourites. Everything else shows what was saved last time, and rows still loading are greyed out. A "~" before a slot's count means some of its items haven't loaded yet, or aren't scored yet; open the slot to load them. Scores don't count set bonuses, and auction prices come from your own Auctionator scans.
 
 ## Localisation
 
@@ -75,3 +77,5 @@ Forever LootFinder reads its data from these addons. Thanks to their authors.
 * [Silver Dragon](https://www.curseforge.com/wow/addons/silver-dragon) by Kemayo
 * [ALL THE THINGS](https://www.curseforge.com/wow/addons/all-the-things) by Crieve and the ATT team
 * [forever-db](https://www.curseforge.com/wow/addons/forever-db) by fatedfr
+* [SkillUp Forever](https://www.curseforge.com/wow/addons/skillup-forever) by cjber
+* [GearQuest Forever](https://www.curseforge.com/wow/addons/gearquest-forever) by weber8210
