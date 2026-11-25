@@ -153,7 +153,7 @@ local function pick(ids, spell)
     return best
 end
 
--- pure, for tests: opt holds the client and FDJ lookups. localNames is nil on an English client
+-- pure, for tests: opt holds the client and FDJ lookups. localItems is nil on an English client
 function ForeverDB.Read(D, opt)
     local out, counts = {}, {
         items = 0,
@@ -276,6 +276,7 @@ function ForeverDB.Read(D, opt)
     end
 
     local byName = {} -- English, lowercased: gear only
+    local gear = {}
     local recipes = {} -- [spell] = recipe item
     for id, row in pairs(D.item) do
         if type(id) == "number" and type(row) == "table" then
@@ -287,6 +288,7 @@ function ForeverDB.Read(D, opt)
                 end
             elseif opt.equippable(id) and not (opt.testItem and opt.testItem(row[1])) then
                 counts.items = counts.items + 1
+                gear[id] = true
                 if type(row[1]) == "string" then
                     local key = row[1]:lower()
                     byName[key] = byName[key] or {}
@@ -364,8 +366,20 @@ function ForeverDB.Read(D, opt)
         end
         checkpoint()
     end
-    -- trainers teach the rest: the spell has the item's name, in the client's language
-    local names = opt.localNames or byName
+    -- trainers teach the rest: the spell has the item's name, in the client's language. the locale lists every item,
+    -- potions and leather too, so only the gear byName has
+    local names = byName
+    if opt.localItems then
+        names = {}
+        for id, name in pairs(opt.localItems) do
+            if gear[id] and type(name) == "string" then
+                local key = (opt.lower or string.lower)(name)
+                names[key] = names[key] or {}
+                table.insert(names[key], id)
+            end
+        end
+    end
+    gear = nil
     if opt.spellName then
         for spell in pairs(D.sla or {}) do
             if type(spell) == "number" and not made[spell] and craftable(spell) then
@@ -389,19 +403,6 @@ local function localeTable()
     local locales = rawget(_G, "ForeverDBLocale")
     local loc = type(locales) == "table" and type(locales.loc) == "table" and locales.loc[GetLocale()]
     return type(loc) == "table" and loc or nil
-end
-
-local function localNames(loc)
-    if not loc or type(loc.item) ~= "table" then return nil end
-    local names = {}
-    for id, name in pairs(loc.item) do
-        if type(id) == "number" and type(name) == "string" then
-            local key = Util.Lower(name)
-            names[key] = names[key] or {}
-            table.insert(names[key], id)
-        end
-    end
-    return names
 end
 
 local zoneNames = {}
@@ -466,7 +467,7 @@ local function read()
             instancePlaces = instancePlaces,
             dungeonOf = dungeonOf,
             spellName = (ENGLISH[GetLocale()] or loc) and spellName or nil,
-            localNames = localNames(loc),
+            localItems = loc and type(loc.item) == "table" and loc.item or nil,
             lower = Util.Lower,
             professions = professions,
             testItem = ns.Index.TestItem,
