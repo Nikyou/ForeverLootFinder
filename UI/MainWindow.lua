@@ -402,6 +402,10 @@ local function create()
     frame.status = W.Label(frame, "", 11, Style.MUTED)
     frame.status:SetPoint("BOTTOMLEFT", 14, 8)
 
+    frame.versionText = W.Label(frame, ns.Options.GetVersionText(), 10)
+    frame.versionText:SetPoint("BOTTOMRIGHT", -24, 8)
+    frame.versionText:SetJustifyH("RIGHT")
+
     local grip = CreateFrame("Button", nil, frame)
     grip:SetSize(16, 16)
     grip:SetPoint("BOTTOMRIGHT", -4, 4)
