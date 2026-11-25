@@ -132,6 +132,18 @@ local function factionName(id)
     return nil
 end
 
+-- a second item with a count beside the item is what it costs: 125 Tarnished Undermine Reals, 1200 Darkmoon tickets
+local AMOUNT2 = 904
+local function rowPrice(row)
+    local currency, count = row and row[3], row and row[AMOUNT2]
+    if type(currency) == "number" and currency > 0 and type(count) == "number" and count > 0 then
+        return {{item = currency, count = count}}
+    end
+    return nil
+end
+
+local PRICED = {vendor = true, event = true, pvp = true, reputation = true}
+
 local function rowItems(row, diffFaction)
     local out = {}
     if type(row) ~= "table" then return out end
@@ -158,9 +170,13 @@ local function sectionRows(section, factionOf)
     return list
 end
 
+-- TableType is the number AddItemTableType gave, its format table starts with the type's name
 local SET_TYPE = "Set"
-local function isSetTable(content, section)
-    local function setType(t) return type(t) == "table" and t[1] == SET_TYPE or t == SET_TYPE end
+local function isSetTable(storage, content, section)
+    local function setType(index)
+        local format = type(index) == "number" and call(storage, "GetItemTableType", index)
+        return type(format) == "table" and format[1] == SET_TYPE
+    end
     return setType(section.TableType) or setType(content.TableType)
 end
 
@@ -176,7 +192,8 @@ local function readModule(module, storage, classify, out, byName, checkpoint)
         if type(key) == "string" and type(content) == "table" and type(content.items) == "table"
           and not (type(content.gameVersion) == "number" and content.gameVersion > 1) and not SKIP_CONTENT[key] then
             local typeIndex = type(content.ContentType) == "number" and content.ContentType or nil
-            local typeName = typeIndex and types[typeIndex] and types[typeIndex].name
+            -- a type is {name, colour}
+            local typeName = typeIndex and type(types[typeIndex]) == "table" and types[typeIndex][1] or nil
             local name = clean(call(content, "GetName", true)) or clean(content.name) or key
             local how = classify(content, typeIndex, key, typeName)
             if how then
@@ -219,7 +236,7 @@ local function readModule(module, storage, classify, out, byName, checkpoint)
                 end
                 for index, section in ipairs(content.items) do
                     if type(section) == "table" and not section.IgnoreAsSource then
-                        if isSetTable(content, section) then
+                        if isSetTable(storage, content, section) then
                             stats.skippedSets = stats.skippedSets + 1
                         else
                             local sectionName = clean(section.name)
@@ -258,11 +275,15 @@ local function readModule(module, storage, classify, out, byName, checkpoint)
                                                 entry.factionName = entry.factionID and factionName(entry.factionID)
                                                     or entry.factionName
                                             end
+                                            if PRICED[entry.kind] then entry.price = rowPrice(item.row) end
                                             if entry.bossName then entry.bossIndex = index end
                                             entry.chance = dropRate(section, row.id)
                                             if entry.chance then stats.chances = stats.chances + 1 end
-                                            out.entries[#out.entries + 1] = entry
-                                            stats.items = stats.items + 1
+                                            -- a vendor list without a price isn't one
+                                            if entry.kind ~= "vendor" or entry.price then
+                                                out.entries[#out.entries + 1] = entry
+                                                stats.items = stats.items + 1
+                                            end
                                         end
                                     end
                                 end
@@ -283,19 +304,16 @@ local function hasWord(text, english, localized)
     return type(localized) == "string" and localized ~= "" and not isSecret(localized) and text:find(localized, 1, true) ~= nil
 end
 
-local function questWord()
-    local al = ns.AtlasLoot.Get()
-    local locales = al and al.Locales
-    return type(locales) == "table" and rawget(locales, "Quest") or nil
-end
-
--- an English locale may hold true for its own key
+-- AtlasLoot.Locales stays empty: its __index hands out the translation, or the key itself
 local function localeText(text)
     local al = ns.AtlasLoot.Get()
     local locales = al and al.Locales
-    local value = type(locales) == "table" and rawget(locales, text)
-    return type(value) == "string" and not isSecret(value) and value or text
+    if type(locales) ~= "table" then return text end
+    local ok, value = pcall(function() return locales[text] end)
+    return ok and type(value) == "string" and not isSecret(value) and value or text
 end
+
+local function questWord() return localeText("Quest") end
 
 local function dungeonSection(sectionName, section)
     local text = sectionName or "?"
@@ -336,6 +354,10 @@ local CLASSIFY = {
         end
         if typeName == localeText("Collections") then
             return {base = function(sectionName) return {kind = "world", section = sectionName} end}
+        end
+        -- AtlasLoot Forever's own type, not translated: the Tarnished Undermine Real vendor. it names no vendor
+        if typeName == "Forever" then
+            return {base = function() return {kind = "vendor"} end}
         end
         return nil
     end,
