@@ -1,4 +1,4 @@
-#### 1.4.4
+#### 1.5
 ##### New
 * SkillUp Forever support: crafted gear shows the skill its recipe needs on Forever.
 * GearQuest Forever support: its stat weights for every spec are scales next to Pawn's, and score items without Pawn.
