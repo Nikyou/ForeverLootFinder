@@ -83,6 +83,8 @@ L["Auction: %s"] = "Аукцион: %s"
 L["creatures %s"] = "существа: %s"
 L["Combine: %s"] = "Собрать: %s"
 L["extremely rare"] = "крайне редко"
+L["%d Honor"] = "%d чести"
+L["Rank %d"] = "Ранг %d"
 
 -- Features/Reminder.lua
 L["Favourites in this dungeon"] = "Избранное в этом подземелье"
@@ -403,6 +405,7 @@ L["my standings"] = "моё отношение"
 L["Only ranks I have"] = "Только мой ранг"
 L["my PvP rank"] = "мой PvP-ранг"
 L["Upgrades only"] = "Только улучшения"
+L["my battleground standings"] = "моё отношение на полях боя"
 
 -- UI/MainWindow.lua
 L["Item level"] = "Уровень предмета"
@@ -646,9 +649,6 @@ L["Use auction prices"] = "Цены аукциона"
 L["Price column, sort, filters and shopping list. Prices are from your scans."] =
   "Столбец «Цена», сортировка, фильтры и список покупок. Цены — из ваших сканирований."
 L["In use: %d of %d sellable items priced."] = "Используется: цена у %d из %d продаваемых."
-L["Use for dungeon loot and quests"] = "Добыча и задания подземелий"
-L["The main source: Forever's dungeons, bosses and dungeon quests."] =
-  "Главный источник: подземелья Forever, боссы и задания подземелий."
 L["In use: %d dungeons."] = "Используется: подземелий: %d."
 L["Use for quests the others miss"] = "Использовать для заданий, которых нет у других"
 L["Quest rewards from Wowhead's Forever pages. QuestieDB and DungeonJournal come first."] =
@@ -672,9 +672,13 @@ L["Use for crafts and recipe skill"] = "Использовать для реме
 L["Gives recipes the skill they need on Forever. For trainer recipes ALL THE THINGS comes first."] =
   "Даёт рецептам навык, нужный на Forever. Для рецептов у учителей сначала ALL THE THINGS."
 L["%d crafts, %d recipe skills."] = "Ремесло: %d, навыки рецептов: %d."
+L["Use for dungeon loot, quests and PvP rewards"] = "Добыча и задания подземелий, награды PvP"
+L["The main source: Forever's dungeons, bosses, dungeon quests and PvP rewards."] =
+  "Главный источник: подземелья Forever, боссы, задания подземелий и награды PvP."
 
 -- UI/Tabs/SourceTabs.lua
 L["Needs AtlasLoot or ALL THE THINGS."] = "Нужен AtlasLoot или ALL THE THINGS."
+L["Needs DungeonJournal, AtlasLoot or ALL THE THINGS."] = "Нужен DungeonJournal, AtlasLoot или ALL THE THINGS."
 
 -- Modules/Questie.lua
 L["%s (entrance)"] = "%s (вход)"
@@ -710,10 +714,11 @@ L["Made by %s"] = "Автор аддона: %s"
 L["It reads its data from these addons. Thanks to their authors!"] =
   "Данные берутся из этих аддонов. Спасибо их авторам!"
 L["Credits"] = "Благодарности"
-L["Dungeon loot, bosses and quests."] = "Добыча, боссы и задания подземелий."
 L["Quest rewards from Wowhead's Forever pages."] =
   "Награды за задания со страниц Wowhead для Forever."
 L["Rare creatures and their loot."] = "Редкие существа и их добыча."
+L["Dungeon loot, bosses, quests and PvP rewards."] =
+  "Добыча, боссы, задания подземелий и награды PvP."
 
 -- Modules/AtlasLoot/BiS.lua
 L["%s, phase %d"] = "%s, фаза %d"
@@ -743,3 +748,6 @@ L["No set pieces match the filters."] = "Нет предметов компле�
 
 -- Core/Holidays.lua
 L["Stranglethorn Fishing Extravaganza"] = "Рыбомания Тернистой долины"
+
+-- Modules/DungeonJournal.lua
+L["Honor & Ranks"] = "Честь и звания"

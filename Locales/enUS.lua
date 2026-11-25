@@ -78,6 +78,8 @@ L["Auction: %s"] = true
 L["creatures %s"] = true
 L["Combine: %s"] = true
 L["extremely rare"] = true
+L["%d Honor"] = true
+L["Rank %d"] = true
 
 -- Features/Reminder.lua
 L["Favourites in this dungeon"] = true
@@ -382,6 +384,7 @@ L["my standings"] = true
 L["Only ranks I have"] = true
 L["my PvP rank"] = true
 L["Upgrades only"] = true
+L["my battleground standings"] = true
 
 -- UI/MainWindow.lua
 L["Item level"] = true
@@ -598,8 +601,6 @@ L["Not available: install TomTom."] = true
 L["Use auction prices"] = true
 L["Price column, sort, filters and shopping list. Prices are from your scans."] = true
 L["In use: %d of %d sellable items priced."] = true
-L["Use for dungeon loot and quests"] = true
-L["The main source: Forever's dungeons, bosses and dungeon quests."] = true
 L["In use: %d dungeons."] = true
 L["Use for quests the others miss"] = true
 L["Quest rewards from Wowhead's Forever pages. QuestieDB and DungeonJournal come first."] = true
@@ -617,9 +618,12 @@ L["%d crafts, %d quest rewards, %d vendor and %d creature sources."] = true
 L["Use for crafts and recipe skill"] = true
 L["Gives recipes the skill they need on Forever. For trainer recipes ALL THE THINGS comes first."] = true
 L["%d crafts, %d recipe skills."] = true
+L["Use for dungeon loot, quests and PvP rewards"] = true
+L["The main source: Forever's dungeons, bosses, dungeon quests and PvP rewards."] = true
 
 -- UI/Tabs/SourceTabs.lua
 L["Needs AtlasLoot or ALL THE THINGS."] = true
+L["Needs DungeonJournal, AtlasLoot or ALL THE THINGS."] = true
 
 -- Modules/Questie.lua
 L["%s (entrance)"] = true
@@ -651,9 +655,9 @@ L["Auction prices and shopping lists."] = true
 L["Made by %s"] = true
 L["It reads its data from these addons. Thanks to their authors!"] = true
 L["Credits"] = true
-L["Dungeon loot, bosses and quests."] = true
 L["Quest rewards from Wowhead's Forever pages."] = true
 L["Rare creatures and their loot."] = true
+L["Dungeon loot, bosses, quests and PvP rewards."] = true
 
 -- Modules/AtlasLoot/BiS.lua
 L["%s, phase %d"] = true
@@ -682,3 +686,6 @@ L["No set pieces match the filters."] = true
 
 -- Core/Holidays.lua
 L["Stranglethorn Fishing Extravaganza"] = true
+
+-- Modules/DungeonJournal.lua
+L["Honor & Ranks"] = true

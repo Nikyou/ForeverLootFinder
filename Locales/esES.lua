@@ -78,6 +78,8 @@ if not L then return end
 -- L["creatures %s"] = true -- Translation missing
 -- L["Combine: %s"] = true -- Translation missing
 -- L["extremely rare"] = true -- Translation missing
+-- L["%d Honor"] = true -- Translation missing
+-- L["Rank %d"] = true -- Translation missing
 
 -- Features/Reminder.lua
 -- L["Favourites in this dungeon"] = true -- Translation missing
@@ -382,6 +384,7 @@ if not L then return end
 -- L["Only ranks I have"] = true -- Translation missing
 -- L["my PvP rank"] = true -- Translation missing
 -- L["Upgrades only"] = true -- Translation missing
+-- L["my battleground standings"] = true -- Translation missing
 
 -- UI/MainWindow.lua
 -- L["Item level"] = true -- Translation missing
@@ -598,8 +601,6 @@ if not L then return end
 -- L["Use auction prices"] = true -- Translation missing
 -- L["Price column, sort, filters and shopping list. Prices are from your scans."] = true -- Translation missing
 -- L["In use: %d of %d sellable items priced."] = true -- Translation missing
--- L["Use for dungeon loot and quests"] = true -- Translation missing
--- L["The main source: Forever's dungeons, bosses and dungeon quests."] = true -- Translation missing
 -- L["In use: %d dungeons."] = true -- Translation missing
 -- L["Use for quests the others miss"] = true -- Translation missing
 -- L["Quest rewards from Wowhead's Forever pages. QuestieDB and DungeonJournal come first."] = true -- Translation missing
@@ -616,9 +617,12 @@ if not L then return end
 -- L["Use for crafts and recipe skill"] = true -- Translation missing
 -- L["Gives recipes the skill they need on Forever. For trainer recipes ALL THE THINGS comes first."] = true -- Translation missing
 -- L["%d crafts, %d recipe skills."] = true -- Translation missing
+-- L["Use for dungeon loot, quests and PvP rewards"] = true -- Translation missing
+-- L["The main source: Forever's dungeons, bosses, dungeon quests and PvP rewards."] = true -- Translation missing
 
 -- UI/Tabs/SourceTabs.lua
 -- L["Needs AtlasLoot or ALL THE THINGS."] = true -- Translation missing
+-- L["Needs DungeonJournal, AtlasLoot or ALL THE THINGS."] = true -- Translation missing
 
 -- Modules/Questie.lua
 -- L["%s (entrance)"] = true -- Translation missing
@@ -650,9 +654,9 @@ if not L then return end
 -- L["Made by %s"] = true -- Translation missing
 -- L["It reads its data from these addons. Thanks to their authors!"] = true -- Translation missing
 -- L["Credits"] = true -- Translation missing
--- L["Dungeon loot, bosses and quests."] = true -- Translation missing
 -- L["Quest rewards from Wowhead's Forever pages."] = true -- Translation missing
 -- L["Rare creatures and their loot."] = true -- Translation missing
+-- L["Dungeon loot, bosses, quests and PvP rewards."] = true -- Translation missing
 
 -- Modules/AtlasLoot/BiS.lua
 -- L["%s, phase %d"] = true -- Translation missing
@@ -681,3 +685,6 @@ if not L then return end
 
 -- Core/Holidays.lua
 -- L["Stranglethorn Fishing Extravaganza"] = true -- Translation missing
+
+-- Modules/DungeonJournal.lua
+-- L["Honor & Ranks"] = true -- Translation missing
