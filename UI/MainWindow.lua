@@ -113,8 +113,8 @@ local function sortItems()
     local scale = ns.ActiveScale()
     local index = ns.GetIndex()
     if scale then
-        items[#items + 1] = {value = "pawn", text = L["Pawn value"]}
-        items[#items + 1] = {value = "upgrade", text = L["Pawn upgrade %"]}
+        items[#items + 1] = {value = "pawn", text = L["Score"]}
+        items[#items + 1] = {value = "upgrade", text = L["Upgrade %"]}
     end
     items[#items + 1] = {value = "ilvl", text = L["Item level"]}
     items[#items + 1] = {value = "reqlevel", text = L["Required level"]}
@@ -349,7 +349,7 @@ local function create()
     end)
     frame.sort:SetPoint("LEFT", frame.sortLabel, "RIGHT", 6, 0)
 
-    frame.pawnLabel = W.Label(bar, "Pawn:", 11, Style.MUTED)
+    frame.pawnLabel = W.Label(bar, L["Scale:"], 11, Style.MUTED)
     frame.pawnLabel:SetPoint("LEFT", frame.sort, "RIGHT", 14, 0)
     frame.pawn = W.Dropdown(bar, 150, pawnItems, function(value)
         ns.addon.db.char.pawnScale = value
@@ -364,7 +364,7 @@ local function create()
     end)
     frame.pawnRefresh:SetPoint("LEFT", frame.pawn, "RIGHT", 4, 0)
     W.AddTooltip(frame.pawnRefresh,
-                 function(tooltip) tooltip:AddLine(L["Reread Pawn values (after editing a scale)"]) end)
+                 function(tooltip) tooltip:AddLine(L["Reread scores (after editing a Pawn scale)"]) end)
 
     frame.filtersToggle = W.Button(bar, L["Filters"], nil, 22, function()
         ns.addon.db.profile.window.filters = not (ns.addon.db.profile.window.filters ~= false)
@@ -442,7 +442,7 @@ function MainWindow.UpdateStatus()
     if not frame:IsShown() then return end
     local parts = {}
     if pending > 0 then parts[#parts + 1] = format(L["Loading %s items..."], BreakUpLargeNumbers(pending)) end
-    if ns.Pawn.IsBusy() then parts[#parts + 1] = L["Pawn values..."] end
+    if ns.Pawn.IsBusy() then parts[#parts + 1] = L["Scores..."] end
     if ns.inCombat then parts[#parts + 1] = L["Paused in combat"] end
     if MainWindow.shownCount then parts[#parts + 1] = format(L["%d items"], MainWindow.shownCount) end
     frame.status:SetText(ns.Labels.Join(parts, "   "))
@@ -488,12 +488,12 @@ end
 -- a tab's empty text. when no addon has anything, and none is still reading, it says which addons FLF reads
 function MainWindow.EmptyText(text)
     if #ns.GetIndex().records > 0 then return text end
-    for _, provider in ipairs({ns.Questie, ns.Crafts, ns.AtlasLootLists, ns.ATT, ns.ForeverDB}) do
+    for _, provider in ipairs({ns.Questie, ns.Crafts, ns.AtlasLootLists, ns.ATT, ns.SkillUp, ns.ForeverDB}) do
         local state = provider.State()
         if state == "waiting" or state == "scanning" then return text end
     end
     return L["Nothing to list yet."] .. "\n\n" .. L["Needs one of these addons:"] .. "\n"
-           .. "DungeonJournal\nQuestie, QuestieDB\nAtlasLoot Classic Forever\nALL THE THINGS\nforever-db"
+           .. "DungeonJournal\nQuestie, QuestieDB\nAtlasLoot Classic Forever\nALL THE THINGS\nforever-db\nSkillUp Forever"
 end
 
 -- kinds nil redraws everything

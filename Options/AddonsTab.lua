@@ -23,6 +23,7 @@ local PROVIDER_NAMES = {
     questie = "Questie",
     atlasloot = "AtlasLoot",
     att = "ATT",
+    skillup = "SkillUp",
     foreverdb = "forever-db",
     tradeskill = L["Profession window"],
 }
@@ -106,6 +107,9 @@ local function create(parent)
     controls.att = section(left, "ALL THE THINGS", L["Use for its Forever database"],
                            L["Dungeon loot, quests, vendors, crafts, reputation, PvP and event rewards. Fills what the others miss, and gives recipes their skill level on Forever."],
                            function(value) ns.ATT.SetEnabled(value) end)
+    controls.skillup = section(left, "SkillUp Forever", L["Use for crafts and recipe skill"],
+                               L["Gives recipes the skill they need on Forever. For trainer recipes ALL THE THINGS comes first."],
+                               function(value) ns.SkillUp.SetEnabled(value) end)
     controls.foreverdb = section(left, "forever-db", L["Use for crafts, quests, vendors and drop chances"],
                                  L["Links every recipe to what it makes, Forever's own included. Creature drops get their chance, mostly Classic's."],
                                  function(value) ns.ForeverDB.SetEnabled(value) end)
@@ -224,6 +228,10 @@ local function refresh()
     setStatus(controls.att, ns.ATT.Installed(), p.att ~= false,
               ns.ATT.State() == "done" and good(format(L["%d sources, %d places."], att.items, att.places))
                 or STATE_TEXT[ns.ATT.State()] or "")
+    local skillup = ns.SkillUp.Stats()
+    setStatus(controls.skillup, ns.SkillUp.Installed(), p.skillup ~= false,
+              ns.SkillUp.State() == "done" and good(format(L["%d crafts, %d recipe skills."], skillup.items, skillup.skills))
+                or STATE_TEXT[ns.SkillUp.State()] or "")
     local fdb = ns.ForeverDB.Stats()
     setStatus(controls.foreverdb, ns.ForeverDB.Installed(), p.foreverdb ~= false,
               ns.ForeverDB.State() == "done"

@@ -82,7 +82,7 @@ local function create(parent)
         button:HookScript("OnEnter", function(self)
             if not (ui.approximate and ui.approximate[slot] and slot ~= ns.Filters().slot) then return end
             if GameTooltip:GetOwner() ~= self then GameTooltip:SetOwner(self, "ANCHOR_RIGHT") end
-            GameTooltip:AddLine(L["~ Some of these haven't loaded yet, or Pawn hasn't scored them. Open the slot to load them."],
+            GameTooltip:AddLine(L["~ Some of these haven't loaded yet, or aren't scored yet. Open the slot to load them."],
                                 1, 1, 1, true)
             GameTooltip:Show()
         end)

@@ -197,8 +197,6 @@ if not L then return end
 -- L["Two-hand weapon equipped."] = true -- Translation missing
 -- L["Slot empty."] = true -- Translation missing
 -- L["Pawn (%s): %.1f"] = true -- Translation missing
--- L["Pawn rates base stats only; the bonus is random."] = true -- Translation missing
--- L["Pawn doesn't count set bonuses."] = true -- Translation missing
 -- L["Set: %s (%s)"] = true -- Translation missing
 -- L["Item data still loading."] = true -- Translation missing
 -- L["Not in the game data yet"] = true -- Translation missing
@@ -214,7 +212,6 @@ if not L then return end
 -- L["Not seen at auction for 21+ days."] = true -- Translation missing
 -- L["Not on this server: it says the item doesn't exist."] = true -- Translation missing
 -- L["Maybe not on this server: it never sent the item."] = true -- Translation missing
--- L["Pawn hasn't scored it yet."] = true -- Translation missing
 -- L["binding"] = true -- Translation missing
 -- L["quality"] = true -- Translation missing
 -- L["stats"] = true -- Translation missing
@@ -222,7 +219,6 @@ if not L then return end
 -- L["sets only"] = true -- Translation missing
 -- L["search"] = true -- Translation missing
 -- L["owned"] = true -- Translation missing
--- L["not a Pawn upgrade"] = true -- Translation missing
 -- L["price"] = true -- Translation missing
 -- L["drop chance or source"] = true -- Translation missing
 -- L["Your filters hide it elsewhere: %s."] = true -- Translation missing
@@ -230,6 +226,12 @@ if not L then return end
 -- L["better"] = true -- Translation missing
 -- L["PvP rank"] = true -- Translation missing
 -- L["reputation"] = true -- Translation missing
+-- L["not an upgrade"] = true -- Translation missing
+-- L["Score"] = true -- Translation missing
+-- L["Pick a scale at the top."] = true -- Translation missing
+-- L["Scores count base stats only; the bonus is random."] = true -- Translation missing
+-- L["Scores don't count set bonuses."] = true -- Translation missing
+-- L["Not scored yet."] = true -- Translation missing
 
 -- UI/Menu.lua
 -- L["Remove from favourites"] = true -- Translation missing
@@ -294,7 +296,6 @@ if not L then return end
 -- L["Equipped, bags, and bank once opened."] = true -- Translation missing
 -- L["Minimum quality"] = true -- Translation missing
 -- L["Dungeons"] = true -- Translation missing
--- L["Pawn upgrades only"] = true -- Translation missing
 -- L["%d dungeons"] = true -- Translation missing
 -- L["Max required level: off"] = true -- Translation missing
 -- L["Max required level: %d"] = true -- Translation missing
@@ -358,7 +359,6 @@ if not L then return end
 -- L["Item"] = true -- Translation missing
 -- L["Off in Settings, Addons tab."] = true -- Translation missing
 -- L["Without it, open a profession window to list its items."] = true -- Translation missing
--- L["Pick a Pawn scale at the top."] = true -- Translation missing
 -- L["Hide drops rarer than this"] = true -- Translation missing
 -- L["Keep drops with unknown chance"] = true -- Translation missing
 -- L["AtlasLoot's chances, per boss. Often unknown for trash and shared loot. Quests and crafts aren't affected."] = true -- Translation missing
@@ -381,10 +381,9 @@ if not L then return end
 -- L["my standings"] = true -- Translation missing
 -- L["Only ranks I have"] = true -- Translation missing
 -- L["my PvP rank"] = true -- Translation missing
+-- L["Upgrades only"] = true -- Translation missing
 
 -- UI/MainWindow.lua
--- L["Pawn value"] = true -- Translation missing
--- L["Pawn upgrade %"] = true -- Translation missing
 -- L["Item level"] = true -- Translation missing
 -- L["Required level"] = true -- Translation missing
 -- L["Drop chance"] = true -- Translation missing
@@ -394,20 +393,22 @@ if not L then return end
 -- L["Other scales"] = true -- Translation missing
 -- L["Search"] = true -- Translation missing
 -- L["Sort:"] = true -- Translation missing
--- L["Reread Pawn values (after editing a scale)"] = true -- Translation missing
 -- L["Filters"] = true -- Translation missing
 -- L["Reset"] = true -- Translation missing
 -- L["Reset filters to class defaults"] = true -- Translation missing
--- L["Pawn values..."] = true -- Translation missing
 -- L["Paused in combat"] = true -- Translation missing
 -- L["%d items"] = true -- Translation missing
 -- L["Nothing to list yet."] = true -- Translation missing
 -- L["Loading %s items..."] = true -- Translation missing
+-- L["Upgrade %"] = true -- Translation missing
+-- L["Scale:"] = true -- Translation missing
+-- L["Reread scores (after editing a Pawn scale)"] = true -- Translation missing
+-- L["Scores..."] = true -- Translation missing
 
 -- UI/Tabs/SlotTab.lua
 -- L["No items match the filters."] = true -- Translation missing
 -- L["By slot"] = true -- Translation missing
--- L["~ Some of these haven't loaded yet, or Pawn hasn't scored them. Open the slot to load them."] = true -- Translation missing
+-- L["~ Some of these haven't loaded yet, or aren't scored yet. Open the slot to load them."] = true -- Translation missing
 
 -- UI/Tabs/DungeonTab.lua
 -- L["All slots"] = true -- Translation missing
@@ -612,6 +613,9 @@ if not L then return end
 -- L["Links every recipe to what it makes, Forever's own included. Creature drops get their chance, mostly Classic's."] = true -- Translation missing
 -- L["%d sources, %d places."] = true -- Translation missing
 -- L["%d crafts, %d quest rewards, %d vendor and %d creature sources."] = true -- Translation missing
+-- L["Use for crafts and recipe skill"] = true -- Translation missing
+-- L["Gives recipes the skill they need on Forever. For trainer recipes ALL THE THINGS comes first."] = true -- Translation missing
+-- L["%d crafts, %d recipe skills."] = true -- Translation missing
 
 -- UI/Tabs/SourceTabs.lua
 -- L["Needs AtlasLoot or ALL THE THINGS."] = true -- Translation missing

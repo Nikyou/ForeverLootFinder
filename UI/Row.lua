@@ -6,7 +6,7 @@ local W, Style, Labels = ns.Widgets, ns.Style, ns.Labels
 local FILTERED_OUT = {
     bind = L["binding"], quality = L["quality"], stats = L["stats"], speed = L["weapon speed"],
     special = L["Use or proc"], set = L["sets only"], search = L["search"], owned = L["owned"],
-    upgrade = L["not a Pawn upgrade"], price = L["price"], source = L["drop chance or source"],
+    upgrade = L["not an upgrade"], price = L["price"], source = L["drop chance or source"],
     ["pvp rank"] = L["PvP rank"], standing = L["reputation"],
 }
 local LEVEL_NOTE = L["Above your level filter for now."]
@@ -20,7 +20,7 @@ Row.HEADER_HEIGHT = 24
 -- right to left. a column shows when picked and when there's data for it
 local COLUMNS = {
     {key = "upgrade", width = 64, sort = "upgrade", label = L["Upgrade"], menu = L["Upgrade"], pawn = true},
-    {key = "pawn", width = 56, sort = "pawn", label = "Pawn", menu = L["Pawn value"], pawn = true},
+    {key = "pawn", width = 56, sort = "pawn", label = L["Score"], menu = L["Score"], pawn = true},
     {key = "weapon", width = 84, sort = "speed", label = L["Speed / DPS"], menu = L["Speed / DPS"], weapon = true},
     {key = "chance", width = 50, sort = "chance", label = L["Drop %"], menu = L["Drop chance"], chance = true},
     {key = "price", width = 72, sort = "price", label = L["Price"], menu = L["Auction price"], price = true},
@@ -45,8 +45,8 @@ function Row.ColumnStatus(key, opts)
     local turnedOff = L["Off in Settings, Addons tab."]
     if key == "upgrade" or key == "pawn" then
         if ns.ActiveScale() then return true end
-        local reason = ns.Pawn.IsInstalled() and L["Pick a Pawn scale at the top."] or nil
-        return false, {needs = {"Pawn"}, reason = reason}
+        local reason = ns.Pawn.IsInstalled() and L["Pick a scale at the top."] or nil
+        return false, {needs = {"Pawn", "GearQuest Forever"}, reason = reason}
     elseif key == "chance" then
         local index = ns.GetIndex()
         if index and index.hasChance then return true end
@@ -431,14 +431,16 @@ local function compareLines(tooltip, row, opts)
     if scale then
         local value = row.pawn or ns.Pawn.Value(record.id, scale)
         local label = ns.Pawn.Color(scale) .. ns.Pawn.Label(scale) .. "|r"
+        local gearQuest = ns.GearQuest.IsScale(scale)
         if value then
             local upgrade = upgradeText({compare = compare, upgrade = compare.upgrade})
-            tooltip:AddDoubleLine(format(L["Pawn (%s): %.1f"], label, value), upgrade, 1, 1, 1)
+            local text = gearQuest and format("%s: %.1f", label, value) or format(L["Pawn (%s): %.1f"], label, value)
+            tooltip:AddDoubleLine(text, upgrade, 1, 1, 1)
         end
         if record.randomBonus then
-            tooltip:AddLine(L["Pawn rates base stats only; the bonus is random."], 0.7, 0.7, 0.7, true)
+            tooltip:AddLine(L["Scores count base stats only; the bonus is random."], 0.7, 0.7, 0.7, true)
         end
-        if info.setID or info.setName then tooltip:AddLine(L["Pawn doesn't count set bonuses."], 0.7, 0.7, 0.7, true) end
+        if info.setID or info.setName then tooltip:AddLine(L["Scores don't count set bonuses."], 0.7, 0.7, 0.7, true) end
     end
     local price = row.auction or (opts.price and ns.Auctionator.ForRecord(record, info))
     if price and (price.old or not price.exact) then
@@ -453,7 +455,7 @@ local function compareLines(tooltip, row, opts)
     local set = (info.setID or info.setName) and ns.Sets.For(record)
     if set then tooltip:AddLine(format(L["Set: %s (%s)"], ns.Sets.Name(set), ns.Sets.Summary(set, L)), 1, 0.82, 0, true) end
     if row.status == "unknown" then
-        tooltip:AddLine(info.loaded and L["Pawn hasn't scored it yet."] or L["Item data still loading."], 0.7, 0.7, 0.7, true)
+        tooltip:AddLine(info.loaded and L["Not scored yet."] or L["Item data still loading."], 0.7, 0.7, 0.7, true)
     end
     -- the Sets tab keeps a set whole
     if row.filteredOut == "level" then

@@ -17,7 +17,7 @@ local changedSoon = W.Debounce(SLIDER_DELAY, changed)
 local NEEDS = {
     questie = {"Questie", "QuestieDB"},
     atlasloot = {"AtlasLoot Classic"},
-    pawn = {"Pawn"},
+    pawn = {"Pawn", "GearQuest Forever"},
     auctionator = {"Auctionator"},
 }
 
@@ -241,9 +241,9 @@ local CHECKS = {
     upgradesOnly = {
         field = "pawnUpgradesOnly",
         default = false,
-        label = L["Pawn upgrades only"],
+        label = L["Upgrades only"],
         usable = function(_, env)
-            local reason = ns.Pawn.IsInstalled() and L["Pick a Pawn scale at the top."] or nil
+            local reason = ns.Pawn.IsInstalled() and L["Pick a scale at the top."] or nil
             return env.pawn, {needs = NEEDS.pawn, reason = reason}
         end,
         summary = {[true] = L["upgrades only"]},

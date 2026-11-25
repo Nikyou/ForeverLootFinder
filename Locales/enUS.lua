@@ -197,8 +197,6 @@ L["Unique: already owned"] = true
 L["Two-hand weapon equipped."] = true
 L["Slot empty."] = true
 L["Pawn (%s): %.1f"] = true
-L["Pawn rates base stats only; the bonus is random."] = true
-L["Pawn doesn't count set bonuses."] = true
 L["Set: %s (%s)"] = true
 L["Item data still loading."] = true
 L["Not in the game data yet"] = true
@@ -214,7 +212,6 @@ L["Last seen at auction %d days ago."] = true
 L["Not seen at auction for 21+ days."] = true
 L["Not on this server: it says the item doesn't exist."] = true
 L["Maybe not on this server: it never sent the item."] = true
-L["Pawn hasn't scored it yet."] = true
 L["binding"] = true
 L["quality"] = true
 L["stats"] = true
@@ -222,7 +219,6 @@ L["weapon speed"] = true
 L["sets only"] = true
 L["search"] = true
 L["owned"] = true
-L["not a Pawn upgrade"] = true
 L["price"] = true
 L["drop chance or source"] = true
 L["Your filters hide it elsewhere: %s."] = true
@@ -230,6 +226,12 @@ L["Above your level filter for now."] = true
 L["better"] = true
 L["PvP rank"] = true
 L["reputation"] = true
+L["not an upgrade"] = true
+L["Score"] = true
+L["Pick a scale at the top."] = true
+L["Scores count base stats only; the bonus is random."] = true
+L["Scores don't count set bonuses."] = true
+L["Not scored yet."] = true
 
 -- UI/Menu.lua
 L["Remove from favourites"] = true
@@ -294,7 +296,6 @@ L["Hide items I own"] = true
 L["Equipped, bags, and bank once opened."] = true
 L["Minimum quality"] = true
 L["Dungeons"] = true
-L["Pawn upgrades only"] = true
 L["%d dungeons"] = true
 L["Max required level: off"] = true
 L["Max required level: %d"] = true
@@ -358,7 +359,6 @@ L["Quests tied to a raid go with it."] = true
 L["Item"] = true
 L["Off in Settings, Addons tab."] = true
 L["Without it, open a profession window to list its items."] = true
-L["Pick a Pawn scale at the top."] = true
 L["Hide drops rarer than this"] = true
 L["Keep drops with unknown chance"] = true
 L["AtlasLoot's chances, per boss. Often unknown for trash and shared loot. Quests and crafts aren't affected."] = true
@@ -381,10 +381,9 @@ L["Only standings I have"] = true
 L["my standings"] = true
 L["Only ranks I have"] = true
 L["my PvP rank"] = true
+L["Upgrades only"] = true
 
 -- UI/MainWindow.lua
-L["Pawn value"] = true
-L["Pawn upgrade %"] = true
 L["Item level"] = true
 L["Required level"] = true
 L["Drop chance"] = true
@@ -394,20 +393,22 @@ L["Visible scales"] = true
 L["Other scales"] = true
 L["Search"] = true
 L["Sort:"] = true
-L["Reread Pawn values (after editing a scale)"] = true
 L["Filters"] = true
 L["Reset"] = true
 L["Reset filters to class defaults"] = true
-L["Pawn values..."] = true
 L["Paused in combat"] = true
 L["%d items"] = true
 L["Nothing to list yet."] = true
 L["Loading %s items..."] = true
+L["Upgrade %"] = true
+L["Scale:"] = true
+L["Reread scores (after editing a Pawn scale)"] = true
+L["Scores..."] = true
 
 -- UI/Tabs/SlotTab.lua
 L["No items match the filters."] = true
 L["By slot"] = true
-L["~ Some of these haven't loaded yet, or Pawn hasn't scored them. Open the slot to load them."] = true
+L["~ Some of these haven't loaded yet, or aren't scored yet. Open the slot to load them."] = true
 
 -- UI/Tabs/DungeonTab.lua
 L["All slots"] = true
@@ -612,6 +613,9 @@ L["Use for crafts, quests, vendors and drop chances"] = true
 L["Links every recipe to what it makes, Forever's own included. Creature drops get their chance, mostly Classic's."] = true
 L["%d sources, %d places."] = true
 L["%d crafts, %d quest rewards, %d vendor and %d creature sources."] = true
+L["Use for crafts and recipe skill"] = true
+L["Gives recipes the skill they need on Forever. For trainer recipes ALL THE THINGS comes first."] = true
+L["%d crafts, %d recipe skills."] = true
 
 -- UI/Tabs/SourceTabs.lua
 L["Needs AtlasLoot or ALL THE THINGS."] = true

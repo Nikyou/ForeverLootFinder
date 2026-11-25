@@ -71,7 +71,9 @@ ns.Cards.Tab({
     },
     entries = entries,
     emptyHint = function()
-        if ns.Crafts.Installed() or ns.ForeverDB.Installed() or ns.ATT.Installed() then return nil end
+        if ns.Crafts.Installed() or ns.ForeverDB.Installed() or ns.ATT.Installed() or ns.SkillUp.Installed() then
+            return nil
+        end
         return L["Install forever-db for all crafted items, or open your professions once."]
     end,
 })

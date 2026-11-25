@@ -75,7 +75,7 @@ function SetPanel.Refresh()
     if not frame or not current or not frame:IsShown() then return end
     local index = ns.GetIndex()
     frame:SetTitle(ns.Sets.Name(current))
-    frame.summary:SetText(ns.Sets.Summary(current, L) .. "  " .. L["Pawn doesn't count set bonuses."])
+    frame.summary:SetText(ns.Sets.Summary(current, L) .. "  " .. L["Scores don't count set bonuses."])
     for _, row in ipairs(frame.rows) do row:Hide() end
     local y = 0
     local ctx = ns.FilterContext()
