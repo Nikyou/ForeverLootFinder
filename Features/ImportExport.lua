@@ -64,7 +64,7 @@ end
 
 local DECODE_ERRORS = {
     empty = L["The string is empty."],
-    prefix = L["Not a Forever Loot Finder profile string."],
+    prefix = L["Not a Forever LootFinder profile string."],
     damaged = L["The string is damaged."],
 }
 
@@ -72,9 +72,9 @@ function ImportExport.Decode(text)
     local payload, why = ns.Util.Decode(text, PREFIX)
     if not payload then return nil, DECODE_ERRORS[why] end
     if type(payload.profile) ~= "table" then return nil, L["The string is damaged."] end
-    if payload.v ~= PAYLOAD_VERSION then return nil, L["Needs a newer Forever Loot Finder."] end
+    if payload.v ~= PAYLOAD_VERSION then return nil, L["Needs a newer Forever LootFinder."] end
     if type(payload.schema) == "number" and payload.schema > ns.SCHEMA_VERSION then
-        return nil, L["Needs a newer Forever Loot Finder."]
+        return nil, L["Needs a newer Forever LootFinder."]
     end
     local source, defaults = payload.profile, ns.DEFAULTS.profile
     local data = {}
@@ -94,7 +94,7 @@ end
 function ImportExport.Summary(data)
     local lines = {L["All display and alert settings"]}
     if data.addonVersion and data.addonVersion:match("^v?%d") then
-        lines[#lines + 1] = format(L["Made with Forever Loot Finder %s"], data.addonVersion)
+        lines[#lines + 1] = format(L["Made with Forever LootFinder %s"], data.addonVersion)
     end
     return table.concat(lines, "\n")
 end

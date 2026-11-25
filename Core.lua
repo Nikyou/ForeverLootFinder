@@ -5,7 +5,7 @@ local L = LibStub("AceLocale-3.0"):GetLocale("ForeverLootFinder")
 local addon = LibStub("AceAddon-3.0"):NewAddon(ADDON_NAME, "AceConsole-3.0")
 ns.addon = addon
 ns.L = L
-ns.TITLE = "Forever Loot Finder"
+ns.TITLE = "Forever LootFinder"
 
 local ICON = 134344
 local isSecret = ns.Util.IsSecret
@@ -311,7 +311,7 @@ local fdjNoticeShown = false
 -- FDJ is optional, so only a broken one gets a message
 function ns.FDJMessage()
     if ns.DungeonJournal.Enabled() and ns.DungeonJournal.Status() == "invalid" then
-        return L["Can't read DungeonJournal's loot data. Forever Loot Finder may need an update."]
+        return L["Can't read DungeonJournal's loot data. Forever LootFinder may need an update."]
     end
     return nil
 end

@@ -22,7 +22,7 @@ if not L then return end
 -- L["items not loaded, and why"] = true -- Translation missing
 -- L["all dumps but stats"] = true -- Translation missing
 -- L["reread the Dungeon Journal, rebuild the lists"] = true -- Translation missing
--- L["Can't read DungeonJournal's loot data. Forever Loot Finder may need an update."] = true -- Translation missing
+-- L["Can't read DungeonJournal's loot data. Forever LootFinder may need an update."] = true -- Translation missing
 -- L["That item can't be worn."] = true -- Translation missing
 -- L["No addon lists where it's from, so it shows only under Favourites."] = true -- Translation missing
 -- L["the selected slot's items with no Pawn value, and why"] = true -- Translation missing
@@ -36,7 +36,7 @@ if not L then return end
 -- L["The string is empty."] = true -- Translation missing
 -- L["Not a favourites string."] = true -- Translation missing
 -- L["The string is damaged."] = true -- Translation missing
--- L["Needs a newer Forever Loot Finder."] = true -- Translation missing
+-- L["Needs a newer Forever LootFinder."] = true -- Translation missing
 -- L["%d favourites: %d new, %d tier changed, %d unchanged."] = true -- Translation missing
 -- L["From %s."] = true -- Translation missing
 -- L["%d new, %d unchanged, %d skipped."] = true -- Translation missing
@@ -103,9 +103,9 @@ if not L then return end
 -- L["Usage: /flf dump stats, fdj, questie, crafts, items, pawn, status or all"] = true -- Translation missing
 
 -- Features/ImportExport.lua
--- L["Not a Forever Loot Finder profile string."] = true -- Translation missing
+-- L["Not a Forever LootFinder profile string."] = true -- Translation missing
 -- L["All display and alert settings"] = true -- Translation missing
--- L["Made with Forever Loot Finder %s"] = true -- Translation missing
+-- L["Made with Forever LootFinder %s"] = true -- Translation missing
 
 -- Options/Options.lua
 -- L["Settings"] = true -- Translation missing
@@ -469,7 +469,7 @@ if not L then return end
 -- L["For when Auctionator's own price lines are off."] = true -- Translation missing
 -- L["Empty columns stay hidden. Also: right-click the list header."] = true -- Translation missing
 -- L["Source on all item tooltips"] = true -- Translation missing
--- L["Loot Finder's windows always show it."] = true -- Translation missing
+-- L["LootFinder's windows always show it."] = true -- Translation missing
 -- L["Show items not on this server"] = true -- Translation missing
 -- L["Greyed. Missing favourites always show."] = true -- Translation missing
 -- L["Favourite tier"] = true -- Translation missing
@@ -655,7 +655,7 @@ if not L then return end
 -- L["unlikely drop"] = true -- Translation missing
 -- L["removed quest"] = true -- Translation missing
 -- L["not on this server"] = true -- Translation missing
--- L["Hidden by Loot Finder: %s."] = true -- Translation missing
+-- L["Hidden by LootFinder: %s."] = true -- Translation missing
 -- L["You can still add it."] = true -- Translation missing
 
 -- Modules/Attune.lua

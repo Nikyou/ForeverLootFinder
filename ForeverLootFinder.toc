@@ -1,5 +1,5 @@
 ## Interface: 16001
-## Title: Forever Loot Finder
+## Title: Forever LootFinder
 ## Notes: Browse every dungeon item, quest reward and crafted item by slot, filter and sort it, and plan what to farm.
 ## Notes-ruRU: Все предметы из подземелий, награды заданий и создаваемые предметы по ячейкам: фильтры, сортировка и план, что фармить.
 ## Version: @project-version@

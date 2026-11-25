@@ -41,7 +41,7 @@ local function create(parent)
         profile().tooltip.allItems = value
         changed()
     end)
-    left.help(L["Loot Finder's windows always show it."])
+    left.help(L["LootFinder's windows always show it."])
     controls.favourite = left.check(L["Favourite tier"], function(value)
         profile().tooltip.favourite = value
         setUsable(controls.otherChars, value)

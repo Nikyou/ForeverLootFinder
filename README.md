@@ -4,20 +4,20 @@ https://www.curseforge.com/wow/addons/forever-lootfinder
 
 ## Introduction
 
-**Forever Loot Finder** lists the gear you can get in Forever **by equipment slot**: dungeon and raid drops, quest rewards, crafted items, vendor goods, reputation, PvP and event rewards. Filter and sort it to plan what to farm next.
+**Forever LootFinder** lists the gear you can get in Forever **by equipment slot**: dungeon and raid drops, quest rewards, crafted items, vendor goods, reputation, PvP and event rewards. Filter and sort it to plan what to farm next.
 
 Pick a slot and see every item for it, with where it comes from and its level. Only what your class can use is listed: armor for your level and every weapon type your class can learn. Sort by item level, a stat, required level, dungeon level, weapon speed or DPS, or with Pawn, by your scale and upgrade percent. Mark favourites to get a reminder when you enter their dungeon and a notice when one drops.
 
 ## Requirements
 
-Forever Loot Finder gets its item lists from other addons. It works without them, but then has little to show. The more of these you have, the more it lists.
+Forever LootFinder gets its item lists from other addons. It works without them, but then has little to show. The more of these you have, the more it lists.
 
 Main:
 * **Pawn**: item scores, upgrade percent and the "Pawn upgrades only" filter.
 * **DungeonJournal**: Forever's dungeons with their bosses, loot and quests, and drop chances when it has them.
 * **Questie**: quest rewards, vendors, creature drops and world drops.
 * **AtlasLoot Classic Forever**: raids and world bosses, crafted gear, reputation, PvP and event rewards, world drops, drop chances, and BiS lists to add to your favourites when it has them.
-* **forever-db**: every recipe with the item it makes, Forever's own included, and drop chances for creatures (mostly Classic's). The CurseForge app installs it with Forever Loot Finder.
+* **forever-db**: every recipe with the item it makes, Forever's own included, and drop chances for creatures (mostly Classic's). The CurseForge app installs it with Forever LootFinder.
 
 Extra:
 * **ALL THE THINGS**: Forever's dungeons, quest rewards, vendors, crafted gear, reputation, PvP and event rewards, and the skill each recipe is learned at on Forever.
@@ -63,7 +63,7 @@ Type `/flf dump all`, copy the text and send it to me on Discord with what you d
 
 ## Credits
 
-Forever Loot Finder reads its data from these addons. Thanks to their authors.
+Forever LootFinder reads its data from these addons. Thanks to their authors.
 
 * [DungeonJournal](https://www.curseforge.com/wow/addons/dungeonjournal) by Exehn
 * [QuestieDB](https://www.curseforge.com/wow/addons/questiedb) and [Questie](https://www.curseforge.com/wow/addons/questie) by the Questie team

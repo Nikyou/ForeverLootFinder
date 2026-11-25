@@ -164,7 +164,7 @@ function Favourites.Decode(text)
     if not payload then return nil, DECODE_ERRORS[why] end
     if type(payload.items) ~= "table" then return nil, L["The string is damaged."] end
 
-    if payload.v ~= PAYLOAD_VERSION then return nil, L["Needs a newer Forever Loot Finder."] end
+    if payload.v ~= PAYLOAD_VERSION then return nil, L["Needs a newer Forever LootFinder."] end
     local items, count = {}, 0
     for id, tier in pairs(payload.items) do
         if type(id) == "number" and id > 0 and id == math.floor(id) and Favourites.BY_TIER[tier] then

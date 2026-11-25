@@ -128,7 +128,7 @@ local function resultButton(n)
         GameTooltip:SetItemByID(self.id)
         if self.filtered then
             GameTooltip:AddLine(" ")
-            GameTooltip:AddLine(format(L["Hidden by Loot Finder: %s."], self.note), 1, 0.5, 0.25, true)
+            GameTooltip:AddLine(format(L["Hidden by LootFinder: %s."], self.note), 1, 0.5, 0.25, true)
             GameTooltip:AddLine(L["You can still add it."], 0.6, 0.6, 0.6, true)
         end
         GameTooltip:Show()

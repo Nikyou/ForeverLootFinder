@@ -6,8 +6,8 @@ local AH = {}
 ns.Auctionator = AH
 
 -- the API names its temporary lists after the caller ID
-AH.CALLER = "Forever Loot Finder"
-AH.SHOPPING_LIST = "Forever Loot Finder"
+AH.CALLER = "Forever LootFinder"
+AH.SHOPPING_LIST = "Forever LootFinder"
 -- the API gives no age past 21 days
 AH.OLD_DAYS = 7
 

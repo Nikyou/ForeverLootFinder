@@ -22,7 +22,7 @@ L["AtlasLoot and profession data"] = true
 L["items not loaded, and why"] = true
 L["all dumps but stats"] = true
 L["reread the Dungeon Journal, rebuild the lists"] = true
-L["Can't read DungeonJournal's loot data. Forever Loot Finder may need an update."] = true
+L["Can't read DungeonJournal's loot data. Forever LootFinder may need an update."] = true
 L["That item can't be worn."] = true
 L["No addon lists where it's from, so it shows only under Favourites."] = true
 L["the selected slot's items with no Pawn value, and why"] = true
@@ -36,7 +36,7 @@ L["Nice to have"] = true
 L["The string is empty."] = true
 L["Not a favourites string."] = true
 L["The string is damaged."] = true
-L["Needs a newer Forever Loot Finder."] = true
+L["Needs a newer Forever LootFinder."] = true
 L["%d favourites: %d new, %d tier changed, %d unchanged."] = true
 L["From %s."] = true
 L["%d new, %d unchanged, %d skipped."] = true
@@ -103,9 +103,9 @@ L["Status dump"] = true
 L["Usage: /flf dump stats, fdj, questie, crafts, items, pawn, status or all"] = true
 
 -- Features/ImportExport.lua
-L["Not a Forever Loot Finder profile string."] = true
+L["Not a Forever LootFinder profile string."] = true
 L["All display and alert settings"] = true
-L["Made with Forever Loot Finder %s"] = true
+L["Made with Forever LootFinder %s"] = true
 
 -- Options/Options.lua
 L["Settings"] = true
@@ -469,7 +469,7 @@ L["Auction price (Auctionator)"] = true
 L["For when Auctionator's own price lines are off."] = true
 L["Empty columns stay hidden. Also: right-click the list header."] = true
 L["Source on all item tooltips"] = true
-L["Loot Finder's windows always show it."] = true
+L["LootFinder's windows always show it."] = true
 L["Show items not on this server"] = true
 L["Greyed. Missing favourites always show."] = true
 L["Favourite tier"] = true
@@ -655,7 +655,7 @@ L["SoD only"] = true
 L["unlikely drop"] = true
 L["removed quest"] = true
 L["not on this server"] = true
-L["Hidden by Loot Finder: %s."] = true
+L["Hidden by LootFinder: %s."] = true
 L["You can still add it."] = true
 
 -- Modules/Attune.lua
