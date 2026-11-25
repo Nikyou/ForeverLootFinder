@@ -36,8 +36,12 @@ local function create()
     frame.addAll = W.Button(frame, L["Favourite all pieces"], nil, 22, function()
         if not current then return end
         local tier = ns.addon.db.profile.favourites.defaultTier
-        for _, record in ipairs(current.pieces) do
-            if record.id and record.id > 0 and not ns.Favourites.Get(record.id) then ns.Favourites.Set(record.id, tier) end
+        for _, list in ipairs({current.pieces, frame.sourceless or {}}) do
+            for _, record in ipairs(list) do
+                if record.id and record.id > 0 and not ns.Favourites.Get(record.id) then
+                    ns.Favourites.Set(record.id, tier)
+                end
+            end
         end
     end)
     frame.addAll:FitWidth()
@@ -74,22 +78,31 @@ end
 function SetPanel.Refresh()
     if not frame or not current or not frame:IsShown() then return end
     local index = ns.GetIndex()
+    local known
+    for _, record in ipairs(current.pieces) do if record.id > 0 then known = known or record.id end end
+    -- the pieces no addon gives a source for, but not ones the server says don't exist
+    frame.sourceless = {}
+    for _, record in ipairs(known and index and ns.Sets.Sourceless(current.key, known, index) or {}) do
+        if not ns.Items.Info(record).missing then frame.sourceless[#frame.sourceless + 1] = record end
+    end
     frame:SetTitle(ns.Sets.Name(current))
-    frame.summary:SetText(ns.Sets.Summary(current, L) .. "  " .. L["Scores don't count set bonuses."])
+    frame.summary:SetText(ns.Sets.Summary(current, L, #frame.sourceless) .. "  " .. L["Scores don't count set bonuses."])
     for _, row in ipairs(frame.rows) do row:Hide() end
     local y = 0
     local ctx = ns.FilterContext()
     local pieces = {}
-    for _, record in ipairs(current.pieces) do
-        local info = ns.Items.Info(record)
-        if not ns.Filter.ForOtherClass(record, info, ctx) and not ns.Filter.ForOtherRace(info, ctx) then
-            pieces[#pieces + 1] = record
+    for _, list in ipairs({current.pieces, frame.sourceless}) do
+        for _, record in ipairs(list) do
+            local info = ns.Items.Info(record)
+            if not ns.Filter.ForOtherClass(record, info, ctx) and not ns.Filter.ForOtherRace(info, ctx) then
+                pieces[#pieces + 1] = record
+            end
         end
     end
     table.sort(pieces, function(a, b)
-        local sa, sb = ns.Items.Info(a).slot or "", ns.Items.Info(b).slot or ""
-        if sa ~= sb then return sa < sb end
-        return (a.name or "") < (b.name or "")
+        local ia, ib = ns.Items.Info(a), ns.Items.Info(b)
+        if (ia.slot or "") ~= (ib.slot or "") then return (ia.slot or "") < (ib.slot or "") end
+        return (ia.name or a.name or "") < (ib.name or b.name or "")
     end)
     local showPrice = ns.Auctionator.Active() and ns.Row.ColumnChosen(ns.addon.db.profile.columns, "price")
     for i, record in ipairs(pieces) do
@@ -117,6 +130,7 @@ function SetPanel.Refresh()
         for _, source in ipairs(ns.Tooltip.MergeQuests(doable)) do
             sources[#sources + 1] = ns.Tooltip.SourceText(source, index and index.dungeonByKey)
         end
+        if record.noSource then sources[1] = "|cffff8040" .. L["Source unknown"] .. "|r" end
         row.sub:SetText(Labels.Slot(info.slot) .. " — " .. table.concat(sources, "; "))
         row:Show()
         ns.Row.RefreshTooltip(row)
@@ -144,6 +158,8 @@ function SetPanel.Show(record)
     frame:Show()
     frame:Raise()
     SetPanel.Refresh()
+    -- not urgent: the main window's items keep their turn
+    ns.Items.Request(frame.sourceless)
 end
 
 function SetPanel.Hide() if frame then frame:Hide() end end

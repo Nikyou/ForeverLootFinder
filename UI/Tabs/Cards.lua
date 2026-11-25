@@ -7,6 +7,8 @@ local Cards = {}
 ns.Cards = Cards
 
 local ICON, GAP = 32, 4
+-- where a drop chance goes
+local UNKNOWN_SOURCE = "|cffff8040?|r"
 Cards.TOP = 32 -- the tab's top bar, also a card's header
 
 -- every card tab shares one slot setting
@@ -176,7 +178,11 @@ function Cards.Create(parent, top)
                     b.star:SetShown(profile.stars and tier and true or false)
                     if tier then W.SetStar(b.star, tier) end
                     local chance = profile.cardChance ~= false and group.chances and group.chances[n]
-                    b.chance:SetText(chance and ns.Labels.Chance(chance) or "")
+                    if row.record.noSource then
+                        b.chance:SetText(UNKNOWN_SOURCE)
+                    else
+                        b.chance:SetText(chance and ns.Labels.Chance(chance) or "")
+                    end
                     b:SetAlpha((row.status == "unknown" or row.status == "missing"
                                  or (row.filteredOut and row.filteredOut ~= "level")) and 0.5 or 1)
                     -- too high a level for now: red, not faded
@@ -210,12 +216,15 @@ function Cards.Create(parent, top)
     return view
 end
 
+-- a set piece no addon gives a source for (SetsTab) goes on its card once, by the item alone
+local NO_SOURCE = {{}}
+
 -- an item counts once per card however many of its groups it's in
 local function collect(spec, rows, ctx, grouped)
     local cards, order, shown, counted = {}, {}, 0, {}
     for _, row in ipairs(rows) do
         local seen = {}
-        for _, source in ipairs(row.sources) do
+        for _, source in ipairs(row.record.noSource and NO_SOURCE or row.sources) do
             if spec.accept(source, ctx, row) then
                 local cardKey, title, cardOrder = spec.card(source, ctx, row)
                 local card = cards[cardKey]

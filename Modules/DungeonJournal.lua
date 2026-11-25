@@ -482,6 +482,24 @@ function DungeonJournal.OpenItem(itemID)
     return ok and result ~= false
 end
 
+-- FDJ.ITEM_SETS: every set with a piece in the journal, Forever's own too. not FDJ.ItemSetOf, which also gives boxes
+local setOf
+function DungeonJournal.SetPieces(itemID)
+    if not DungeonJournal.Active() then return nil end
+    if not setOf then
+        local fdj = namespace()
+        local sets = fdj and fdj.ITEM_SETS
+        if type(sets) ~= "table" then return nil end
+        setOf = {}
+        for _, set in ipairs(sets) do
+            if type(set) == "table" then
+                for _, id in ipairs(set) do if type(id) == "number" then setOf[id] = set end end
+            end
+        end
+    end
+    return setOf[itemID]
+end
+
 -- read every time, the player can toggle it any moment
 function DungeonJournal.ItemSourceLineOn()
     if DungeonJournal.Status() ~= "ok" then return false end

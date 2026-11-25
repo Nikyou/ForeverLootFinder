@@ -23,6 +23,17 @@ function AtlasLoot.Storage(module)
     return type(storage) == "table" and storage or nil
 end
 
+-- classic's sets only, Forever's own aren't there
+function AtlasLoot.SetPieces(itemID)
+    if not (AtlasLoot.Installed() and AtlasLoot.Enabled()) then return nil end
+    local al = AtlasLoot.Get()
+    local sets = al and type(al.Data) == "table" and al.Data.ItemSet
+    if type(sets) ~= "table" then return nil end
+    local setID = Util.SafeCall(sets.GetSetIDforItemID, itemID)
+    local pieces = setID and Util.SafeCall(sets.GetSetItems, setID)
+    return type(pieces) == "table" and pieces or nil
+end
+
 -- AtlasLoot's own loader first, else the client's. done runs once
 function AtlasLoot.LoadModule(name, done)
     if ns.inCombat then return C_Timer.After(2, function() AtlasLoot.LoadModule(name, done) end) end

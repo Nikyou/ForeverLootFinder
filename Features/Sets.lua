@@ -39,9 +39,36 @@ function Sets.Name(set)
     return "?"
 end
 
-function Sets.Summary(set, L)
-    if set.total then return format(L["%d of %d pieces listed"], #set.pieces, set.total) end
-    return format(L["%d pieces listed"], #set.pieces)
+-- the whole set an item is in: DungeonJournal's lists have Forever's sets, AtlasLoot's classic's
+function Sets.PieceIDs(itemID) return ns.DungeonJournal.SetPieces(itemID) or ns.AtlasLoot.SetPieces(itemID) end
+
+-- kept, so their item data stays put between refreshes
+local sourceless = {}
+
+-- the pieces no addon gives a source for, from the set lists. itemID: any piece of the set. a piece the game puts in
+-- another set is left out
+function Sets.Sourceless(key, itemID, index)
+    local list = {}
+    for _, id in ipairs(Sets.PieceIDs(itemID) or {}) do
+        if type(id) == "number" and not index.byKey[id] then
+            local record = sourceless[id]
+            if not record then
+                record = {key = id, id = id, sources = {}, noSource = true}
+                sourceless[id] = record
+            end
+            local info = ns.Items.Info(record)
+            local own = Sets.KeyOf(info)
+            if info.slot and (own == nil or own == key) then list[#list + 1] = record end
+        end
+    end
+    return list
+end
+
+-- extra: pieces shown besides the set's own
+function Sets.Summary(set, L, extra)
+    local count = #set.pieces + (extra or 0)
+    if set.total then return format(L["%d of %d pieces listed"], count, set.total) end
+    return format(L["%d pieces listed"], count)
 end
 
 local cached

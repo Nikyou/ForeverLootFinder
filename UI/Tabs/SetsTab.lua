@@ -1,6 +1,6 @@
 -- one card per item set with pieces the character can use, like the Dungeon Journal's tier pages. the game has no
--- piece list for a set, so a card holds the pieces some addon lists; the "of N" is the game's own count. the filters
--- choose the sets, a chosen set shows all its pieces
+-- piece list for a set: DungeonJournal's and AtlasLoot's set lists add the pieces no addon gives a source for, marked.
+-- the "of N" is the game's own count. the filters choose the sets, a chosen set shows all its pieces
 local _, ns = ...
 local L = ns.L
 
@@ -49,10 +49,13 @@ local function rows(slot, ctx)
     local passed = {}
     for _, row in ipairs(shown) do passed[row.record] = true end
     local index = ns.GetIndex()
-    local records = {}
+    local records, pieceOf = {}, {}
     for _, record in ipairs(index.records) do
         local key = ns.Sets.KeyOf(ns.Items.Info(record))
-        if key and picked[key] then records[#records + 1] = record end
+        if key and picked[key] then
+            records[#records + 1] = record
+            if record.id > 0 then pieceOf[key] = pieceOf[key] or record.id end
+        end
     end
     -- the search box and the level limit are read from the context, not the filters
     local looseCtx = setmetatable({search = "", maxLevel = false}, {__index = ctx})
@@ -66,6 +69,19 @@ local function rows(slot, ctx)
             if status == "fail" then
                 local without = ns.Filter.Evaluate(row.record, row.info, filters, noLevel)
                 row.filteredOut = without ~= "fail" and "level" or why
+            end
+        end
+    end
+    -- the pieces no addon gives a source for: who can use one still counts, the rest of the filters can't tell
+    for key, id in pairs(pieceOf) do
+        for _, record in ipairs(ns.Sets.Sourceless(key, id, index)) do
+            local info = ns.Items.Info(record)
+            if not ctx.hidden[record.key] and (ctx.showMissing or not info.missing) and not (ctx.slot and info.slot ~= ctx.slot)
+              and not ns.Filter.ForOtherClass(record, info, ctx) and not ns.Filter.ForOtherRace(info, ctx) then
+                local status = info.missing and "missing" or (info.loaded and info.tooltipLoaded and "pass" or "unknown")
+                local row = {record = record, info = info, status = status, sources = record.sources}
+                if ctx.maxLevel and info.minLevel and info.minLevel > ctx.maxLevel then row.filteredOut = "level" end
+                whole[#whole + 1] = row
             end
         end
     end

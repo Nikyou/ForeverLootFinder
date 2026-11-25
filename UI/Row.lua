@@ -491,6 +491,9 @@ function Row.ShowTooltip(button)
     GameTooltip:SetOwner(button, "ANCHOR_RIGHT")
     if record.id and record.id > 0 then
         GameTooltip:SetItemByID(record.id)
+        if record.noSource then
+            GameTooltip:AddLine(L["Source unknown: no addon lists where it comes from."], 1, 0.5, 0.25, true)
+        end
     else
         -- no item tooltip runs for these, so the source goes here
         GameTooltip:SetText(info.name or record.name or "?", Labels.QualityRGB(info.quality))
