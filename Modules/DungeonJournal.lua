@@ -16,9 +16,9 @@ local KNOWN = {
         "name", "loot", "aliases", "npcID", "description", "trash", "rare", "recipeTab", "trackerHidden", "childOf", "fightGroup",
         "fightSig", "optional", "killWith", "lootChest", "listHidden", "portraitNpcID", "probableLoot", "summonItem",
         "customIcon", "factionOnly", "lootNote", "rareLabel", "chestLabel", "children", "displayID", "killedBefore",
-        "runLogHidden", "spawnQuest", "summonChain", "trackerOnlyIfKilled", "questLink", "pairNpcID",
+        "runLogHidden", "spawnQuest", "summonChain", "trackerOnlyIfKilled", "questLink", "pairNpcID", "deadWith",
     },
-    loot = {"allTrash", "tip", "dropNote", "makes", "sourceTip"},
+    loot = {"allTrash", "tip", "dropNote", "makes", "sourceTip", "lootFirst"},
 }
 -- a stand-in for FDJ's "extremely rare" note when it has no number (Spellshock Leggings was 1/440, Bloodletter
 -- Scalpel 1/611 in its notes)
