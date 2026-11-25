@@ -778,5 +778,20 @@ function Index.Build(data, extras, priority, quests)
         end
         index.records, index.dungeons = records, dungeons
     end
+    -- a whole split dungeon whose lines all went to their wings
+    if next(index.splits) then
+        local used, dungeons = {}, {}
+        for _, record in ipairs(index.records) do
+            for _, source in ipairs(record.sources) do if source.dungeon then used[source.dungeon] = true end end
+        end
+        for _, dungeon in ipairs(index.dungeons) do
+            if index.splits[dungeon.key] and not used[dungeon.key] then
+                index.dungeonByKey[dungeon.key] = nil
+            else
+                dungeons[#dungeons + 1] = dungeon
+            end
+        end
+        index.dungeons = dungeons
+    end
     return index
 end
