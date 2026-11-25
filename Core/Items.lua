@@ -231,15 +231,17 @@ local function retryTooltip(id)
     return true
 end
 
--- the battleground factions' names on this client, to their battleground: "Requires Silverwing Sentinels" is PvP
+-- the battleground factions' names on this client, to their battleground: "Requires Silverwing Sentinels" is PvP.
+-- the client doesn't name the other side's faction (Silverwing Sentinels on a Horde character): FDJ's English name
 local battlegroundOf
 local function pvpFaction(name)
     if not name then return nil end
     if not battlegroundOf then
         battlegroundOf = {}
         for id, key in pairs(Index.PVP_FACTIONS) do
-            local factionName = Util.FactionName(id)
-            if factionName then battlegroundOf[factionName] = key end
+            for _, factionName in ipairs({Util.FactionName(id) or false, ns.DungeonJournal.FactionName(id) or false}) do
+                if factionName then battlegroundOf[factionName] = key end
+            end
         end
     end
     return battlegroundOf[name]

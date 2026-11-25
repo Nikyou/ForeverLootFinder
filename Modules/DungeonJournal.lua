@@ -175,6 +175,21 @@ local function honorPrice(t, at)
     return #price > 0 and price or nil
 end
 
+-- a battleground faction's English name, from its quartermaster's list
+function DungeonJournal.FactionName(factionID)
+    local fdj = DungeonJournal.Active() and namespace()
+    local rewards = fdj and type(fdj.PVP_REWARDS) == "table" and fdj.PVP_REWARDS or {}
+    for _, sides in pairs(rewards) do
+        for _, side in ipairs(SIDES) do
+            local list = type(sides) == "table" and sides[side]
+            if type(list) == "table" and list.faction == factionID and type(list.factionName) == "string" then
+                return list.factionName
+            end
+        end
+    end
+    return nil
+end
+
 -- PVP_REWARDS[battleground][side][standing] (and questRewards): {name, quality, itemID, level, itemID, level, ...}, one
 -- item per level bracket. supplies are consumables. PVP_HONOR: the Premier sets (a rare piece, and the epic its seal makes
 -- of it at a rank), rank rewards and rank 14 weapons
@@ -427,6 +442,7 @@ end
 -- looked up every call, FDJ re-wraps its localizers while it loads
 function DungeonJournal.DungeonName(key)
     if type(key) == "string" and key:sub(1, 3) == "al:" then return ns.AtlasLootLists and ns.AtlasLootLists.Name(key) or key end
+    if type(key) == "string" and key:sub(1, 4) == "att:" then return ns.ATT and ns.ATT.Name(key) or key end
     local name = call("LocalizeDungeonName", key)
     return type(name) == "string" and name ~= "" and name or key
 end
