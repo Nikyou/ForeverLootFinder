@@ -1,4 +1,5 @@
--- the only file that calls Pawn. everything in pcall, Pawn prints chat errors on misuse
+-- the only file that calls Pawn. everything in pcall, Pawn prints chat errors on misuse. GearQuest Forever's
+-- weights come in as more scales ("gq:<spec>", Modules/GearQuest.lua), after Pawn's
 local _, ns = ...
 
 local Pawn = {}
@@ -39,25 +40,34 @@ end
 function Pawn.IsInstalled() return ns.Util.AddOnLoaded("Pawn") end
 
 -- Pawn sets itself up on PLAYER_LOGIN
-function Pawn.IsReady()
+local function pawnReady()
     if not Pawn.IsInstalled() then return false end
     local ok, ready = call("PawnIsReady")
     return ok and ready == true
 end
 
+-- a scale to score with: GearQuest's only without Pawn. an installed Pawn is waited for, or the scale picked in it
+-- would be swapped for GearQuest's before Pawn has set itself up
+function Pawn.IsReady()
+    if Pawn.IsInstalled() then return pawnReady() end
+    return ns.GearQuest.Installed()
+end
+
+local function isGearQuest(scale) return ns.GearQuest.IsScale(scale) end
+
 function Pawn.Exists(scale)
-    if type(scale) ~= "string" or scale == "" or not Pawn.IsReady() then return false end
+    if isGearQuest(scale) then return ns.GearQuest.Exists(scale) end
+    if type(scale) ~= "string" or scale == "" or not pawnReady() then return false end
     local ok, exists = call("PawnDoesScaleExist", scale)
     return ok and exists == true
 end
 
--- visible scales first, as Pawn sorts them
+-- Pawn's first, visible ones first as Pawn sorts them, then GearQuest's
 function Pawn.Scales()
     local list = {}
-    if not Pawn.IsReady() then return list end
-    local ok, scales = call("PawnGetAllScalesEx")
-    if not ok or type(scales) ~= "table" then return list end
-    for _, scale in ipairs(scales) do
+    local ok, scales = false, nil
+    if pawnReady() then ok, scales = call("PawnGetAllScalesEx") end
+    for _, scale in ipairs(ok and type(scales) == "table" and scales or {}) do
         if type(scale) == "table" and type(scale.Name) == "string" then
             list[#list + 1] = {
                 name = scale.Name,
@@ -67,17 +77,24 @@ function Pawn.Scales()
             }
         end
     end
+    for _, scale in ipairs(ns.GearQuest.Scales()) do list[#list + 1] = scale end
     return list
 end
 
+-- with nothing picked: a scale Pawn shows, else the spec GearQuest goes by
 function Pawn.Resolve(saved)
     if saved and Pawn.Exists(saved) then return saved end
     local scales = Pawn.Scales()
-    for _, scale in ipairs(scales) do if scale.visible then return scale.name end end
+    for _, scale in ipairs(scales) do
+        if scale.visible and not isGearQuest(scale.name) then return scale.name end
+    end
+    local gearQuest = ns.GearQuest.Default()
+    if gearQuest then return gearQuest end
     return scales[1] and scales[1].name or nil
 end
 
 function Pawn.Color(scale)
+    if isGearQuest(scale) then return ns.GearQuest.COLOR end
     if not Pawn.Exists(scale) then return "|cff8ec3e6" end
     local ok, color = call("PawnGetScaleColor", scale)
     if ok and type(color) == "string" and not isSecret(color) then return color end
@@ -85,6 +102,7 @@ function Pawn.Color(scale)
 end
 
 function Pawn.Label(scale)
+    if isGearQuest(scale) then return ns.GearQuest.Label(scale) end
     if not Pawn.Exists(scale) then return scale end
     local ok, label = call("PawnGetScaleLocalizedName", scale)
     return ok and type(label) == "string" and label or scale
@@ -110,6 +128,7 @@ end
 function Pawn.Compute(id, scale)
     if not Pawn.Exists(scale) then return nil end
     if not clientHas(id) then return nil, "uncached" end
+    if isGearQuest(scale) then return ns.GearQuest.Value(id, scale) end
     local ok, item = call("PawnGetItemData", "item:" .. id)
     if not ok then return nil end
     if type(item) ~= "table" then
@@ -130,6 +149,10 @@ end
 
 function Pawn.Signature(scale)
     if not Pawn.Exists(scale) then return nil end
+    if isGearQuest(scale) then
+        local text = ns.GearQuest.SignatureText(scale)
+        return text and hash(text) or nil
+    end
     local ok, weights = call("PawnGetAllStatValues", scale)
     if not ok or type(weights) ~= "table" then return nil end
     local keys = {}
@@ -259,6 +282,11 @@ function Pawn.SlotValue(invSlot, scale)
     if not link or isSecret(link) then
         slotValues[scale][invSlot] = false
         return false
+    end
+    if isGearQuest(scale) then
+        local value = ns.GearQuest.SlotValue(link, scale)
+        if value ~= nil then slotValues[scale][invSlot] = value end
+        return value
     end
     local ok, item = call("PawnGetItemDataForInventorySlot", invSlot, true)
     if not ok then return nil end

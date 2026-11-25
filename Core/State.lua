@@ -34,11 +34,13 @@ local function build()
     local started = Util.Clock()
     ns.ForeverDB.Prune()
     ns.ForeverDB.ApplySkills()
+    ns.SkillUp.ApplySkills()
     index = ns.Index.Build(data, {
         {provider = "questie", entries = ns.Questie.Entries(), areas = ns.Questie.Areas()},
         {provider = "atlasloot", entries = ns.Crafts.Entries()},
         ns.AtlasLootLists.Entries(),
         ns.ATT.Entries(),
+        ns.SkillUp.Entries(),
         ns.ForeverDB.Entries(),
         {provider = "attune", entries = ns.Attune.Entries()},
         {provider = "silverdragon", entries = ns.SilverDragon.Entries()},
@@ -61,7 +63,7 @@ end
 
 -- Attune and SilverDragon read while the index is built, so they never count as busy
 function ns.ProvidersBusy()
-    for _, provider in ipairs({ns.Questie, ns.Crafts, ns.AtlasLootLists, ns.ATT, ns.ForeverDB}) do
+    for _, provider in ipairs({ns.Questie, ns.Crafts, ns.AtlasLootLists, ns.ATT, ns.SkillUp, ns.ForeverDB}) do
         local state = provider.State()
         if state == "waiting" or state == "scanning" then return true end
     end

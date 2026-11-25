@@ -495,15 +495,15 @@ function ForeverDB.Prune()
     extra = {provider = "foreverdb", entries = kept, areas = extra.areas, instances = extra.instances}
 end
 
--- ATT knows the skill each recipe is learned at on Forever, ForeverDB only when it turns yellow
+-- SkillUp and ATT know the skill each recipe is learned at on Forever, ForeverDB only when it turns yellow
 function ForeverDB.ApplySkills()
-    local att = ns.ATT and (ns.ATT.State() .. tostring(ns.ATT.Enabled()))
-    if learnedFor == att then return end
-    learnedFor = att
+    local learned = ns.ATT.State() .. tostring(ns.ATT.Enabled()) .. ns.SkillUp.State() .. tostring(ns.SkillUp.Enabled())
+    if learnedFor == learned then return end
+    learnedFor = learned
     for _, entry in ipairs(extra.entries) do
         if entry.kind == "craft" and entry.spell then
             entry.yellow = entry.yellow or entry.skill
-            entry.skill = ns.ATT.LearnedAt(entry.spell) or entry.yellow
+            entry.skill = ns.SkillUp.LearnedAt(entry.spell) or entry.yellow
         end
     end
 end

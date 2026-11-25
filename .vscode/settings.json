@@ -74,7 +74,8 @@
         "UNKNOWN",
         "FACTION_HORDE",
         "FACTION_ALLIANCE",
-        "SlashCmdList"
+        "SlashCmdList",
+        "ProfessionsFrame"
     ],
     "Lua.type.weakUnionCheck": true
 }

@@ -49,6 +49,7 @@ local defaults = {
         waypoints = "auto", -- auto (TomTom, else the map pin), tomtom or pin
         atlasloot = true,
         att = true,
+        skillup = true,
         foreverdb = true,
         auctionator = true,
         -- a column with no data hides whatever the choice
@@ -281,7 +282,7 @@ function addon:OnProfileChanged()
     self:Migrate("profile")
     LibStub("LibDBIcon-1.0"):Refresh(ADDON_NAME, self.db.profile.minimap)
     if started then
-        for _, provider in ipairs({ns.Questie, ns.Crafts, ns.AtlasLootLists, ns.ATT, ns.ForeverDB, ns.Attune,
+        for _, provider in ipairs({ns.Questie, ns.Crafts, ns.AtlasLootLists, ns.ATT, ns.SkillUp, ns.ForeverDB, ns.Attune,
                                    ns.SilverDragon}) do
             if provider.Enabled() and provider.State() == "off" then provider.Init() end
         end
@@ -341,6 +342,8 @@ local HANDLERS = {
             ns.InvalidateCharacters()
         end
         ns.FireChange("level")
+        -- GearQuest's scales change set at talent level
+        if ns.Pawn.CheckScales() then ns.FireChange("pawn") end
     end,
     PLAYER_EQUIPMENT_CHANGED = function()
         ns.Owned.Invalidate()
@@ -412,6 +415,7 @@ function addon:OnEnable()
     ns.Crafts.Init()
     ns.AtlasLootLists.Init()
     ns.ATT.Init()
+    ns.SkillUp.Init()
     ns.ForeverDB.Init()
     ns.Auctionator.Init()
     ns.Holidays.Init()

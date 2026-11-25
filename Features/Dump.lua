@@ -552,7 +552,7 @@ function Dump.StatusText()
     add(format("fdj: state %s%s, read %d times, last read in %.0f ms%s", ns.DungeonJournal.Status(),
                ns.DungeonJournal.Enabled() and "" or " (off)", index.fdjReads, index.fdjMs, fdjError))
     for _, provider in ipairs({ns.Questie, ns.Crafts, ns.AtlasLootLists}) do add(statusLine(provider.Status())) end
-    for _, provider in ipairs({ns.ATT, ns.ForeverDB, ns.Attune, ns.SilverDragon}) do
+    for _, provider in ipairs({ns.ATT, ns.SkillUp, ns.ForeverDB, ns.Attune, ns.SilverDragon}) do
         local counts = {}
         for _, key in ipairs(sortedKeys(provider.Stats())) do
             if key ~= "ms" then counts[#counts + 1] = key .. "=" .. tostring(provider.Stats()[key]) end
@@ -592,6 +592,7 @@ function Dump.StatusText()
     measure("questie", ns.Questie.Tables())
     measure("foreverdb", ns.ForeverDB.Entries())
     measure("att", ns.ATT.Entries())
+    measure("skillup", ns.SkillUp.Entries())
     measure("atlasloot", ns.AtlasLootLists.Entries())
     measure("crafts", ns.Crafts.Entries())
     measure("attune", ns.Attune.Entries())
