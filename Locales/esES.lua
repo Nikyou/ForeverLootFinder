@@ -387,6 +387,7 @@ if not L then return end
 -- L["my PvP rank"] = true -- Translation missing
 -- L["Upgrades only"] = true -- Translation missing
 -- L["my battleground standings"] = true -- Translation missing
+-- L["Always shown in this tab."] = true -- Translation missing
 
 -- UI/MainWindow.lua
 -- L["Item level"] = true -- Translation missing

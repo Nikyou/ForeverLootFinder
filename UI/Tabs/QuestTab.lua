@@ -54,6 +54,7 @@ ns.Cards.Tab({
     key = "quests",
     label = L["Quests"],
     accept = function(source) return ns.Index.IsQuest(source) end,
+    own = {"quest", "zoneQuest"},
     card = zoneOf,
     group = function(source, ctx)
         local done = source.questID and ctx.completed and ctx.completed(source.questID)

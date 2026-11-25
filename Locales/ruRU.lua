@@ -409,6 +409,7 @@ L["Only ranks I have"] = "Только мой ранг"
 L["my PvP rank"] = "мой PvP-ранг"
 L["Upgrades only"] = "Только улучшения"
 L["my battleground standings"] = "моё отношение на полях боя"
+L["Always shown in this tab."] = "На этой вкладке показываются всегда."
 
 -- UI/MainWindow.lua
 L["Item level"] = "Уровень предмета"

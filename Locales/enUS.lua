@@ -387,6 +387,7 @@ L["Only ranks I have"] = true
 L["my PvP rank"] = true
 L["Upgrades only"] = true
 L["my battleground standings"] = true
+L["Always shown in this tab."] = true
 
 -- UI/MainWindow.lua
 L["Item level"] = true
