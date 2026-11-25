@@ -37,6 +37,36 @@ function Tooltip.ViaQuestNote(source)
     return " " .. MUTED .. "(" .. table.concat(parts, ", ") .. ")|r"
 end
 
+local function iconText(icon, count)
+    if icon == nil or isSecret(icon) then return tostring(count) end
+    return format("%d |T%s:0|t", count, tostring(icon))
+end
+
+-- coins for gold, the item's or currency's icon with the count for the rest
+function Tooltip.PriceText(price)
+    if type(price) ~= "table" then return nil end
+    local parts = {}
+    local currencies = rawget(_G, "C_CurrencyInfo")
+    for _, cost in ipairs(price) do
+        if cost.money then
+            local coins = currencies and ns.Util.SafeCall(currencies.GetCoinTextureString, cost.money)
+            parts[#parts + 1] = type(coins) == "string" and not isSecret(coins) and coins or format("%dc", cost.money)
+        elseif cost.item then
+            local icon = C_Item and select(5, ns.Util.SafeCall(C_Item.GetItemInfoInstant, cost.item))
+            parts[#parts + 1] = iconText(icon, cost.count or 1)
+        elseif cost.currency then
+            local info = currencies and ns.Util.SafeCall(currencies.GetCurrencyInfo, cost.currency)
+            parts[#parts + 1] = iconText(type(info) == "table" and info.iconFileID or nil, cost.count or 1)
+        end
+    end
+    return #parts > 0 and table.concat(parts, " ") or nil
+end
+
+local function withPrice(text, source)
+    local price = Tooltip.PriceText(source.price)
+    return price and (text .. "  " .. price) or text
+end
+
 local function zonesText(source)
     if source.zones and #source.zones > 0 then
         return table.concat(source.zones, ", ") .. (source.moreZones and ", ..." or "")
@@ -54,7 +84,7 @@ local function npcText(source, withDungeon)
     local text, notes = nil, {}
     if source.kind == "vendor" then
         text = source.many and format(L["Sold by %d vendors"], source.count or 0)
-            or format(L["Vendor: %s"], source.npcName or "?")
+            or (source.npcName and format(L["Vendor: %s"], source.npcName)) or L["Vendor"]
         if source.faction then notes[#notes + 1] = source.faction == "Horde" and L["Horde"] or L["Alliance"] end
     else
         text = source.many and format(L["Dropped by %d creatures"], source.count or 0)
@@ -63,6 +93,7 @@ local function npcText(source, withDungeon)
         notes[#notes + 1] = levelText(source.levelMin, source.levelMax)
     end
     if #notes > 0 then text = text .. " " .. MUTED .. "(" .. table.concat(notes, ", ") .. ")|r" end
+    text = withPrice(text, source)
     local where = zonesText(source)
     if withDungeon == false or not where then return text end
     return text .. " — " .. where
@@ -80,15 +111,16 @@ function Tooltip.SourceText(source, dungeonByKey, withDungeon)
     if source.kind == "reputation" then
         local name = source.factionName or L["Reputation"]
         local text = source.standing and format("%s: %s", name, ns.AtlasLootLists.StandingName(source.standing)) or name
-        return text .. Tooltip.ViaQuestNote(source)
+        return withPrice(text, source) .. Tooltip.ViaQuestNote(source)
     end
     if source.kind == "pvp" then
         local text = source.section and format(L["PvP: %s"], source.section) or L["PvP"]
         if source.standing then text = text .. " " .. MUTED .. "(" .. ns.AtlasLootLists.StandingName(source.standing) .. ")|r" end
-        return text
+        return withPrice(text, source)
     end
     if source.kind == "event" then
-        return format(L["World event: %s"], source.eventName or "?") .. Tooltip.ViaQuestNote(source)
+        local name = ns.Holidays.EventName(source) or "?"
+        return withPrice(format(L["World event: %s"], name), source) .. Tooltip.ViaQuestNote(source)
     end
     if source.kind == "world" then
         local text = source.section and format(L["World drop: %s"], source.section) or L["World drop"]

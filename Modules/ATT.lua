@@ -13,6 +13,11 @@ local SIDES = {[1] = "Horde", [2] = "Alliance"}
 local SKIP_CATEGORIES = {NeverImplemented = true, HiddenQuestTriggers = true, Unsorted = true, Secrets = true,
                          ExpansionFeatures = true, Promotions = true}
 local CATEGORY_KIND = {PVP = "pvp", Holidays = "event", WorldDrops = "world", Craftables = "craft"}
+-- ATT's event numbers on its holiday headers (e=), to ns.Holidays' keys
+local HOLIDAYS = {
+    [1] = "darkmoon", [18] = "lunar", [9] = "love", [15] = "noblegarden", [13] = "children", [11] = "midsummer",
+    [6] = "fishing", [17] = "harvest", [16] = "hallows", [14] = "winterVeil",
+}
 
 local status = Util.NewStatus("att", {items = 0, places = 0, matched = 0, recipes = 0, ms = 0})
 local stats = status.counts
@@ -92,6 +97,29 @@ function ATT.Read(root, opt)
         return key
     end
 
+    -- ATT's cost: copper, or {{"g", copper}, {"i", itemID, count}, {"c", currencyID, count}}
+    local function priceOf(cost)
+        if type(cost) == "number" then return cost > 0 and {{money = cost}} or nil end
+        if type(cost) ~= "table" then return nil end
+        local price = {}
+        for _, part in ipairs(cost) do
+            local what, id, count
+            if type(part) == "table" then
+                what, id, count = rawget(part, 1), tonumber(rawget(part, 2)), tonumber(rawget(part, 3))
+            end
+            if what == "g" and id then
+                price[#price + 1] = {money = id}
+            elseif what == "i" and id then
+                price[#price + 1] = {item = id, count = count or 1}
+            elseif what == "c" and id then
+                price[#price + 1] = {currency = id, count = count or 1}
+            end
+        end
+        return #price > 0 and price or nil
+    end
+    -- a vendor's links carry no cost, the item's own node does
+    local costs = {}
+
     local function addItem(node, id, ctx)
         local entry = {id = id, faction = ctx.faction, classMask = ctx.classMask}
         local side = SIDES[raw(node, "r")]
@@ -105,7 +133,7 @@ function ATT.Read(root, opt)
         elseif ctx.category == "pvp" then
             entry.kind, entry.section = "pvp", ctx.header
         elseif ctx.category == "event" then
-            entry.kind, entry.eventName = "event", ctx.header
+            entry.kind, entry.eventName, entry.holiday = "event", ctx.header, ctx.holiday
         elseif ctx.category == "world" then
             entry.kind, entry.worldDrop = "world", true
         elseif ctx.quest then
@@ -153,6 +181,11 @@ function ATT.Read(root, opt)
                 end
                 return
             end
+        end
+        local price = priceOf(raw(node, "cost"))
+        if price and not costs[id] then costs[id] = price end
+        if entry.kind == "vendor" or entry.kind == "reputation" or entry.kind == "pvp" or entry.kind == "event" then
+            entry.price = price
         end
         if entry.dungeon then used[entry.dungeon] = true end
         out[#out + 1] = entry
@@ -218,6 +251,8 @@ function ATT.Read(root, opt)
         if profession and opt.professions[profession] then ctx = with(ctx, "profession", profession) end
         if raw(node, "headerID") or raw(node, "autoHeaderID") then
             if ctx.category ~= "craft" then ctx = with(ctx, "header", nameOf(node) or ctx.header) end
+            local holiday = HOLIDAYS[raw(node, "e")]
+            if holiday then ctx = with(ctx, "holiday", holiday) end
         end
         for _, child in ipairs(children) do
             walk(child, ctx)
@@ -230,6 +265,9 @@ function ATT.Read(root, opt)
         if key and not SKIP_CATEGORIES[key] then
             walk(category, {category = CATEGORY_KIND[key], header = nameOf(category)})
         end
+    end
+    for _, entry in ipairs(out) do
+        if entry.kind == "vendor" and not entry.price then entry.price = costs[entry.id] end
     end
     -- places with nothing wearable stay off the Raids tab (Forever's raids, for now)
     local kept = {}
