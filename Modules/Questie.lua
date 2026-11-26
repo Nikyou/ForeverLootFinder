@@ -232,9 +232,13 @@ local function questieModules()
     return corrections, events
 end
 
+-- Questie hides these as Classic's, but Forever has them: 7668 is the rare Darkreaver quest beside 8258 (ATT, players)
+local SHOWN = {[7668] = true}
+
 -- Questie's own rule: "HIDE_ON_MAP" quests are only kept off its map, and a holiday's quests sit in the hidden
 -- list all year (Questie shows them while the holiday runs). Other addons' quest lines go through this too
 function Questie.HiddenQuest(questID)
+    if SHOWN[questID] then return false end
     local fixes, holidays = questieModules()
     local list = fixes and fixes.hiddenQuests
     local hidden = type(list) == "table" and list[questID]
