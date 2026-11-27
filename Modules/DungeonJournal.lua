@@ -16,7 +16,7 @@ local KNOWN = {
         "name", "loot", "aliases", "npcID", "description", "trash", "rare", "recipeTab", "trackerHidden", "childOf", "fightGroup",
         "fightSig", "optional", "killWith", "lootChest", "listHidden", "portraitNpcID", "probableLoot", "summonItem",
         "customIcon", "factionOnly", "lootNote", "rareLabel", "chestLabel", "children", "displayID", "killedBefore",
-        "runLogHidden", "spawnQuest", "summonChain", "trackerOnlyIfKilled", "questLink", "pairNpcID", "deadWith",
+        "runLogHidden", "spawnQuest", "summonChain", "trackerOnlyIfKilled", "questLink", "pairNpcID", "deadWith", "rareSig",
     },
     loot = {"allTrash", "tip", "dropNote", "makes", "sourceTip", "lootFirst"},
 }
