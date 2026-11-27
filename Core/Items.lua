@@ -232,16 +232,18 @@ local function retryTooltip(id)
 end
 
 -- the battleground factions' names on this client, to their battleground: "Requires Silverwing Sentinels" is PvP.
--- the client doesn't name the other side's faction (Silverwing Sentinels on a Horde character): FDJ's English name
-local battlegroundOf
+-- the client doesn't name the other side's faction (Silverwing Sentinels on a Horde character): FDJ's English name,
+-- forever-db's in the client's language
+local battlegroundOf, namedFor
 local function pvpFaction(name)
     if not name then return nil end
     if not battlegroundOf then
-        battlegroundOf = {}
+        battlegroundOf, namedFor = {}, ns.ForeverDB.State()
         for id, key in pairs(Index.PVP_FACTIONS) do
-            for _, factionName in ipairs({Util.FactionName(id) or false, ns.DungeonJournal.FactionName(id) or false}) do
-                if factionName then battlegroundOf[factionName] = key end
-            end
+            local names = {
+                Util.FactionName(id) or false, ns.DungeonJournal.FactionName(id) or false, ns.ForeverDB.FactionName(id) or false,
+            }
+            for _, factionName in ipairs(names) do if factionName then battlegroundOf[factionName] = key end end
         end
     end
     return battlegroundOf[name]
@@ -479,6 +481,11 @@ function Items.Track(index)
             trackedCount = trackedCount + 1
             if isDone(id) then doneCount = doneCount + 1 end
         end
+    end
+    -- forever-db's names come in when it's read, after some items were
+    if battlegroundOf and namedFor ~= ns.ForeverDB.State() then
+        battlegroundOf = nil
+        for _, info in pairs(cache) do if info.reqReputation then info.pvpFaction = pvpFaction(info.reqReputation) end end
     end
 end
 
