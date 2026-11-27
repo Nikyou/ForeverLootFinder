@@ -359,6 +359,11 @@ function ForeverDB.Read(D, opt)
         local skill = tonumber(skillRow[3])
         return opt.professions[skillRow[1]] and (not skill or skill <= MAX_SKILL)
     end
+    -- a dungeon creature's map is often the zone outside, or none
+    local function placeOf(info)
+        return info.instance and opt.instanceName and opt.instanceName(info.instance) or info.zone and zoneName(info.zone)
+    end
+
     -- a recipe item's vendors, quests and likeliest droppers, with the side or races each is for
     local function recipeFrom(item)
         local sodItem = item >= SOD_ITEM_FIRST and item <= SOD_ITEM_LAST
@@ -367,11 +372,7 @@ function ForeverDB.Read(D, opt)
             if type(npcID) == "number" and keepNpc(npcID, sodItem) then
                 local info = npcOf(npcID)
                 sold[npcID] = true
-                found.vendors[#found.vendors + 1] = {
-                    name = info.name,
-                    zone = info.zone and zoneName(info.zone),
-                    faction = info.faction,
-                }
+                found.vendors[#found.vendors + 1] = {name = info.name, zone = placeOf(info), faction = info.faction}
             end
         end
         for _, questID in ipairs(list(D.rew[item])) do
@@ -394,7 +395,7 @@ function ForeverDB.Read(D, opt)
                 local info = npcOf(npcID)
                 found.drops[#found.drops + 1] = {
                     name = info.name,
-                    zone = info.zone and zoneName(info.zone),
+                    zone = placeOf(info),
                     chance = type(rate) == "number" and rate > 0 and rate / 100 or nil,
                 }
             end
@@ -485,13 +486,24 @@ local function mapName(map)
     return type(name) == "string" and not Util.IsSecret(name) and name ~= "" and name or nil
 end
 
--- FDJ knows its dungeons' instance IDs and the wings that share one. the client's name ("Deadmines") for the rest
-local function instancePlaces(map)
+local function realZoneText(map)
     local get = rawget(_G, "GetRealZoneText")
     local name = type(get) == "function" and Util.SafeCall(get, map)
-    if type(name) ~= "string" or Util.IsSecret(name) or name == "" then name = nil end
-    local keys = Util.SafeCall(ns.DungeonJournal.MatchInstance, map, name)
+    if type(name) ~= "string" or Util.IsSecret(name) or name == "" then return nil end
+    return name
+end
+
+-- FDJ knows its dungeons' instance IDs and the wings that share one. the client's name ("Deadmines") for the rest
+local function instancePlaces(map)
+    local keys = Util.SafeCall(ns.DungeonJournal.MatchInstance, map, realZoneText(map))
     return type(keys) == "table" and keys or nil
+end
+
+-- wings share one instance: the whole dungeon's name, as the client gives it
+local function instanceName(map)
+    local keys = instancePlaces(map)
+    if keys and #keys == 1 then return ns.DungeonJournal.DungeonName(keys[1]) or realZoneText(map) end
+    return realZoneText(map)
 end
 
 local function dungeonOf(name)
@@ -529,6 +541,7 @@ local function read()
             zoneName = zoneName,
             mapName = mapName,
             instancePlaces = instancePlaces,
+            instanceName = instanceName,
             dungeonOf = dungeonOf,
             spellName = (ENGLISH[GetLocale()] or loc) and spellName or nil,
             localItems = loc and type(loc.item) == "table" and loc.item or nil,
