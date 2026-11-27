@@ -40,6 +40,14 @@ function SkillUp.LearnedAt(spell)
     return known[1]
 end
 
+-- where the item that teaches a recipe comes from. not kept: SkillUp says "loading" while it reads a profession's
+-- sources, the first time anyone asks
+function SkillUp.RecipeSources(spell)
+    local source = spell and SkillUp.Enabled() and api()
+    local found = source and Util.SafeCall(source.RecipeSources, spell)
+    return type(found) == "table" and found or nil
+end
+
 -- ATT may finish after this did
 function SkillUp.ApplySkills()
     local att = ns.ATT.State() .. tostring(ns.ATT.Enabled())

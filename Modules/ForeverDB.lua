@@ -42,6 +42,7 @@ local status = Util.NewStatus("foreverdb", {
 local stats = status.counts
 local EMPTY = {provider = "foreverdb", entries = {}, areas = {}, instances = {}}
 local extra = EMPTY
+local recipeItems, recipeOf = {}, {} -- [recipe item] = where it comes from, [spell] = the recipe item that teaches it
 local learnedFor -- ATT's state the skill levels came from
 local prunedFor -- QuestieDB's list the copies were dropped for, false when there was none
 
@@ -65,6 +66,8 @@ function ForeverDB.State() return status.state end
 function ForeverDB.Status() return status end
 function ForeverDB.Stats() return stats end
 function ForeverDB.Entries() return ForeverDB.Enabled() and extra or EMPTY end
+function ForeverDB.RecipeItem(spell) return ForeverDB.Enabled() and spell and recipeOf[spell] or nil end
+function ForeverDB.RecipeSources(item) return ForeverDB.Enabled() and item and recipeItems[item] or nil end
 
 local function list(value)
     if type(value) == "table" then return value end
@@ -356,6 +359,53 @@ function ForeverDB.Read(D, opt)
         local skill = tonumber(skillRow[3])
         return opt.professions[skillRow[1]] and (not skill or skill <= MAX_SKILL)
     end
+    -- a recipe item's vendors, quests and likeliest droppers, with the side or races each is for
+    local function recipeFrom(item)
+        local sodItem = item >= SOD_ITEM_FIRST and item <= SOD_ITEM_LAST
+        local found, sold = {vendors = {}, quests = {}, drops = {}}, {}
+        for _, npcID in ipairs(list(D.vend[item])) do
+            if type(npcID) == "number" and keepNpc(npcID, sodItem) then
+                local info = npcOf(npcID)
+                sold[npcID] = true
+                found.vendors[#found.vendors + 1] = {
+                    name = info.name,
+                    zone = info.zone and zoneName(info.zone),
+                    faction = info.faction,
+                }
+            end
+        end
+        for _, questID in ipairs(list(D.rew[item])) do
+            local sodQuest = type(questID) == "number" and questID >= SOD_QUEST_FIRST and questID < FOREVER_QUEST_FIRST
+            local quest = type(questID) == "number" and not (sodItem and sodQuest) and questOf(questID)
+            if quest then
+                found.quests[#found.quests + 1] = {
+                    questID = questID,
+                    title = quest.questName,
+                    raceMask = quest.raceMask,
+                    classMask = quest.classMask,
+                }
+            end
+        end
+        local dropRow = list(D.drop[item])
+        for i = 1, #dropRow - 1, 2 do
+            local npcID, rate = dropRow[i], dropRow[i + 1]
+            -- its vendors are among the droppers too, with no chance
+            if type(npcID) == "number" and not sold[npcID] and keepNpc(npcID, sodItem) then
+                local info = npcOf(npcID)
+                found.drops[#found.drops + 1] = {
+                    name = info.name,
+                    zone = info.zone and zoneName(info.zone),
+                    chance = type(rate) == "number" and rate > 0 and rate / 100 or nil,
+                }
+            end
+        end
+        table.sort(found.drops, function(a, b) return (a.chance or 0) > (b.chance or 0) end)
+        for i = #found.drops, MAX_EACH + 1, -1 do found.drops[i] = nil end
+        found.world = type(D.world and D.world[item]) == "number" or nil
+        if #found.vendors + #found.quests + #found.drops == 0 and not found.world then return nil end
+        return found
+    end
+
     local made = {}
     for spell, recipe in pairs(recipes) do
         local recipeRow = D.item[recipe]
@@ -364,6 +414,13 @@ function ForeverDB.Read(D, opt)
             made[spell] = true
             craft(spell, id, recipe)
         end
+        checkpoint()
+    end
+    local byItem, bySpell = {}, {}
+    for spell in pairs(made) do
+        local item = recipes[spell]
+        bySpell[spell] = item
+        if byItem[item] == nil then byItem[item] = recipeFrom(item) or false end
         checkpoint()
     end
     -- trainers teach the rest: the spell has the item's name, in the client's language. the locale lists every item,
@@ -394,7 +451,7 @@ function ForeverDB.Read(D, opt)
         end
     end
     for map, keys in pairs(instances) do if not keys then instances[map] = nil end end
-    return out, counts, areas, instances
+    return out, counts, areas, instances, byItem, bySpell
 end
 
 -- the client's language, from ForeverDB_Locales when it's loaded
@@ -403,6 +460,13 @@ local function localeTable()
     local locales = rawget(_G, "ForeverDBLocale")
     local loc = type(locales) == "table" and type(locales.loc) == "table" and locales.loc[GetLocale()]
     return type(loc) == "table" and loc or nil
+end
+
+-- the client names only the factions the character can meet, not the other side's battleground one
+function ForeverDB.FactionName(id)
+    local loc = ForeverDB.Enabled() and localeTable()
+    local name = loc and type(loc.faction) == "table" and loc.faction[id]
+    return type(name) == "string" and name or nil
 end
 
 local zoneNames = {}
@@ -456,9 +520,9 @@ local function read()
     end
     status.state, status.error = "scanning", nil
     local loc = localeTable()
-    local found, counts, areas, instances
+    local found, counts, areas, instances, items, spells
     Util.RunSliced(function(checkpoint)
-        found, counts, areas, instances = ForeverDB.Read(db, {
+        found, counts, areas, instances, items, spells = ForeverDB.Read(db, {
             equippable = Util.Equippable,
             npcName = function(id) return loc and type(loc.npc) == "table" and loc.npc[id] or nil end,
             questName = function(id) return loc and type(loc.quest) == "table" and loc.quest[id] or nil end,
@@ -487,6 +551,7 @@ local function read()
                 if entry.profession then entry.professionName = ns.Crafts.Name(entry.profession) end
             end
             extra = {provider = "foreverdb", entries = found, areas = areas, instances = instances}
+            recipeItems, recipeOf = items or {}, spells or {}
             learnedFor = nil
         end
         status.state = found and #found > 0 and "done" or "nodata"

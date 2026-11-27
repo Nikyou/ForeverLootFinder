@@ -7,6 +7,7 @@ ns.Tooltip = Tooltip
 
 local MAX_SOURCES = 3
 local SOURCE_COLOR = {1, 0.82, 0}
+local RECIPE_COLOR = {0.85, 0.85, 0.85}
 local MUTED = "|cffaaaaaa"
 -- tooltip fonts have no star character
 Tooltip.STAR_TEXTURE = "Interface\\TargetingFrame\\UI-RaidTargetingIcon_1"
@@ -188,6 +189,41 @@ function Tooltip.SourceText(source, dungeonByKey, withDungeon)
     return where .. " — " .. Tooltip.DungeonLabel(source.dungeon, dungeonByKey)
 end
 
+local function usable(list, named)
+    local out = {}
+    for _, row in ipairs(type(list) == "table" and list or {}) do
+        if type(row) == "table" and row.usable ~= false and type(row[named]) == "string" then out[#out + 1] = row end
+    end
+    return out
+end
+
+local function withZone(text, row)
+    if type(row.zone) == "string" and row.zone ~= "" then return text .. " — " .. row.zone end
+    return text
+end
+
+-- where a craft's recipe item comes from: a vendor, else a quest, else the likeliest drop. SkillUp marks what your
+-- side can't get, the others' come already sorted out
+function Tooltip.RecipeText(found)
+    if type(found) ~= "table" then return nil end
+    local vendor = usable(found.vendors, "name")[1]
+    if vendor then return withZone(format(L["Recipe: sold by %s"], vendor.name), vendor) end
+    local quest = usable(found.quests, "title")[1]
+    if quest then return format(L["Recipe: from quest %s"], quest.title) end
+    local best
+    for _, drop in ipairs(usable(found.drops, "name")) do
+        if not best or (tonumber(drop.chance) or 0) > (tonumber(best.chance) or 0) then best = drop end
+    end
+    if best then
+        local text = format(L["Recipe: drops from %s"], best.name)
+        local chance = tonumber(best.chance)
+        if chance then text = text .. " " .. MUTED .. "(" .. Tooltip.ChanceText(chance) .. ")|r" end
+        return withZone(text, best)
+    end
+    if found.world then return L["Recipe: world drop"] end
+    return nil
+end
+
 -- each faction's or race's copy of a quest makes one line
 local MERGED_DROP = {"faction", "zoneKey", "zoneName", "dungeon", "questLevel"}
 function Tooltip.MergeQuests(sources)
@@ -254,6 +290,9 @@ function Tooltip.Lines(record, dungeonByKey, opts)
                 text = format(label, text)
             end
             lines[#lines + 1] = {text = text, color = SOURCE_COLOR}
+            local recipe =
+              opts.recipeSources and sources[i].kind == "craft" and Tooltip.RecipeText(opts.recipeSources(sources[i]))
+            if recipe then lines[#lines + 1] = {text = "        " .. recipe, color = RECIPE_COLOR} end
         end
         if limit < #sources then
             lines[#lines + 1] = {text = "    " .. format(L["%d more (Shift)"], #sources - limit), color = {0.6, 0.6, 0.6}}
@@ -312,6 +351,7 @@ function Tooltip.Add(tooltip, record, own)
         showSource = showSource,
         fdjLineOn = not (own and own.noItem) and ns.DungeonJournal.ItemSourceLineOn(),
         showAll = IsShiftKeyDown(),
+        recipeSources = function(craft) return ns.RecipeSources(craft, own and own.charKey) end,
         showFavourite = profile.tooltip.favourite and record.id and record.id > 0,
         who = record.id and record.id > 0 and whoNames(record.id) or nil,
         auction = profile.tooltip.auction and auctionText(record) or nil,

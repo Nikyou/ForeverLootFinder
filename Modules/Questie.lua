@@ -411,6 +411,50 @@ function Questie.ImplausibleDrop(creature, reqLevel, itemLevel)
     return nil
 end
 
+local function keptNpc(npcID)
+    return foreverNpcs == nil or npcID < SOD_NPC_FIRST or npcID > SOD_NPC_LAST or foreverNpcs[npcID] == true
+end
+
+-- a recipe item's vendors, quests and droppers, asked when a craft's tooltip shows. more droppers than MAX_EACH make
+-- it a world drop: QuestieDB has no chances to pick one by
+local recipeCache = {}
+function Questie.RecipeSources(item)
+    if not (item and Questie.Enabled() and db()) then return nil end
+    if recipeCache[item] ~= nil then return recipeCache[item] or nil end
+    local found = {vendors = {}, quests = {}, drops = {}}
+    for _, npcID in ipairs(ids(get("Item", item, "vendors"))) do
+        local info = keptNpc(npcID) and npc(npcID)
+        if info then
+            found.vendors[#found.vendors + 1] =
+              {name = info.name, zone = info.zone and zoneName(info.zone), faction = info.faction}
+        end
+    end
+    for _, questID in ipairs(ids(get("Item", item, "questRewards"))) do
+        local info = not Questie.HiddenQuest(questID) and quest(questID)
+        if info then
+            found.quests[#found.quests + 1] = {
+                questID = questID,
+                title = info.questName,
+                raceMask = info.raceMask,
+                classMask = info.classMask,
+            }
+        end
+    end
+    local droppers = {}
+    for _, npcID in ipairs(ids(get("Item", item, "npcDrops"))) do if keptNpc(npcID) then droppers[#droppers + 1] = npcID end end
+    if #droppers > MAX_EACH then
+        found.world = true
+    else
+        for _, npcID in ipairs(droppers) do
+            local info = npc(npcID)
+            if info then found.drops[#found.drops + 1] = {name = info.name, zone = info.zone and zoneName(info.zone)} end
+        end
+    end
+    local any = #found.vendors + #found.quests + #found.drops > 0 or found.world == true
+    recipeCache[item] = any and found or false
+    return any and found or nil
+end
+
 local function zoneFields(entry, zone)
     entry.zone = zone
     entry.zoneKey = zone and ("zone:" .. zone) or nil
@@ -783,6 +827,7 @@ local function scan()
     wipe(questCache)
     wipe(npcZones)
     wipe(npcCache)
+    wipe(recipeCache)
     wipe(sodSkipped)
     wipe(refQuests)
     wipe(keptSodQuests)

@@ -169,15 +169,38 @@ end
 
 -- for tooltips, the set panel and the reminder
 local doableCtx = setmetatable({}, {__mode = "k"})
-function ns.DoableSources(sources, charKey, hideFaction)
+local function contextOf(charKey)
     local character = ns.Character(charKey)
     local ctx = doableCtx[character]
     if not ctx then
         ctx = ns.Filter.CharacterContext(character)
         doableCtx[character] = ctx
     end
+    return ctx
+end
+
+function ns.DoableSources(sources, charKey, hideFaction)
     if hideFaction == nil then hideFaction = ns.Filters().faction ~= false end
-    return ns.Filter.Doable(sources, ctx, hideFaction)
+    return ns.Filter.Doable(sources, contextOf(charKey), hideFaction)
+end
+
+-- where a craft's recipe item comes from: forever-db's (it has drop chances), Questie's, else SkillUp's. only what the
+-- character's side, race and class can get
+function ns.RecipeSources(craft, charKey)
+    local item = craft.recipe or ns.ForeverDB.RecipeItem(craft.spell)
+    local found = item and (ns.ForeverDB.RecipeSources(item) or ns.Questie.RecipeSources(item))
+    if not found then return ns.SkillUp.RecipeSources(craft.spell) end
+    local ctx = contextOf(charKey)
+    local function doable(rows)
+        local out = {}
+        for _, row in ipairs(rows) do
+            if ns.Filter.SourceBlock(row, ctx) == nil and not (row.questID and ns.Questie.HiddenQuest(row.questID)) then
+                out[#out + 1] = row
+            end
+        end
+        return out
+    end
+    return {vendors = doable(found.vendors), quests = doable(found.quests), drops = doable(found.drops), world = found.world}
 end
 
 local activeScale, scaleKnown = nil, false
