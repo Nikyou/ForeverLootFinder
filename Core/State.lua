@@ -39,7 +39,7 @@ local function build()
         {provider = "questie", entries = ns.Questie.Entries(), areas = ns.Questie.Areas()},
         {provider = "atlasloot", entries = ns.Crafts.Entries()}, ns.AtlasLootLists.Entries(), ns.ATT.Entries(),
         ns.SkillUp.Entries(), ns.ForeverDB.Entries(), {provider = "attune", entries = ns.Attune.Entries()},
-        {provider = "silverdragon", entries = ns.SilverDragon.Entries()},
+        {provider = "silverdragon", entries = ns.SilverDragon.Entries()}, ns.Visited.Entries(),
     }, ns.Priority(), {hidden = ns.Questie.HiddenQuest, holiday = ns.Questie.Holiday})
     dirty = false
     ns.Sets.Invalidate()
@@ -184,11 +184,23 @@ function ns.DoableSources(sources, charKey, hideFaction)
     return ns.Filter.Doable(sources, contextOf(charKey), hideFaction)
 end
 
--- where a craft's recipe item comes from: forever-db's (it has drop chances), Questie's, else SkillUp's. only what the
--- character's side, race and class can get
+-- where a craft's recipe item comes from: forever-db's (it has drop chances), Questie's, else SkillUp's, with the
+-- vendors seen selling it first. only what the character's side, race and class can get
 function ns.RecipeSources(craft, charKey)
     local item = craft.recipe or ns.ForeverDB.RecipeItem(craft.spell)
     local found = item and (ns.ForeverDB.RecipeSources(item) or ns.Questie.RecipeSources(item))
+    local seen = item and ns.Visited.RecipeVendors(item)
+    if seen then
+        local vendors = {}
+        for _, row in ipairs(seen) do vendors[#vendors + 1] = row end
+        for _, row in ipairs(found and found.vendors or {}) do vendors[#vendors + 1] = row end
+        found = {
+            vendors = vendors,
+            quests = found and found.quests or {},
+            drops = found and found.drops or {},
+            world = found and found.world,
+        }
+    end
     if not found then return ns.SkillUp.RecipeSources(craft.spell) end
     local ctx = contextOf(charKey)
     local function doable(rows)

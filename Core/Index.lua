@@ -170,7 +170,7 @@ Index.DEFAULT_PRIORITY = {
     drops = {"fdj", "att", "atlasloot", "questie", "foreverdb"},
     quests = {"questie", "fdj", "att", "foreverdb", "atlasloot"},
     crafts = {"skillup", "foreverdb", "atlasloot", "att", "tradeskill"},
-    vendors = {"questie", "foreverdb", "att"},
+    vendors = {"visited", "questie", "foreverdb", "att"},
     creatures = {"questie", "foreverdb", "att"},
     lists = {"fdj", "atlasloot", "att"},
 }

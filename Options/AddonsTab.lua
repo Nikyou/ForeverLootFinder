@@ -121,6 +121,9 @@ local function create(parent)
     controls.silverdragon = section(left, "SilverDragon", L["Use for rare creatures"],
                                     L["Rares and their loot. DungeonJournal and QuestieDB come first."],
                                     function(value) ns.SilverDragon.SetEnabled(value) end)
+    controls.visited = section(left, L["Vendors you visit"], L["Remember what they sell"],
+                               L["Gear and recipes from every vendor your characters open, for the vendors the addons miss."],
+                               function(value) ns.Visited.SetEnabled(value) end)
 
     controls.auctionator = section(left, "Auctionator", L["Use auction prices"],
                                    L["Price column, sort, filters and shopping list. Prices are from your scans."],
@@ -253,6 +256,9 @@ local function refresh()
     setStatus(controls.silverdragon, ns.SilverDragon.Installed(), p.silverdragon ~= false,
               ns.SilverDragon.State() == "done" and good(format(L["%d rares, %d items."], rares.rares, rares.items))
                 or STATE_TEXT[ns.SilverDragon.State()] or "")
+    local seen = ns.Visited.Stats()
+    setStatus(controls.visited, true, p.visited ~= false,
+              good(format(L["%d vendors, %d gear items, %d recipes."], seen.vendors, seen.gear, seen.recipes)))
     local auctionText = ""
     if ns.Auctionator.Active() then
         local index = ns.GetIndex()

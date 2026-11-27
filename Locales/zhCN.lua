@@ -626,6 +626,10 @@ if not L then return end
 -- L["Use for dungeon loot, quests and PvP rewards"] = true -- Translation missing
 -- L["The main source: Forever's dungeons, bosses, dungeon quests and PvP rewards."] = true -- Translation missing
 -- L["Gives recipes the skill they need on Forever. For trainer recipes ALL THE THINGS comes first."] = true -- Translation missing
+-- L["Vendors you visit"] = true -- Translation missing
+-- L["Remember what they sell"] = true -- Translation missing
+-- L["Gear and recipes from every vendor your characters open, for the vendors the addons miss."] = true -- Translation missing
+-- L["%d vendors, %d gear items, %d recipes."] = true -- Translation missing
 
 -- UI/Tabs/SourceTabs.lua
 -- L["Needs AtlasLoot or ALL THE THINGS."] = true -- Translation missing

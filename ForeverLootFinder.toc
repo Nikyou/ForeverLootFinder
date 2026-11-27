@@ -43,6 +43,7 @@ Modules\AtlasLoot\BiS.lua
 Modules\ATT.lua
 Modules\SkillUp.lua
 Modules\ForeverDB.lua
+Modules\Visited.lua
 Modules\Waypoints.lua
 Features\Favourites.lua
 Features\Sets.lua

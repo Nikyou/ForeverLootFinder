@@ -683,6 +683,11 @@ L["The main source: Forever's dungeons, bosses, dungeon quests and PvP rewards."
   "Главный источник: подземелья Forever, боссы, задания подземелий и награды PvP."
 L["Gives recipes the skill they need on Forever. For trainer recipes ALL THE THINGS comes first."] =
   "Даёт рецептам навык, нужный на Forever. Для рецептов у учителей ALL THE THINGS в приоритете."
+L["Vendors you visit"] = "Посещённые торговцы"
+L["Remember what they sell"] = "Запоминать их товары"
+L["Gear and recipes from every vendor your characters open, for the vendors the addons miss."] =
+  "Снаряжение и рецепты всех торговцев, у которых были ваши персонажи, — для торговцев, которых нет в аддонах."
+L["%d vendors, %d gear items, %d recipes."] = "Торговцы: %d, снаряжение: %d, рецепты: %d."
 
 -- UI/Tabs/SourceTabs.lua
 L["Needs AtlasLoot or ALL THE THINGS."] = "Нужен AtlasLoot или ALL THE THINGS."

@@ -627,6 +627,10 @@ L["%d crafts, %d recipe skills."] = true
 L["Use for dungeon loot, quests and PvP rewards"] = true
 L["The main source: Forever's dungeons, bosses, dungeon quests and PvP rewards."] = true
 L["Gives recipes the skill they need on Forever. For trainer recipes ALL THE THINGS comes first."] = true
+L["Vendors you visit"] = true
+L["Remember what they sell"] = true
+L["Gear and recipes from every vendor your characters open, for the vendors the addons miss."] = true
+L["%d vendors, %d gear items, %d recipes."] = true
 
 -- UI/Tabs/SourceTabs.lua
 L["Needs AtlasLoot or ALL THE THINGS."] = true

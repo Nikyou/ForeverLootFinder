@@ -51,6 +51,7 @@ local defaults = {
         att = true,
         skillup = true,
         foreverdb = true,
+        visited = true,
         auctionator = true,
         -- a column with no data hides whatever the choice
         columns = {upgrade = true, pawn = true, weapon = true, chance = true, source = true, price = false},
@@ -73,6 +74,7 @@ local defaults = {
         characters = {},
         favourites = {}, -- ["Name-Realm"] = {[itemID] = tier}
         tradeSkills = {}, -- [skill line] = {[itemID] = spell or true}, from profession windows
+        vendors = {}, -- [npcID] = {name, faction, map, x, y, items = {[itemID] = true}}, from merchant windows
     },
 }
 ns.DEFAULTS = defaults
@@ -283,7 +285,7 @@ function addon:OnProfileChanged()
     LibStub("LibDBIcon-1.0"):Refresh(ADDON_NAME, self.db.profile.minimap)
     if started then
         for _, provider in ipairs({
-            ns.Questie, ns.Crafts, ns.AtlasLootLists, ns.ATT, ns.SkillUp, ns.ForeverDB, ns.Attune, ns.SilverDragon,
+            ns.Questie, ns.Crafts, ns.AtlasLootLists, ns.ATT, ns.SkillUp, ns.ForeverDB, ns.Attune, ns.SilverDragon, ns.Visited,
         }) do if provider.Enabled() and provider.State() == "off" then provider.Init() end end
         ns.Owned.ScanSyndicator()
         ns.Auctionator.Hook()
@@ -360,6 +362,8 @@ local HANDLERS = {
         ns.FireChange("owned")
     end,
     BANKFRAME_CLOSED = function() bankOpen = false end,
+    MERCHANT_SHOW = function() ns.Visited.OnMerchant() end,
+    MERCHANT_UPDATE = function() ns.Visited.OnMerchant() end,
     PLAYERBANKSLOTS_CHANGED = function()
         if not bankOpen then return end
         ns.Owned.ScanBank()
@@ -414,6 +418,7 @@ function addon:OnEnable()
     ns.ATT.Init()
     ns.SkillUp.Init()
     ns.ForeverDB.Init()
+    ns.Visited.Init()
     ns.Auctionator.Init()
     ns.Holidays.Init()
     ns.Tooltip.Enable()
