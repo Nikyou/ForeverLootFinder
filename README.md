@@ -10,7 +10,7 @@ Pick a slot and see every item for it, with where it comes from and its level. O
 
 ## Other addons
 
-Forever LootFinder has no item lists of its own: it reads them from other addons. None is required, but the more you have, the more it lists. When two addons list the same item, it shows once.
+Forever LootFinder has no item lists of its own: it reads them from other addons. None is required, but the more you have, the more it lists. When two addons list the same item, it shows once. It also remembers the gear and recipes sold by the vendors you visit.
 
 Recommended:
 * **Pawn**: item scores, upgrade percent and the "Upgrades only" filter.

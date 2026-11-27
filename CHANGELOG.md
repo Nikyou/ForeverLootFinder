@@ -1,6 +1,7 @@
 #### 1.5.1
 ##### New
-* Crafted gear shows where to get its recipe: who sells it, the quest that gives it, or what drops it.
+* Crafted gear shows where to get its recipe: who sells it, the quest that gives it, or what drops it and where.
+* Remembers the gear and recipes sold by every vendor your characters visit, so vendors the addons don't list yet show too. You can turn it off on the Addons tab.
 
 #### 1.5.0
 ##### New
