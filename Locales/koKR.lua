@@ -80,6 +80,10 @@ if not L then return end
 -- L["extremely rare"] = true -- Translation missing
 -- L["%d Honor"] = true -- Translation missing
 -- L["Rank %d"] = true -- Translation missing
+-- L["Recipe: sold by %s"] = true -- Translation missing
+-- L["Recipe: from quest %s"] = true -- Translation missing
+-- L["Recipe: drops from %s"] = true -- Translation missing
+-- L["Recipe: world drop"] = true -- Translation missing
 
 -- Features/Reminder.lua
 -- L["Favourites in this dungeon"] = true -- Translation missing
@@ -618,10 +622,10 @@ if not L then return end
 -- L["%d sources, %d places."] = true -- Translation missing
 -- L["%d crafts, %d quest rewards, %d vendor and %d creature sources."] = true -- Translation missing
 -- L["Use for crafts and recipe skill"] = true -- Translation missing
--- L["Gives recipes the skill they need on Forever. For trainer recipes ALL THE THINGS comes first."] = true -- Translation missing
 -- L["%d crafts, %d recipe skills."] = true -- Translation missing
 -- L["Use for dungeon loot, quests and PvP rewards"] = true -- Translation missing
 -- L["The main source: Forever's dungeons, bosses, dungeon quests and PvP rewards."] = true -- Translation missing
+-- L["Gives recipes the skill they need on Forever. For trainer recipes ALL THE THINGS comes first."] = true -- Translation missing
 
 -- UI/Tabs/SourceTabs.lua
 -- L["Needs AtlasLoot or ALL THE THINGS."] = true -- Translation missing

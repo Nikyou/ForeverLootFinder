@@ -1,3 +1,7 @@
+#### 1.5.1
+##### New
+* Crafted gear shows where to get its recipe: who sells it, the quest that gives it, or what drops it.
+
 #### 1.5.0
 ##### New
 * SkillUp Forever support: crafted gear shows the skill its recipe needs on Forever.

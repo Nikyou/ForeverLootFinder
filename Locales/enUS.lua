@@ -80,6 +80,10 @@ L["Combine: %s"] = true
 L["extremely rare"] = true
 L["%d Honor"] = true
 L["Rank %d"] = true
+L["Recipe: sold by %s"] = true
+L["Recipe: from quest %s"] = true
+L["Recipe: drops from %s"] = true
+L["Recipe: world drop"] = true
 
 -- Features/Reminder.lua
 L["Favourites in this dungeon"] = true
@@ -619,10 +623,10 @@ L["Links every recipe to what it makes, Forever's own included. Creature drops g
 L["%d sources, %d places."] = true
 L["%d crafts, %d quest rewards, %d vendor and %d creature sources."] = true
 L["Use for crafts and recipe skill"] = true
-L["Gives recipes the skill they need on Forever. For trainer recipes ALL THE THINGS comes first."] = true
 L["%d crafts, %d recipe skills."] = true
 L["Use for dungeon loot, quests and PvP rewards"] = true
 L["The main source: Forever's dungeons, bosses, dungeon quests and PvP rewards."] = true
+L["Gives recipes the skill they need on Forever. For trainer recipes ALL THE THINGS comes first."] = true
 
 -- UI/Tabs/SourceTabs.lua
 L["Needs AtlasLoot or ALL THE THINGS."] = true

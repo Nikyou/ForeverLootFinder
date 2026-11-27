@@ -85,6 +85,10 @@ L["Combine: %s"] = "Собрать: %s"
 L["extremely rare"] = "крайне редко"
 L["%d Honor"] = "%d чести"
 L["Rank %d"] = "Ранг %d"
+L["Recipe: sold by %s"] = "Рецепт: продаёт %s"
+L["Recipe: from quest %s"] = "Рецепт: из задания %s"
+L["Recipe: drops from %s"] = "Рецепт: падает с %s"
+L["Recipe: world drop"] = "Рецепт: добыча в мире"
 
 -- Features/Reminder.lua
 L["Favourites in this dungeon"] = "Избранное в этом подземелье"
@@ -673,12 +677,12 @@ L["%d sources, %d places."] = "Источников: %d, мест: %d."
 L["%d crafts, %d quest rewards, %d vendor and %d creature sources."] =
   "Ремесло: %d, награды заданий: %d, торговцы: %d, существа: %d."
 L["Use for crafts and recipe skill"] = "Использовать для ремесла и навыка рецептов"
-L["Gives recipes the skill they need on Forever. For trainer recipes ALL THE THINGS comes first."] =
-  "Даёт рецептам навык, нужный на Forever. Для рецептов у учителей сначала ALL THE THINGS."
 L["%d crafts, %d recipe skills."] = "Ремесло: %d, навыки рецептов: %d."
 L["Use for dungeon loot, quests and PvP rewards"] = "Добыча и задания подземелий, награды PvP"
 L["The main source: Forever's dungeons, bosses, dungeon quests and PvP rewards."] =
   "Главный источник: подземелья Forever, боссы, задания подземелий и награды PvP."
+L["Gives recipes the skill they need on Forever. For trainer recipes ALL THE THINGS comes first."] =
+  "Даёт рецептам навык, нужный на Forever. Для рецептов у учителей ALL THE THINGS в приоритете."
 
 -- UI/Tabs/SourceTabs.lua
 L["Needs AtlasLoot or ALL THE THINGS."] = "Нужен AtlasLoot или ALL THE THINGS."
